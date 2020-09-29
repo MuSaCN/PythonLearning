@@ -1,0 +1,31 @@
+分析结果记录
+参数选择(k,holding,lag_trade)，仅多与仅空参数不同，有的甚至没有：
+AUDCAD; TIMEFRAME_H12; BuyOnly(194,1,1); ;
+AUDJPY; TIMEFRAME_D1; BuyOnly(359,1,1); ;
+AUDJPY; TIMEFRAME_H1; BuyOnly(226,1,1); SellOnly(226,1,1);
+AUDJPY; TIMEFRAME_H2; BuyOnly(49,1,1); SellOnly(49,1,1);
+AUDJPY; TIMEFRAME_H3; BuyOnly(162,1,1); ;
+AUDJPY; TIMEFRAME_H4; BuyOnly(121,1,1); ;
+AUDJPY; TIMEFRAME_H6; BuyOnly(80,1,1); ;
+AUDJPY; TIMEFRAME_M10; ; SellOnly(268,1,1);
+AUDJPY; TIMEFRAME_M15; ; SellOnly(204,1,1);
+AUDNZD; TIMEFRAME_D1; BuyOnly(56,1,1); SellOnly(56,1,1);
+AUDNZD; TIMEFRAME_H1; ; SellOnly(314,1,1);
+AUDNZD; TIMEFRAME_H12; BuyOnly(115,1,1); SellOnly(115,1,1);
+AUDUSD; TIMEFRAME_D1; BuyOnly(112,1,1); SellOnly(112,1,1);
+AUDUSD; TIMEFRAME_H4; BuyOnly(260,1,1); SellOnly(260,1,1);
+
+
+
+
+
+
+
+
+
+
+指标过滤：
+
+
+
+

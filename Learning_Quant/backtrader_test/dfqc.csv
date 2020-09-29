@@ -1,0 +1,17 @@
+Ref: 18
+OrdType: 0
+OrdType: Buy
+Status: 4
+Status: Completed
+Size: 1
+Price: None
+Price Limit: None
+TrailAmount: None
+TrailPercent: None
+ExecType: 0
+ExecType: Market
+CommInfo: <backtrader.comminfo.CommInfoBase object at 0x00000241F1FC7F60>
+End of Session: 735600.9999999999
+Info: AutoOrderedDict()
+Broker: None
+Alive: False

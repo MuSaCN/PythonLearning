@@ -1,0 +1,29 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label="历史违约次数 <= 0.5\ngini = 0.482\nsamples = 800\nvalue = [475, 325]\nclass = 不违约", fillcolor="#e5813951"] ;
+1 [label="年龄 <= 44.5\ngini = 0.335\nsamples = 484\nvalue = [381, 103]\nclass = 不违约", fillcolor="#e58139ba"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="年龄 <= 29.5\ngini = 0.289\nsamples = 462\nvalue = [381, 81]\nclass = 不违约", fillcolor="#e58139c9"] ;
+1 -> 2 ;
+3 [label="gini = 0.0\nsamples = 19\nvalue = [0, 19]\nclass = 违约", fillcolor="#399de5ff"] ;
+2 -> 3 ;
+4 [label="gini = 0.241\nsamples = 443\nvalue = [381, 62]\nclass = 不违约", fillcolor="#e58139d6"] ;
+2 -> 4 ;
+5 [label="gini = 0.0\nsamples = 22\nvalue = [0, 22]\nclass = 违约", fillcolor="#399de5ff"] ;
+1 -> 5 ;
+6 [label="历史授信额度 <= 22500.0\ngini = 0.418\nsamples = 316\nvalue = [94, 222]\nclass = 违约", fillcolor="#399de593"] ;
+0 -> 6 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+7 [label="历史授信额度 <= 11150.0\ngini = 0.146\nsamples = 151\nvalue = [12, 139]\nclass = 违约", fillcolor="#399de5e9"] ;
+6 -> 7 ;
+8 [label="gini = 0.078\nsamples = 123\nvalue = [5, 118]\nclass = 违约", fillcolor="#399de5f4"] ;
+7 -> 8 ;
+9 [label="gini = 0.375\nsamples = 28\nvalue = [7, 21]\nclass = 违约", fillcolor="#399de5aa"] ;
+7 -> 9 ;
+10 [label="年龄 <= 44.5\ngini = 0.5\nsamples = 165\nvalue = [82, 83]\nclass = 违约", fillcolor="#399de503"] ;
+6 -> 10 ;
+11 [label="gini = 0.493\nsamples = 147\nvalue = [82, 65]\nclass = 不违约", fillcolor="#e5813935"] ;
+10 -> 11 ;
+12 [label="gini = 0.0\nsamples = 18\nvalue = [0, 18]\nclass = 违约", fillcolor="#399de5ff"] ;
+10 -> 12 ;
+}
