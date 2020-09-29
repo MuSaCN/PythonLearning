@@ -45,7 +45,7 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-
+# 批量运算，最后合并且输出表格
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_D1"
 direct = "BuyOnly"
