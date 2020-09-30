@@ -45,23 +45,61 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-# 批量运算，最后合并且输出表格
-symbol = "EURUSD"
-timeframe = "TIMEFRAME_D1"
-direct = "BuyOnly"
-
-folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
-filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
-filecontent = pd.read_excel(filepath)
-para_fixed= {"k":None, "holding":1, "lag_trade":1}
-y_name = ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
-
-out_df = myBTV.auto_para_1D(filepath, filecontent, para_fixed, y_name, order=20, output=True, batch=False)
+'''
+# 输出内容都放在主目录下的“自动参数选择1D”文件夹，然后在里面分别建立品种目录存档结果。
+'''
 
 
-out_df[out_df["sharpe"] > 0]
-out_df[out_df["calmar_ratio"] > 0]
-out_df[out_df["cumRet"] > 0]
+#%% 根据 非策略参数 定位文件 ###########################
+import warnings
+warnings.filterwarnings('ignore')
+
+direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
+symbol_list = myPjMT5.get_all_symbol_name().tolist()
+# timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
+#                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
+#                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
+#                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
+#                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
+timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
+                  "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
+                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
+                  "TIMEFRAME_M10"]
+
+
+#%%
+myDefault.set_backend_default("agg")
+# 仅检测 holding=1 就可以了
+para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
+# 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
+y_name = ["sharpe"]
+
+#%%
+order = 15
+finish_symbol = []
+for symbol in symbol_list:
+    # 批量运算，最后合并且输出表格
+    total_df = pd.DataFrame([])
+    for timeframe in timeframe_list:
+        for direct in direct_para:
+            folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+            filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
+            filecontent = pd.read_excel(filepath)
+            for para_fixed in para_fixed_list:
+                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, output=True, batch=True)
+                total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
+        print(symbol, timeframe, "OK")
+    # 输出表格
+    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D\\" + symbol
+    total_df.to_excel(out_folder + "\\EURUSD_aotu_para_1D.xlsx")
+    # 显示进度
+    finish_symbol.append(symbol)
+    print("自动选择最佳参数1D finished:", finish_symbol)
+
+
+
+
+
 
 
 
