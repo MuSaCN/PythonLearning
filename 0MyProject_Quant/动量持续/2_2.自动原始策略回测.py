@@ -54,7 +54,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-symbol_list = myPjMT5.get_all_symbol_name().tolist()[:5]
+symbol_list = myPjMT5.get_all_symbol_name().tolist()
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
 para_name = ["k", "holding", "lag_trade"]
 # 仅根据夏普选择就可以了.
