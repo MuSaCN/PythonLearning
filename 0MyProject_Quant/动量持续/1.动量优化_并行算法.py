@@ -147,13 +147,13 @@ if __name__ == '__main__':
         if timeframe in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                       "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                       "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                      "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]:
+                      "TIMEFRAME_M10","TIMEFRAME_M6"]:
             continue
         finish_symbol = []
         for symbol in symbol_list:
-            if timeframe ==  "TIMEFRAME_M4" and symbol in ['EURUSD', 'GBPUSD', 'USDCHF', 'USDJPY', 'USDCAD', 'AUDUSD', 'AUDNZD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'CHFJPY', 'EURGBP', 'EURAUD', 'EURCHF', 'EURJPY', 'EURNZD']:
-                finish_symbol.append(symbol)
-                continue
+            # if timeframe ==  "TIMEFRAME_M4" and symbol in ['EURUSD', 'GBPUSD', 'USDCHF', 'USDJPY', 'USDCAD', 'AUDUSD', 'AUDNZD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'CHFJPY', 'EURGBP', 'EURAUD', 'EURCHF', 'EURJPY', 'EURNZD']:
+            #     finish_symbol.append(symbol)
+            #     continue
             # 设置输出目录：one symbol + one timeframe + three direct --> one folder
             folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
             # 仅做多、仅做空、多空都做，保存在一个目录下
