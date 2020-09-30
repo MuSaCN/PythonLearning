@@ -54,7 +54,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
+symbol_list = myPjMT5.get_all_symbol_name().tolist()[:5]
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
 para_name = ["k", "holding", "lag_trade"]
 # 仅根据夏普选择就可以了.
@@ -66,7 +66,7 @@ for symbol in symbol_list:
     folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D\\%s"%symbol
     filepath_para1D = folder_para1D + "\\%s_aotu_para_1D.xlsx"%symbol
     filecontent = pd.read_excel(filepath_para1D)
-    # ---解析
+    # ---解析，显然没有内容则直接跳过
     for i in range(len(filecontent)):
         # ---获取各参数和策略评价
         timeframe = filecontent.iloc[i]["timeframe"]
