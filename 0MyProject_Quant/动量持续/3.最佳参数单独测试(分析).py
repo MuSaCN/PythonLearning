@@ -50,6 +50,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 由于优化结果被保存在硬盘，所以读取后解析参数和策略结果就可以进行分析。
 # 在多个参数的情况下，为了分析需要把一些参数取固定值、另一些参数不取固定值。需要通过字典传递。
 # 在分析最佳参数时，需要进行 单独测试 来观察图示。
+# 注意使用的表格是基于训练集样本，与后面的分析用全集样本时的sharpe不一样。
 '''
 
 
@@ -58,8 +59,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 direct_para = ["BuyOnly","SellOnly","All"]
-symbol_list = ["AUDUSD"]
-timeframe_list = ["TIMEFRAME_H4"]
+symbol_list = ["AUS200"]
+timeframe_list = ["TIMEFRAME_M12"]
 
 
 #%% 根据 策略参数 分析 ############################
@@ -67,20 +68,22 @@ timeframe_list = ["TIMEFRAME_H4"]
 # k 动量向左参数；holding 必须小于 k
 symbol = symbol_list[0]
 timeframe = timeframe_list[0]
-direct = direct_para[1]  # 0-"BuyOnly", 1-"SellOnly", 2-"All"
+direct = direct_para[0]  # 0-"BuyOnly", 1-"SellOnly", 2-"All"
 
 para_fixed = {"k":100, "holding":1, "lag_trade":None}
 para_fixed = {"k":None, "holding":1, "lag_trade":1}
 para_fixed = {"k":42, "holding":[1,10], "lag_trade":1}
-para_fixed = {"k":[225,300], "holding":1, "lag_trade":1}
+para_fixed = {"k":[0,400], "holding":1, "lag_trade":1}
 
 folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
 filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 
-y_name = ["sharpe", "calmar_ratio", "cumRet"]
+y_name = ["sharpe"] # ["sharpe", "calmar_ratio", "cumRet"]
+
 myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
 
+myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=20, plot=True, savefig=None, batch=False)
 
 
 

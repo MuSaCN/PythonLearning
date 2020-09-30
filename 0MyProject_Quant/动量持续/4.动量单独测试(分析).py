@@ -57,8 +57,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ---获取数据
-symbol = "AUDUSD"
-timeframe = "TIMEFRAME_D1"
+symbol = "AUS200"
+timeframe = "TIMEFRAME_M10"
 
 date_from, date_to = myPjMT5.get_date_range(timeframe)
 data_total = myPjMT5.getsymboldata(symbol,timeframe,date_from,date_to,index_time=True, col_capitalize=True)
@@ -71,7 +71,7 @@ train_x1 = data_train.index[-1]
 
 #%%
 # ---仅做多分析
-k_range = [k for k in range(112, 112+1)]
+k_range = [k for k in range(333, 333+1)]
 holding_range = [holding for holding in range(1, 1+1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1+1)]
 

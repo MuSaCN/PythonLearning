@@ -89,7 +89,7 @@ for symbol in symbol_list:
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
-                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, output=True, batch=True)
+                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, plot=True, savefig="default", batch=True)
                 total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
         print(symbol, timeframe, "OK")
     # 输出表格
