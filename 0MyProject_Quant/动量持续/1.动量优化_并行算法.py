@@ -61,7 +61,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 策略参数(需写在这里)，按顺序保存在 para 的前面
 strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
 k_end = 400             # 动量向左参数
-holding_end = 10        # 持有期参数，可以不同固定为1
+holding_end = 1        # 持有期参数，可以不同固定为1
 lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 
 #%% ################# 信号函数部分，或多个函数、或多个参数 #####################
@@ -147,11 +147,11 @@ if __name__ == '__main__':
         if timeframe in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                       "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                       "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                      "TIMEFRAME_M10","TIMEFRAME_M6"]:
+                      "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]:
             continue
         finish_symbol = []
         for symbol in symbol_list:
-            if timeframe ==  "TIMEFRAME_M5" and symbol in ['EURUSD', 'GBPUSD', 'USDCHF', 'USDJPY', 'USDCAD', 'AUDUSD', 'AUDNZD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'CHFJPY', 'EURGBP', 'EURAUD', 'EURCHF', 'EURJPY', 'EURNZD', 'EURCAD', 'GBPCHF', 'GBPJPY', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'USDDKK', 'USDHKD', 'USDNOK']:
+            if timeframe ==  "TIMEFRAME_M4" and symbol in ['EURUSD', 'GBPUSD', 'USDCHF', 'USDJPY', 'USDCAD', 'AUDUSD', 'AUDNZD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'CHFJPY', 'EURGBP', 'EURAUD', 'EURCHF', 'EURJPY', 'EURNZD']:
                 finish_symbol.append(symbol)
                 continue
             # 设置输出目录：one symbol + one timeframe + three direct --> one folder
