@@ -78,7 +78,7 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe"]
 
 #%%
-order = 20
+order = 30
 finish_symbol = []
 for symbol in symbol_list:
     # 批量运算，最后合并且输出表格
