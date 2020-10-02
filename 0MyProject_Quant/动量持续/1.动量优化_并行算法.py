@@ -152,7 +152,7 @@ if __name__ == '__main__':
             continue
         finish_symbol = []
         for symbol in symbol_list:
-            if timeframe ==  "TIMEFRAME_M2" and symbol in ['EURUSD', 'GBPUSD', 'USDCHF', 'USDJPY', 'USDCAD', 'AUDUSD', 'AUDNZD', 'AUDCAD', 'AUDCHF', 'AUDJPY', 'CHFJPY', 'EURGBP', 'EURAUD', 'EURCHF', 'EURJPY', 'EURNZD', 'EURCAD', 'GBPCHF', 'GBPJPY', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK', 'USDSGD', 'USDTRY', 'GBPAUD', 'GBPCAD', 'NZDJPY', 'NZDUSD', 'XAGUSD']:
+            if timeframe ==  "TIMEFRAME_M1" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK']:
                 finish_symbol.append(symbol)
                 continue
             # 设置输出目录：one symbol + one timeframe + three direct --> one folder
