@@ -148,7 +148,7 @@ if __name__ == '__main__':
                       "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                       "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
                       "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
-                      "TIMEFRAME_M3"]:
+                      "TIMEFRAME_M3","TIMEFRAME_M2"]:
             continue
         finish_symbol = []
         for symbol in symbol_list:
