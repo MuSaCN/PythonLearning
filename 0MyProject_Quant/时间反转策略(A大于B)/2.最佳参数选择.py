@@ -77,8 +77,10 @@ finish_symbol = []
 for symbol in symbol_list:
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ---文件位置 ***(修改这句)***
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
+            # ---
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
@@ -99,8 +101,10 @@ finish_symbol = []
 for symbol in symbol_list:
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ---文件位置 ***(修改这句)***
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
+            # ---
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 myBTV.plot_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, annot=False, batch=True) # 若batch=False，要设置画图模式为pycharm.
@@ -121,8 +125,10 @@ finish_symbol = []
 for symbol in symbol_list:
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ---文件位置 ***(修改这句)***
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
+            # ---
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 myBTV.plot_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)

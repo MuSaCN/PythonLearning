@@ -67,7 +67,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%% ################# 设置参数，设置范围的最大值 ##########################
-# 策略参数(需写在这里)，按顺序保存在 para 的前面
+# 策略参数(需写在这里)，按顺序保存在 para 的前面。***(修改这句)***
 strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
 k_end = 400             # 动量向左参数
 holding_end = 1         # 持有期参数，可以不同固定为1
@@ -99,7 +99,7 @@ def signalfunc_NoRepeatHold_train(para):
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
-    # 获取反转策略信号数据
+    # 获取反转策略信号数据 ***(修改这句)***
     signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_train, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
@@ -129,7 +129,7 @@ def signalfunc_NoRepeatHold_test(para):
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
-    # 获取反转策略信号数据
+    # 获取反转策略信号数据 ***(修改这句)***
     signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_test, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
@@ -162,12 +162,13 @@ if __name__ == '__main__':
             # if timeframe ==  "TIMEFRAME_M1" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK']:
             #     finish_symbol.append(symbol)
             #     continue
-            # 设置输出目录：one symbol + one timeframe + three direct --> one folder
+            # 设置输出目录 ***(修改这句)***：one symbol + one timeframe + three direct --> one folder
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             # 仅做多、仅做空、多空都做，保存在一个目录下
             for direct in direct_para:
                 # 设定并行参数，只需要指定策略参数的范围即可
                 para_muilt = [(k, holding, lag_trade, direct, symbol, timeframe) for k in range(1, k_end + 1) for holding in range(1, holding_end + 1) for lag_trade in range(1, lag_trade_end + 1)]
+                # 文件位置 ***(修改这句) ***
                 filepath = folder + "\\反转_{}.xlsx".format(direct)
                 # 分析训练集(并行)，会把参数优化结果生成文档。
                 myBTV.run_train(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)

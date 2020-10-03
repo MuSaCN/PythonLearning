@@ -83,8 +83,10 @@ for symbol in symbol_list:
     total_df = pd.DataFrame([])
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ---文件位置 ***(修改这句)***
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
+            # ---
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, plot=True, savefig="default", batch=True)
