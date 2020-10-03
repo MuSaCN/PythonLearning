@@ -107,6 +107,7 @@ if __name__ == '__main__':
         finish_symbol = [] # 记录品种完成进度
         for symbol in symbol_list:
             for direct in direct_para:
+                finish_indi = [] # 由于指标很多，记录指标完成进度
                 for indi_name in indi_name_list:
                     # ---(核心部分)不同名称的技术指标，设定不同的多核运算参数范围
                     if indi_name == "rsi":
@@ -117,6 +118,9 @@ if __name__ == '__main__':
                     myBTV.multi_processing(run, multi_params, core_num=7)
                     t1 = timeit.default_timer()
                     print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
+                    # ---记录指标完成
+                    finish_indi.append(indi_name)
+                    print("indi finished:", timeframe, symbol, direct, finish_indi)
             finish_symbol.append(symbol)
             print("finished:", timeframe, finish_symbol)
 
