@@ -104,7 +104,7 @@ def run(para):
 
 if __name__ == '__main__':
     for timeframe in timeframe_list:
-        finish_symbol = []
+        finish_symbol = [] # 记录品种完成进度
         for symbol in symbol_list:
             for direct in direct_para:
                 for indi_name in indi_name_list:
