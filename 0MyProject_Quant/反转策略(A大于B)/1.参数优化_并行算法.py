@@ -152,24 +152,22 @@ if __name__ == '__main__':
                       "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
     # ---开始并行运算
     for timeframe in timeframe_list:
-        if timeframe in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
-                      "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
-                      "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                      "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
-                      "TIMEFRAME_M3","TIMEFRAME_M2"]:
-            continue
-        finish_symbol = []
+        # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
+        # if timeframe in ["TIMEFRAME_D1"]:
+        #     continue
+        finish_symbol = [] # 用于记录品种进度
         for symbol in symbol_list:
-            if timeframe ==  "TIMEFRAME_M1" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK']:
-                finish_symbol.append(symbol)
-                continue
+            # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
+            # if timeframe ==  "TIMEFRAME_M1" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK']:
+            #     finish_symbol.append(symbol)
+            #     continue
             # 设置输出目录：one symbol + one timeframe + three direct --> one folder
-            folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+            folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             # 仅做多、仅做空、多空都做，保存在一个目录下
             for direct in direct_para:
                 # 设定并行参数，只需要指定策略参数的范围即可
                 para_muilt = [(k, holding, lag_trade, direct, symbol, timeframe) for k in range(1, k_end + 1) for holding in range(1, holding_end + 1) for lag_trade in range(1, lag_trade_end + 1)]
-                filepath = folder + "\\动量_{}.xlsx".format(direct)
+                filepath = folder + "\\反转_{}.xlsx".format(direct)
                 # 分析训练集(并行)，会把参数优化结果生成文档。
                 myBTV.run_train(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)
                 # 分析测试集(并行)，会内部解析训练集文档中的参数。
