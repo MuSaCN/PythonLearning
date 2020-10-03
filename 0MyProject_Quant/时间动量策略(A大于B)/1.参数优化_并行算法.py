@@ -152,6 +152,7 @@ if __name__ == '__main__':
                       "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
     # ---开始并行运算
     for timeframe in timeframe_list:
+        # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
         if timeframe in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                       "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                       "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
@@ -160,6 +161,7 @@ if __name__ == '__main__':
             continue
         finish_symbol = []
         for symbol in symbol_list:
+            # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
             if timeframe ==  "TIMEFRAME_M1" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK']:
                 finish_symbol.append(symbol)
                 continue
