@@ -69,7 +69,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 策略参数(需写在这里)，按顺序保存在 para 的前面
 strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
 k_end = 400             # 动量向左参数
-holding_end = 1        # 持有期参数，可以不同固定为1
+holding_end = 1         # 持有期参数，可以不同固定为1
 lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 
 #%% ################# 信号函数部分，或多个函数、或多个参数 #####################
@@ -98,8 +98,8 @@ def signalfunc_NoRepeatHold_train(para):
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
-    # 获取信号数据
-    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
+    # 获取反转策略信号数据
+    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_train, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
     # 设置信号统计
@@ -128,8 +128,8 @@ def signalfunc_NoRepeatHold_test(para):
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
-    # 获取信号数据
-    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
+    # 获取反转策略信号数据
+    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_test, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
     # 设置信号统计
