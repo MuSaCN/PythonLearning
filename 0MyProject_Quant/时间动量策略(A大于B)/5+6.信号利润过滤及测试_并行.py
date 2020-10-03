@@ -52,8 +52,8 @@ myplt.set_backend("agg")  # 后台输出图片，不占pycharm内存
 import warnings
 warnings.filterwarnings('ignore')
 
-# 策略参数，根据前面分析后设置固定值。
-strategy_para = [[100,1,1], [100,1,1], [100,1,1]] # 值对应["k", "holding", "lag_trade"]，且索引对应 direct_para
+# 不同方向 BuyOnly、SellOnly、All 的策略参数，根据前面分析后设置固定值。
+strategy_para_direct = [[100,1,1], [100,1,1], [100,1,1]] # 值对应["k", "holding", "lag_trade"]，且索引对应 direct_para
 
 # 技术指标名称，参数设置在 -4 的位置，具体的参数指定，在 if __name__ == '__main__': 中
 indi_name_list=["rsi"]
@@ -61,27 +61,24 @@ indi_name_list=["rsi"]
 # 方向参数："BuyOnly" "SellOnly" "All"，保存在 para 的 -3 位置
 direct_para = ["BuyOnly","SellOnly","All"]
 
-# symbol、timeframe 参数设置在 -2、-1 的位置
-symbol_list = ["EURUSD"]
+# timeframe、symbol 参数设置在 -2、-1 的位置
 timeframe_list = ["TIMEFRAME_D1"]
+symbol_list = ["EURUSD"]
 
-# 设置时间范围，不同时间框架加载的时间范围不同，返回 date_from, date_to
-def get_date_range(timeframe=str):
-    if timeframe == "TIMEFRAME_D1":
-        date_from = [2000,1,1,0,0,0]
-        date_to = [2020,1,1,0,0,0]
-    return date_from, date_to
+
 
 #%%
 # para 传递指标的参数 indi_params 中的元素
 def run(para):
+    # 显示进度
+    print("\r", "当前执行参数为：", para, end="", flush=True)
     # 非策略参数
     indi_name = para[-4]
     direct = para[-3]
-    symbol = para[-2]
-    timeframe = para[-1]
+    timeframe = para[-2]
+    symbol = para[-1]
     # ---获取数据
-    date_from, date_to = get_date_range(timeframe)
+    date_from, date_to = myPjMT5.get_date_range(timeframe)
     data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
     # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
     data_train, data_test, bound = myPjMT5.get_train_test(data_total, train_scale=0.8, return_bound=True)
@@ -90,35 +87,38 @@ def run(para):
     train_x1 = bound
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct=direct)
     # 加载固定的参数
-    k, holding, lag_trade = strategy_para[direct_para.index(direct)]
-    # ---获取训练集的信号
+    k, holding, lag_trade = strategy_para_direct[direct_para.index(direct)]
+    # ---获取训练集的信号 ***(修改这里)***
     signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
     signal_train = signaldata_train[signalname]
-    # ---计算整个样本的信号
+    # ---计算整个样本的信号 ***(修改这里)***
     signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
     signal_all = signaldata_all[signalname]
     # ---(核心，在库中添加)获取指标
     indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, para)
     # ---信号利润过滤及测试
-    # 总目录
+    # 总目录 ***(修改这里)***
     folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}.指标过滤".format(symbol, timeframe)
     savefig = folder + "\\{}\\{}\\{}{}.png".format(indi_name, direct, indi_name, para[:-4])
     myBTV.signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
 
 if __name__ == '__main__':
-    for symbol in symbol_list:
-        for timeframe in timeframe_list:
+    for timeframe in timeframe_list:
+        finish_symbol = []
+        for symbol in symbol_list:
             for direct in direct_para:
                 for indi_name in indi_name_list:
                     # ---(核心部分)不同名称的技术指标，设定不同的多核运算参数范围
                     if indi_name == "rsi":
-                        multi_params = [("Close", i) + (indi_name, direct, symbol, timeframe) for i in range(5, 100 + 1)]
+                        multi_params = [("Close", i) + (indi_name, direct, timeframe, symbol) for i in range(5, 100 + 1)]
                     # ---开始多核执行
                     import timeit
                     t0 = timeit.default_timer()
                     myBTV.multi_processing(run, multi_params, core_num=7)
                     t1 = timeit.default_timer()
-                    print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol,timeframe,direct,indi_name), t1 - t0)
+                    print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
+            finish_symbol.append(symbol)
+            print("finished:", timeframe, finish_symbol)
 
 
 
