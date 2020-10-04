@@ -13,6 +13,9 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\参数优化.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -64,6 +67,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 需要注意的是，由于 训练集和测试集 信号计算时依赖的数据集不同，所以要设定两个函数。
 # 由于并行运算的原理，参数分为 策略参数 + 非策略参数
 # 为了提高运算速度，可以只测试训练集，然后再通过后面的分析筛选。
+# 由于并行运算时间长，防止出错输出日志。
 '''
 
 #%% ################# 设置参数，设置范围的最大值 ##########################
@@ -175,7 +179,7 @@ if __name__ == '__main__':
                 # 分析测试集(并行)，会内部解析训练集文档中的参数。
                 # myBTV.run_test(signalfunc_NoRepeatHold_test, filepath, strategy_para_names, [direct,symbol,timeframe],cpu_core)
             finish_symbol.append(symbol)
-            print("finished:", timeframe, finish_symbol)
+            mylogging.warning("finished: {} {}".format(timeframe, finish_symbol))
 
 
 

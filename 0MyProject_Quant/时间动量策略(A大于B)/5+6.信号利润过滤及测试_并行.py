@@ -10,6 +10,9 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\信号利润过滤及测试.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -45,6 +48,13 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+
+'''
+# 说明
+# 根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
+# 画的图中，min-max表示max最大的以max之前的min最小，start-end表示上涨额度最大的区间。
+# 由于并行运算时间长，防止出错输出日志。
+'''
 
 myplt.set_backend("agg")  # 后台输出图片，不占pycharm内存
 
@@ -120,9 +130,9 @@ if __name__ == '__main__':
                     print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
                     # ---记录指标完成
                     finish_indi.append(indi_name)
-                    print("indi finished:", timeframe, symbol, direct, finish_indi)
+                    mylogging.warning("indi finished: {} {} {} {}".format(timeframe, symbol, direct, finish_indi))
             finish_symbol.append(symbol)
-            print("finished:", timeframe, finish_symbol)
+            mylogging.warning("finished: {} {}".format(timeframe, finish_symbol))
 
 
 
