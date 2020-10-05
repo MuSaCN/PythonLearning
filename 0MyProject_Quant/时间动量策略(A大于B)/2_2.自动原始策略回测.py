@@ -63,6 +63,10 @@ evaluate = "sharpe"
 #%%
 finish_symbol = []
 for symbol in symbol_list:
+    if symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK', 'USDSGD', 'USDTRY', 'AUDJPY', 'AUDUSD', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURUSD', 'GBPAUD', 'GBPCAD', 'GBPCHF', 'GBPJPY', 'GBPUSD', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAGUSD']:
+        finish_symbol.append(symbol)
+        continue
+    # ---
     folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D\\%s"%symbol
     filepath_para1D = folder_para1D + "\\%s_aotu_para_1D.xlsx"%symbol
     filecontent = pd.read_excel(filepath_para1D)
