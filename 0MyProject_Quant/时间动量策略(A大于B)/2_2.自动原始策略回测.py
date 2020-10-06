@@ -67,7 +67,7 @@ for symbol in symbol_list:
     #     finish_symbol.append(symbol)
     #     continue
     # ---
-    folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D\\%s"%symbol
+    folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D_30\\%s"%symbol
     filepath_para1D = folder_para1D + "\\%s_aotu_para_1D.xlsx"%symbol
     filecontent = pd.read_excel(filepath_para1D)
     # ---解析，显然没有内容则直接跳过
