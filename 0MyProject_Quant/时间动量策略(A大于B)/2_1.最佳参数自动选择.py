@@ -75,22 +75,24 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe"]
 
 #%%
-order = 50 # 极值每一边用有多少点进行比较
+order = 60 # 极值每一边用有多少点进行比较
 finish_symbol = []
 for symbol in symbol_list:
     # 批量运算，最后合并且输出表格
     total_df = pd.DataFrame([])
     for timeframe in timeframe_list:
+        # ---输入目录和输出目录
+        folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+        out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D_%s\\" % order + symbol
+        # ---
         for direct in direct_para:
-            folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
-                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, plot=True, savefig="default", batch=True)
+                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, plot=True, savefolder=out_folder, batch=True)
                 total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
         print(symbol, timeframe, "OK")
     # 输出表格
-    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D\\" + symbol
     total_df.to_excel(out_folder + "\\%s_aotu_para_1D.xlsx"%symbol)
     # 显示进度
     finish_symbol.append(symbol)
