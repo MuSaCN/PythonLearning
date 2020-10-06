@@ -10,6 +10,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -45,61 +46,47 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-'''
-# 1.根据前面输出的优化结果，自动寻找最佳参数点。
-# 2.运算后的输出内容都放在主目录下的“自动参数选择1D”文件夹，然后在里面分别建立品种目录存档结果。
-# 3.人工浏览下自动寻找的最佳参数点，排除一些潜在不合理的地方。
-# 4.修改表格内容，为下一步批量自动回测做准备。
-'''
-
-
-#%% 根据 非策略参数 定位文件 ###########################
-import warnings
-warnings.filterwarnings('ignore')
-
-direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
-timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
-                  "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
-                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
-                  "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
-
-
 
 #%%
-myDefault.set_backend_default("agg")
-# 仅检测 holding=1 就可以了
-para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
-# 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
+symbol = "AUDNZD"
+timeframe = "TIMEFRAME_H6"
+direct = "SellOnly"
+
+in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
+filecontent = pd.read_excel(filepath)
+para_fixed = {"k":None, "holding":1, "lag_trade":1}
 y_name = ["sharpe"]
 
 #%%
-order = 30 # 极值每一边用有多少点进行比较
-finish_symbol = []
-for symbol in symbol_list:
-    # 批量运算，最后合并且输出表格
-    total_df = pd.DataFrame([])
-    for timeframe in timeframe_list:
-        # ---输入目录和输出目录
-        in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
-        out_folder = __mypath__.dirname(in_folder) + "\\自动参数选择1D_%s\\" % order + symbol
-        # ---
-        for direct in direct_para:
-            filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
-            filecontent = pd.read_excel(filepath)
-            for para_fixed in para_fixed_list:
-                out_df = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=1, plot=True, savefolder=out_folder, batch=True)
-                total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
-        print(symbol, timeframe, "OK")
-    # 输出表格
-    total_df.to_excel(out_folder + "\\%s_aotu_para_1D.xlsx"%symbol)
-    # 显示进度
-    finish_symbol.append(symbol)
-    print("自动选择最佳参数1D finished:", finish_symbol)
+# 全部的文档内容
+filecontent = pd.read_excel(filepath) if filecontent is None else filecontent
 
+name, name_fixed, x_name, y_name, analysis_last, picname_suffix = myBTV.__plot_analy_para__(filecontent=filecontent, para_fixed=para_fixed, y_namelist=y_name)
+# ---
+if "BuyOnly" in filepath:
+    directname = "BuyOnly"
+elif "SellOnly" in filepath:
+    directname = "SellOnly"
+elif "All" in filepath:
+    directname = "All"
+import os
+symbolname = os.path.basename(os.path.dirname(filepath)).split(".")[0]
+timeframename = os.path.basename(os.path.dirname(filepath)).split(".")[1]
+# ---分别判断
+for y in y_name:
+    y= "sharpe"
+    array = analysis_last[y].values
+    arrayX = analysis_last[x_name[0]].values
 
+    data_filter1 = myDA.kalman_1D(array, 1, restore_nan=True, fill_value=0)
+    data_filter2 = myDA.kalman_1D(data_filter1, 1, restore_nan=True, fill_value=0)
 
+    myfig.__init__(nrows=3, ncols=6, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]", "[2,:]"], AddFigure=True)
+    index0, values0, ax0 = myDA.argrelextrema(array, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[0])
+    index1, values1, ax1 = myDA.argrelextrema(data_filter1, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[1])
+    index2, values2, ax2 = myDA.argrelextrema(data_filter2, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[2])
+    myfig.show()
 
 
 
