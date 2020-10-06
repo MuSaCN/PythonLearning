@@ -93,7 +93,7 @@ for symbol in symbol_list:
                 total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
         print(symbol, timeframe, "OK")
     # 输出表格
-    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D_%s\\"%order + symbol
+    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D\\" + symbol
     total_df.to_excel(out_folder + "\\%s_aotu_para_1D.xlsx"%symbol)
     # 显示进度
     finish_symbol.append(symbol)
