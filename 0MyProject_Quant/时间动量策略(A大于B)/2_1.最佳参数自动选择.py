@@ -75,7 +75,7 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe"]
 
 #%%
-order = 50 # 极值每一边用有多少点进行比较
+order = 30 # 极值每一边用有多少点进行比较
 finish_symbol = []
 for symbol in symbol_list:
     # 批量运算，最后合并且输出表格
@@ -90,7 +90,7 @@ for symbol in symbol_list:
                 total_df = pd.concat([total_df,out_df ],axis=0, ignore_index=True)
         print(symbol, timeframe, "OK")
     # 输出表格
-    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D_%s\\"%order + symbol
+    out_folder = __mypath__.dirname(folder) + "\\自动参数选择1D\\" + symbol
     total_df.to_excel(out_folder + "\\%s_aotu_para_1D.xlsx"%symbol)
     # 显示进度
     finish_symbol.append(symbol)
