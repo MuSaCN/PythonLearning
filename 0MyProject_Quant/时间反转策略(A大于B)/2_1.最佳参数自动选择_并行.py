@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -46,21 +49,18 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 
-
 '''
-# 1.根据前面输出的优化结果，自动寻找最佳参数点。
-# 2.运算后的输出内容都放在主目录下的“自动参数选择1D”文件夹，然后在里面分别建立品种目录存档结果。
-# 3.人工浏览下自动寻找的最佳参数点，排除一些潜在不合理的地方。
-# 4.修改表格内容，为下一步批量自动回测做准备。
+# 1.根据前面输出的优化结果，自动寻找最佳参数点。由于品种较多，再算上极值点判断方法，耗时较长，故采用多核运算。
+# 2.自动寻找的思路为：对 过滤0次、过滤1次、过滤2次 的数据寻找极值点。会输出图片和表格。注意过滤后的数据判断完极值后，会根据其位置索引到源数据，再组成表格的内容。注意图片中的过滤部分极值，并没有更改为源数据，仅表格更改了。
+# 3.并行运算必须处理好图片释放内存的问题。
+# 4.运算后的输出内容都放在主目录下的“自动参数选择1D”文件夹，然后在里面分别建立品种目录存档结果。
+# 5.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
+# 6.为下一步批量自动回测做准备。
 '''
 
 
 #%% 根据 非策略参数 定位文件 ###########################
-import warnings
-warnings.filterwarnings('ignore')
-
 direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
@@ -71,31 +71,33 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
 #%%
 myDefault.set_backend_default("agg")
 # 仅检测 holding=1 就可以了
-para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}]
+para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 # 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
 y_name = ["sharpe"]
 
+
 #%%
-order = 30 # 极值每一边用有多少点进行比较。
-finish_symbol = []
-for symbol in symbol_list:
+# ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
+def run_auto_choose_opt(para):
+    order = para[0]
+    symbol = para[1]
     # 批量运算，最后合并且输出表格
     total_df0 = pd.DataFrame([])
     total_df1 = pd.DataFrame([])
     total_df2 = pd.DataFrame([])
     for timeframe in timeframe_list:
-        # ---输入目录和输出目录 ***(修改这句)***
+        # ---输入目录和输出目录 ***修改这里***
         in_folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
         out_folder = __mypath__.dirname(in_folder) + "\\自动参数选择1D_%s\\" % order + symbol
         # ---
         for direct in direct_para:
-            # ---文件位置 ***(修改这句)***
+            # ---路径 ***修改这里***
             filepath = in_folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 # 过滤0，输出图片
                 out_df0 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder=out_folder, batch=True)
-                total_df0 = pd.concat([total_df0, out_df0], axis=0, ignore_index=True)
+                total_df0 = pd.concat([total_df0,out_df0 ],axis=0, ignore_index=True)
                 # 过滤1，不输出图片
                 out_df1 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False)
                 total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
@@ -104,15 +106,27 @@ for symbol in symbol_list:
                 total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
         print(symbol, timeframe, "OK")
     # 输出表格
-    total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_0.xlsx" % symbol)
-    total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_1.xlsx" % symbol)
-    total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_2.xlsx" % symbol)
+    total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_filter0.xlsx" % symbol)
+    total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_filter1.xlsx" % symbol)
+    total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_filter2.xlsx" % symbol)
     # 显示进度
-    finish_symbol.append(symbol)
-    print("自动选择最佳参数1D finished:", finish_symbol)
+    print("自动选择最佳参数1D_%s finished:"%order, symbol)
 
 
-
+#%%
+################# 多进程执行函数 ########################################
+cpu_core = -1 # -1表示留1个进程不执行运算。
+# ---多进程必须要在这里执行
+if __name__ == '__main__':
+    order_list = [30,40,50,60,70]  # [30,40,50,60,70] 极值每一边用有多少点进行比较
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    para_muilt = [(order,symbol) for order in order_list for symbol in symbol_list]
+    # ---开始多核执行
+    import timeit
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_auto_choose_opt, para_muilt, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", '耗时为：', t1 - t0)
 
 
 

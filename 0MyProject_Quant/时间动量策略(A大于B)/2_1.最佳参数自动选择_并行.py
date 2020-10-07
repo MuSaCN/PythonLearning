@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -56,9 +59,6 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 根据 非策略参数 定位文件 ###########################
-import warnings
-warnings.filterwarnings('ignore')
-
 direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
@@ -74,8 +74,8 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 # 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
 y_name = ["sharpe"]
 
-#%%
 
+#%%
 # ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
 def run_auto_choose_opt(para):
     order = para[0]
@@ -111,6 +111,8 @@ def run_auto_choose_opt(para):
     # 显示进度
     print("自动选择最佳参数1D_%s finished:"%order, symbol)
 
+
+#%%
 ################# 多进程执行函数 ########################################
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
