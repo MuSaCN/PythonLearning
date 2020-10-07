@@ -75,39 +75,40 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe"]
 
 #%%
-order = 70 # 极值每一边用有多少点进行比较
-finish_symbol = []
-for symbol in symbol_list:
-    # 批量运算，最后合并且输出表格
-    total_df0 = pd.DataFrame([])
-    total_df1 = pd.DataFrame([])
-    total_df2 = pd.DataFrame([])
-    for timeframe in timeframe_list:
-        # ---输入目录和输出目录
-        in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
-        out_folder = __mypath__.dirname(in_folder) + "\\自动参数选择1D_%s\\" % order + symbol
-        # ---
-        for direct in direct_para:
-            filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
-            filecontent = pd.read_excel(filepath)
-            for para_fixed in para_fixed_list:
-                # 过滤0，输出图片
-                out_df0 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder=out_folder, batch=True)
-                total_df0 = pd.concat([total_df0,out_df0 ],axis=0, ignore_index=True)
-                # 过滤1，不输出图片
-                out_df1 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False)
-                total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
-                # 过滤2，不输出图片
-                out_df2 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False)
-                total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
-        print(symbol, timeframe, "OK")
-    # 输出表格
-    total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_0.xlsx"%symbol)
-    total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_1.xlsx" % symbol)
-    total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_2.xlsx" % symbol)
-    # 显示进度
-    finish_symbol.append(symbol)
-    print("自动选择最佳参数1D finished:", finish_symbol)
+order_list = [30,40,50,60,70] # 极值每一边用有多少点进行比较
+for order in order_list:
+    finish_symbol = []
+    for symbol in symbol_list:
+        # 批量运算，最后合并且输出表格
+        total_df0 = pd.DataFrame([])
+        total_df1 = pd.DataFrame([])
+        total_df2 = pd.DataFrame([])
+        for timeframe in timeframe_list:
+            # ---输入目录和输出目录
+            in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+            out_folder = __mypath__.dirname(in_folder) + "\\自动参数选择1D_%s\\" % order + symbol
+            # ---
+            for direct in direct_para:
+                filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
+                filecontent = pd.read_excel(filepath)
+                for para_fixed in para_fixed_list:
+                    # 过滤0，输出图片
+                    out_df0 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder=out_folder, batch=True)
+                    total_df0 = pd.concat([total_df0,out_df0 ],axis=0, ignore_index=True)
+                    # 过滤1，不输出图片
+                    out_df1 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False)
+                    total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
+                    # 过滤2，不输出图片
+                    out_df2 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False)
+                    total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
+            print(symbol, timeframe, "OK")
+        # 输出表格
+        total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_filter0.xlsx" % symbol)
+        total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_filter1.xlsx" % symbol)
+        total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_filter2.xlsx" % symbol)
+        # 显示进度
+        finish_symbol.append(symbol)
+        print("自动选择最佳参数1D_%s finished:"%order, finish_symbol)
 
 
 
