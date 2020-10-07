@@ -75,7 +75,7 @@ para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe"]
 
 #%%
-order_list = [30,40,50,60,70] # 极值每一边用有多少点进行比较
+order_list = [50,60,70] # [30,40,50,60,70] 极值每一边用有多少点进行比较
 for order in order_list:
     finish_symbol = []
     for symbol in symbol_list:
