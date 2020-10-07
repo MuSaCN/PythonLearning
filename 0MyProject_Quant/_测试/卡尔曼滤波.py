@@ -82,11 +82,15 @@ for y in y_name:
     data_filter1 = myDA.kalman_1D(array, 1, restore_nan=True, fill_value=0)
     data_filter2 = myDA.kalman_1D(data_filter1, 1, restore_nan=True, fill_value=0)
 
+    myDefault.set_backend_default("tkagg")
+
     myfig.__init__(nrows=3, ncols=6, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]", "[2,:]"], AddFigure=True)
     index0, values0, ax0 = myDA.argrelextrema(array, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[0])
     index1, values1, ax1 = myDA.argrelextrema(data_filter1, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[1])
     index2, values2, ax2 = myDA.argrelextrema(data_filter2, comparator=np.greater_equal, order=30, arrayX=arrayX, plot=True, label=y, ax=myfig.axeslist[2])
+
     myfig.show()
+    myfig.close(check=False)
 
 
 
