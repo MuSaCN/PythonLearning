@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -54,11 +57,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%% 根据 非策略参数 定位文件 ###########################
-import warnings
-warnings.filterwarnings('ignore')
-
 direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
@@ -67,72 +66,86 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
 
 
 #%% 根据 策略参数 分析 ############################
-# ---画参数图1D
 myDefault.set_backend_default("agg")
-# k 动量向左参数；holding 必须小于 k
-para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
-finish_symbol = []
-for symbol in symbol_list:
+
+# ---画参数图1D，1个特征变量
+# k 动量向左参数；holding 必须小于 k
+para_fixed_list_1d = [{"k":None, "holding":1, "lag_trade":1}]
+def run_choose_opt_1d(para):
+    symbol = para[0]
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ***修改这里***
             folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
-            for para_fixed in para_fixed_list:
+            for para_fixed in para_fixed_list_1d:
                 myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
                 plt.clf()
                 plt.close()
-        print(symbol, timeframe, "OK")
-    finish_symbol.append(symbol)
-    print("参数图1D finished:", finish_symbol)
+    print("参数图1D finished:", symbol)
 
-
-#%%
-# ---画参数图2D热力图，batch=True时才能用agg形式画图，否则要用pycharm形式.
-myDefault.set_backend_default("agg")
+# ---画参数图2D，2个特征变量
 # k 动量向左参数；holding 必须小于 k
-para_fixed_list = [{"k":None, "holding":None, "lag_trade":i} for i in range(1,1+1)]
-y_name = ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
-finish_symbol = []
-for symbol in symbol_list:
+para_fixed_list_2d = [{"k":None, "holding":None, "lag_trade":1}]
+def run_choose_opt_2d(para):
+    symbol = para[0]
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ***修改这里***
             folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
-            for para_fixed in para_fixed_list:
+            for para_fixed in para_fixed_list_2d:
+                # ---画参数图2D热力图，batch=True时才能用agg形式画图，否则要用pycharm形式.
                 myBTV.plot_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, annot=False, batch=True) # 若batch=False，要设置画图模式为pycharm.
                 plt.clf()
                 plt.close()
-        print(symbol, timeframe, "OK")
-    finish_symbol.append(symbol)
-    print("参数图2D热力图 finished:", finish_symbol)
+    print("参数图2D热力图 finished:", symbol)
 
-
-#%%
-# ---画参数图3D热力图
-myDefault.set_backend_default("agg")
+# ---画参数图3D热力图，2个特征变量
 # k 动量向左参数；holding 必须小于 k
-para_fixed_list = [{"k":None, "holding":None, "lag_trade":i} for i in range(1,1+1)]
-y_name = ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
-finish_symbol = []
-for symbol in symbol_list:
+para_fixed_list_3d = [{"k":None, "holding":None, "lag_trade":1}]
+def run_choose_opt_3d(para):
+    symbol = para[0]
     for timeframe in timeframe_list:
         for direct in direct_para:
+            # ***修改这里***
             folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
-            for para_fixed in para_fixed_list:
+            for para_fixed in para_fixed_list_3d:
                 myBTV.plot_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
                 plt.clf()
                 plt.close()
-        print(symbol, timeframe, "OK")
-    finish_symbol.append(symbol)
-    print("参数图3D热力图 finished:", finish_symbol)
+    print("参数图3D热力图 finished:", symbol)
 
 
-
+################# 多进程执行函数 ########################################
+cpu_core = -1 # -1表示留1个进程不执行运算。
+# ---多进程必须要在这里执行
+if __name__ == '__main__':
+    # ---3个画图通用参数
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    para_muilt = [(symbol,) for symbol in symbol_list]
+    # ---
+    import timeit
+    # ---开始多核执行参数选择1D
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_choose_opt_1d, para_muilt, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'run_choose_opt_1d() 耗时为：', t1 - t0)
+    # ---开始多核执行参数选择2D
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_choose_opt_2d, para_muilt, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'run_choose_opt_2d() 耗时为：', t1 - t0)
+    # ---开始多核执行参数选择3D
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_choose_opt_3d, para_muilt, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'run_choose_opt_3d() 耗时为：', t1 - t0)
 
 
 
