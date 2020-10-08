@@ -107,7 +107,7 @@ def run_auto_stratgy_test(para):
         outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
         eva_all = outStrat[direct][evaluate] # 全集策略评价
-        y1 = (outStrat[direct]["cumRet"]/2 + 1)
+        y1 = (outStrat[direct]["cumRet"] + 1)
         myfig.axeslist[1].annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
         myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
         # ---保存输出图片
