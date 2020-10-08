@@ -103,7 +103,7 @@ def run_auto_choose_opt(para):
                 # 过滤2，不输出图片
                 out_df2 = myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False)
                 total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
-        print(symbol, timeframe, "OK")
+        print("\r", symbol, timeframe, "OK", end="", flush=True)
     # 输出表格
     total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_filter0.xlsx" % symbol)
     total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_filter1.xlsx" % symbol)
