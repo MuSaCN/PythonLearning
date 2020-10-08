@@ -128,7 +128,7 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30,40] # [30,40,50]
+    order_list = [30,40,50] # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
     # ---设置多步，以更好的控制进度，更好的释放内存。
