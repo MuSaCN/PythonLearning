@@ -65,6 +65,9 @@ evaluate = "sharpe"
 #%%
 # 自动策略测试 order = para[0]； symbol = para[1]； filter_level = para[2]；
 def run_auto_stratgy_test(para):
+    # order = 30
+    # symbol = "EURUSD"
+    # filter_level ="filter1"
     order = para[0]
     symbol = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
@@ -74,6 +77,7 @@ def run_auto_stratgy_test(para):
     filecontent = pd.read_excel(filepath_para1D)
     # ---解析，显然没有内容则直接跳过
     for i in range(len(filecontent)):
+        # i = 0
         # ---获取各参数和策略评价
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
@@ -103,23 +107,24 @@ def run_auto_stratgy_test(para):
         elif direct == "SellOnly":
             signaldata_input = signaldata["sellsignal"]
         # ---信号分析，不重复持仓
-        ax1 = plt.subplot(211)
-        ax2 = plt.subplot(212)
-        outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=ax1, ax2=ax2, show=False) # show必须设为False
+        # myDefault.set_backend_default("tkagg")
+        myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
+        outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
         eva_all = outStrat[direct][evaluate] # 全集策略评价
         y1 = (outStrat[direct]["cumRet"]/2 + 1)
-        ax2.annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
-        ax2.annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
+        myfig.axeslist[1].annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
+        myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
         # ---保存输出图片
+        # savefig = __mypath__.get_desktop_path() + "\\test.png"
         savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}({}).png".format(filter_level,timeframe,direct,para_str)
         import os
         os.makedirs(os.path.dirname(savefig), exist_ok=True)
-        fig = plt.gcf()
-        fig.savefig(savefig)
+        myfig.savefig(savefig)
         # 关闭图片，在批量操作时，释放内存
-        plt.close(fig)
+        myfig.close(check=False)
         plt.show()
+        del data_total, data_train, data_test, signaldata
         # print(symbol,timeframe,direct,para_str,"完成！")
     # ---显示进度
     print("自动原始策略回测 finished:", order, symbol, filter_level)
@@ -130,7 +135,7 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [40,50] # [30,40,50]
+    order_list = [50] # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
     # ---设置多步，以更好的控制进度
