@@ -91,10 +91,10 @@ def run(para):
     date_from, date_to = myPjMT5.get_date_range(timeframe)
     data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
     # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
-    data_train, data_test, bound = myPjMT5.get_train_test(data_total, train_scale=0.8, return_bound=True)
+    data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
     # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
-    train_x0 = data_total.index[0]
-    train_x1 = bound
+    train_x0 = data_train.index[0]
+    train_x1 = data_train.index[-1]
     sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct=direct)
     # 加载固定的参数
     k, holding, lag_trade = strategy_para_direct[direct_para.index(direct)]
