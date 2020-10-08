@@ -70,7 +70,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
 # ---画参数图1D
 myDefault.set_backend_default("agg")
 # k 动量向左参数；holding 必须小于 k
-para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,10+1)]
+para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 y_name = ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
 finish_symbol = []
 for symbol in symbol_list:
