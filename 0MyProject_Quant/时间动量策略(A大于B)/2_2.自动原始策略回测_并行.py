@@ -129,16 +129,32 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30,40,50]  # [30,40,50] 极值每一边用有多少点进行比较
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
-    para_muilt = [(order,symbol,filter_level) for order in order_list for symbol in symbol_list for filter_level in filter_level_list]
-    # ---开始多核执行
+    # ---设置3步，以更好的控制进度
+    para_muilt_30 = [(30,symbol,filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+    para_muilt_40 = [(40, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+    para_muilt_50 = [(50, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+    # ---
     import timeit
+    # ---开始多核执行 30
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
+    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_30, core_num=cpu_core)
     t1 = timeit.default_timer()
-    print("\n", '耗时为：', t1 - t0)
+    print("\n", 'para_muilt_30 耗时为：', t1 - t0)
+    # ---开始多核执行 40
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_40, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'para_muilt_40 耗时为：', t1 - t0)
+    # ---开始多核执行 50
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_50, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'para_muilt_50 耗时为：', t1 - t0)
+
+
+
 
 
 
