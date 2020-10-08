@@ -53,7 +53,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 2.策略结果保存到“自动参数选择1D_**\品种\原始策略测试”文件夹下面。
 # 3.策略测试所用的区间要增大。
 # 4.回测结果较多，构成策略库供后续选择研究。
-# 5.并行运算注意内存释放。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
 
@@ -105,25 +105,25 @@ def run_auto_stratgy_test(para):
         elif direct == "SellOnly":
             signaldata_input = signaldata["sellsignal"]
         # ---信号分析，不重复持仓
-        outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, show=False) # show必须设为False
+        myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
+        outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
         eva_all = outStrat[direct][evaluate] # 全集策略评价
-        ax = plt.gca() # 获取策略图的ax
-        y1 = (outStrat[direct]["cumRet"]/2 + 1)
-        ax.annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
-        ax.annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
+        y1 = (outStrat[direct]["cumRet"] + 1)
+        myfig.axeslist[1].annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
+        myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
         # ---保存输出图片
         savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}({}).png".format(filter_level,timeframe,direct,para_str)
-        import os
-        os.makedirs(os.path.dirname(savefig), exist_ok=True)
-        fig = ax.get_figure()
-        fig.savefig(savefig)
-        # 关闭图片，在批量操作时，释放内存
-        plt.close(fig)
+        myfig.savefig(savefig)
+        # 关闭图片，删除变量，在批量操作时，释放内存
+        myfig.close(check=False)
+        myfig.close(check=False)
         plt.show()
+        del data_total, data_train, data_test, signaldata
         # print(symbol,timeframe,direct,para_str,"完成！")
     # ---显示进度
     print("自动原始策略回测 finished:", order, symbol, filter_level)
+
 
 
 #%%
@@ -131,30 +131,19 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30,40,50]  # [30,40,50] 极值每一边用有多少点进行比较
+    order_list = [30,40,50] # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
-    # ---设置3步，以更好的控制进度
-    para_muilt_30 = [(30, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
-    para_muilt_40 = [(40, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
-    para_muilt_50 = [(50, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+    # ---设置多步，以更好的控制进度，更好的释放内存。
+    para_muilt_list = [ [(order,symbol,filter_level) for symbol in symbol_list for filter_level in filter_level_list] for order in order_list] # 以列表形式存放并行参数
     # ---
-    import timeit
-    # ---开始多核执行 30
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_30, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_30 耗时为：', t1 - t0)
-    # ---开始多核执行 40
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_40, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_40 耗时为：', t1 - t0)
-    # ---开始多核执行 50
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_stratgy_test, para_muilt_50, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_50 耗时为：', t1 - t0)
+    for i in range(len(order_list)):
+        import timeit
+        # ---开始多核执行
+        t0 = timeit.default_timer()
+        myBTV.multi_processing(run_auto_stratgy_test, para_muilt_list[i], core_num=cpu_core)
+        t1 = timeit.default_timer()
+        print("\n", 'para_muilt_%s 耗时为：' % order_list[i], t1 - t0)
 
 
 
