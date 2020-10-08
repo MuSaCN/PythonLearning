@@ -138,7 +138,7 @@ if __name__ == '__main__':
     # ---
     for i in range(len(order_list)):
         import timeit
-        # ---开始多核执行 30
+        # ---开始多核执行
         t0 = timeit.default_timer()
         myBTV.multi_processing(run_auto_stratgy_test, para_muilt_list[i], core_num=cpu_core)
         t1 = timeit.default_timer()
