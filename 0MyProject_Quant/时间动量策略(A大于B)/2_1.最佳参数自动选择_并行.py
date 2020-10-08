@@ -117,7 +117,7 @@ def run_auto_choose_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [70]  # [30,40,50,60,70] 极值每一边用有多少点进行比较
+    order_list = [30,40,50]  # [30,40,50] 极值每一边用有多少点进行比较
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     para_muilt = [(order,symbol) for order in order_list for symbol in symbol_list]
     # ---开始多核执行
