@@ -53,7 +53,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 2.策略结果保存到“自动参数选择1D_**\品种\原始策略测试”文件夹下面。
 # 3.策略测试所用的区间要增大。
 # 4.回测结果较多，构成策略库供后续选择研究。
-# 5.并行运算注意内存释放。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
 #%% 根据 非策略参数 定位文件 ###########################
@@ -65,9 +65,6 @@ evaluate = "sharpe"
 #%%
 # 自动策略测试 order = para[0]； symbol = para[1]； filter_level = para[2]；
 def run_auto_stratgy_test(para):
-    # order = 30
-    # symbol = "EURUSD"
-    # filter_level ="filter1"
     order = para[0]
     symbol = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
@@ -77,7 +74,6 @@ def run_auto_stratgy_test(para):
     filecontent = pd.read_excel(filepath_para1D)
     # ---解析，显然没有内容则直接跳过
     for i in range(len(filecontent)):
-        # i = 0
         # ---获取各参数和策略评价
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
@@ -107,7 +103,6 @@ def run_auto_stratgy_test(para):
         elif direct == "SellOnly":
             signaldata_input = signaldata["sellsignal"]
         # ---信号分析，不重复持仓
-        # myDefault.set_backend_default("tkagg")
         myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
         outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
@@ -116,12 +111,10 @@ def run_auto_stratgy_test(para):
         myfig.axeslist[1].annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
         myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
         # ---保存输出图片
-        # savefig = __mypath__.get_desktop_path() + "\\test.png"
         savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}({}).png".format(filter_level,timeframe,direct,para_str)
-        import os
-        os.makedirs(os.path.dirname(savefig), exist_ok=True)
         myfig.savefig(savefig)
-        # 关闭图片，在批量操作时，释放内存
+        # 关闭图片，删除变量，在批量操作时，释放内存
+        myfig.close(check=False)
         myfig.close(check=False)
         plt.show()
         del data_total, data_train, data_test, signaldata
@@ -135,10 +128,10 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [50] # [30,40,50]
+    order_list = [30,40] # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
-    # ---设置多步，以更好的控制进度
+    # ---设置多步，以更好的控制进度，更好的释放内存。
     para_muilt_list = [ [(order,symbol,filter_level) for symbol in symbol_list for filter_level in filter_level_list] for order in order_list] # 以列表形式存放并行参数
     # ---
     for i in range(len(order_list)):
