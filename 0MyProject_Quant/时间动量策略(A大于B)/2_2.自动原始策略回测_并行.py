@@ -116,15 +116,14 @@ def run_auto_stratgy_test(para):
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
         eva_all = outStrat[direct][evaluate] # 全集策略评价
         y1 = (outStrat[direct]["cumRet"] + 1)
-        # 标注策略参数内容
-        myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
         # 标注策略训练集和全集结果的内容
         content_train = "train: "
         content_all = "  all: "
         for eva_name in evaluate:
             content_train = content_train + eva_name + "=%.4f" % eva_train[eva_name] + "; "
             content_all = content_all + eva_name + "=%.4f" % eva_all[eva_name] + "; "
-        content = content_train + "\n" + content_all
+        # 整合策略结果和策略参数，且标注之。
+        content = content_train + "\n" + content_all + "\n" + para_str
         myfig.axeslist[1].annotate(s=content, xy=[train_x0, y1], xytext=[train_x0, y1])
 
         # ---保存输出图片
