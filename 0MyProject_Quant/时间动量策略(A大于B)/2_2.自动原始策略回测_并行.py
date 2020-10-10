@@ -60,7 +60,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
 para_name = ["k", "holding", "lag_trade"]
 # 仅根据夏普选择就可以了.
-evaluate = "sharpe"
+evaluate = ["sharpe", "cumRet", "calmar_ratio", "maxDD", "winRate"]
 
 #%%
 # 自动策略测试 order = para[0]； symbol = para[1]； filter_level = para[2]；
@@ -68,23 +68,28 @@ def run_auto_stratgy_test(para):
     order = para[0]
     symbol = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
+
     # ---文档定位 ***修改这里***
     folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D_%s\\%s"%(order, symbol)
     filepath_para1D = folder_para1D + "\\%s_aotu_para_1D_%s.xlsx" % (symbol, filter_level)
     filecontent = pd.read_excel(filepath_para1D)
+
     # ---解析，显然没有内容则直接跳过
     for i in range(len(filecontent)):
         # ---获取各参数和策略评价
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
+        # 策略参数 ***修改这里***
         k = filecontent.iloc[i][para_name[0]]
         holding = filecontent.iloc[i][para_name[1]]
         lag_trade = filecontent.iloc[i][para_name[2]]
-        eva_train = filecontent.iloc[i][evaluate] # 训练集策略评价
+        # 训练集策略评价
+        eva_train = filecontent.iloc[i][evaluate]
         # 解析参数生成字符串变量，用于 添加策略图的标注 和 输出图片命名。
         para_str = ""
         for name in para_name:
             para_str = para_str + name + "=%s" % filecontent.iloc[i][name] + ";"
+
         # ---加载测试数据
         date_from, date_to = myPjMT5.get_date_range(timeframe)
         data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
@@ -96,20 +101,32 @@ def run_auto_stratgy_test(para):
         bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
         # 再次重新加载下全部的数据
         data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
+
         # ---获取信号数据 ***修改这里***
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
         if direct == "BuyOnly":
             signaldata_input = signaldata["buysignal"]
         elif direct == "SellOnly":
             signaldata_input = signaldata["sellsignal"]
+
         # ---信号分析，不重复持仓
         myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
         outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
+
         # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
         eva_all = outStrat[direct][evaluate] # 全集策略评价
         y1 = (outStrat[direct]["cumRet"] + 1)
-        myfig.axeslist[1].annotate(s="%s train=%.4f,all=%.4f"%(evaluate, eva_train, eva_all), xy=[train_x0, y1], xytext=[train_x0, y1])
+        # 标注策略参数内容
         myfig.axeslist[1].annotate(s="%s" % para_str, xy=[train_x0, 1], xytext=[train_x0, 1])
+        # 标注策略训练集和全集结果的内容
+        content_train = "train: "
+        content_all = "  all: "
+        for eva_name in evaluate:
+            content_train = content_train + eva_name + "=%.4f" % eva_train[eva_name] + "; "
+            content_all = content_all + eva_name + "=%.4f" % eva_all[eva_name] + "; "
+        content = content_train + "\n" + content_all
+        myfig.axeslist[1].annotate(s=content, xy=[train_x0, y1], xytext=[train_x0, y1])
+
         # ---保存输出图片
         savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}({}).png".format(filter_level,timeframe,direct,para_str)
         myfig.savefig(savefig)
@@ -119,6 +136,7 @@ def run_auto_stratgy_test(para):
         plt.show()
         del data_total, data_train, data_test, signaldata
         # print(symbol,timeframe,direct,para_str,"完成！")
+
     # ---显示进度
     print("自动原始策略回测 finished:", order, symbol, filter_level)
 
