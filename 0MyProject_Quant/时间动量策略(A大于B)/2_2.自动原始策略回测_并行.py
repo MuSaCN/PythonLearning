@@ -132,15 +132,14 @@ if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
     # ---设置多步，以更好的控制进度，更好的释放内存。
-    para_muilt_list = [ [(order,symbol,filter_level) for symbol in symbol_list for filter_level in filter_level_list] for order in order_list] # 以列表形式存放并行参数
-    # ---
-    for i in range(len(order_list)):
+    for order in order_list:
+        para_muilt = [(order, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
         import timeit
         # ---开始多核执行
         t0 = timeit.default_timer()
-        myBTV.multi_processing(run_auto_stratgy_test, para_muilt_list[i], core_num=cpu_core)
+        myBTV.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
         t1 = timeit.default_timer()
-        print("\n", 'para_muilt_%s 耗时为：' % order_list[i], t1 - t0)
+        print("\n", 'para_muilt_%s 耗时为：' % order, t1 - t0)
 
 
 
