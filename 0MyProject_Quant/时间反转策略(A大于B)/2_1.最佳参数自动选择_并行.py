@@ -118,27 +118,17 @@ def run_auto_choose_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
+    order_list = [30, 40, 50]  # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---多步并行，以更好的控制进度
-    para_muilt_30 = [(30, symbol) for symbol in symbol_list]
-    para_muilt_40 = [(40, symbol) for symbol in symbol_list]
-    para_muilt_50 = [(50, symbol) for symbol in symbol_list]
-    import timeit
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_choose_opt, para_muilt_30, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_30 耗时为：', t1 - t0)
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_choose_opt, para_muilt_40, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_40 耗时为：', t1 - t0)
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_choose_opt, para_muilt_50, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'para_muilt_50 耗时为：', t1 - t0)
+    for order in order_list:
+        para_muilt = [(order, symbol) for symbol in symbol_list]
+        import timeit
+        # ---开始多核执行
+        t0 = timeit.default_timer()
+        myBTV.multi_processing(run_auto_choose_opt, para_muilt, core_num=cpu_core)
+        t1 = timeit.default_timer()
+        print("\n", 'para_muilt_%s 耗时为：' % order, t1 - t0)
 
 
 
