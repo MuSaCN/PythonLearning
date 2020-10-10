@@ -72,7 +72,7 @@ myDefault.set_backend_default("agg")
 # 仅检测 holding=1 就可以了
 para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
 # 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
-y_name = ["sharpe"]
+y_name = ["annRet","cumRet","calmar_ratio","maxDD","meanLoss","meanWin","sharpe","sortino_ratio","ulcer_index","winRate"]
 
 
 #%%
