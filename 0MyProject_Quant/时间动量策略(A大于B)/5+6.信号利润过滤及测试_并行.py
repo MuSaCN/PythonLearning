@@ -82,11 +82,7 @@ def run(para):
     # 显示进度
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # 非策略参数
-    # indi_name = "rsi"
-    # direct = "BuyOnly"
-    # timeframe = "TIMEFRAME_D1"
-    # symbol = "EURUSD"
-    # para = ("Close", 20) + (indi_name, direct, timeframe, symbol)
+    # para = ("Close", 20) + ("rsi", "BuyOnly", "TIMEFRAME_D1", "EURUSD")
     indi_name = para[-4]
     direct = para[-3]
     timeframe = para[-2]
