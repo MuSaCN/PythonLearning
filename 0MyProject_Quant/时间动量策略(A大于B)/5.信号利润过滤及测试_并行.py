@@ -120,7 +120,7 @@ def run(para):
     folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
     savefig = folder + "\\{}\\{}\\{}{}.png".format(indi_name, direct, indi_name, para[:-4])
     # 过滤及测试
-    myBTV.signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
+    myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
 
 
 #%%
