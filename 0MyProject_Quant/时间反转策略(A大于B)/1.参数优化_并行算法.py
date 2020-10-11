@@ -172,9 +172,9 @@ if __name__ == '__main__':
                 # 文件位置 ***(修改这句) ***
                 filepath = folder + "\\反转_{}.xlsx".format(direct)
                 # 分析训练集(并行)，会把参数优化结果生成文档。
-                myBTV.run_train(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)
+                myBTV.run_concat_dataframe(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)
                 # 分析测试集(并行)，会内部解析训练集文档中的参数。
-                # myBTV.run_test(signalfunc_NoRepeatHold_test, filepath, strategy_para_names, [direct,symbol,timeframe],cpu_core)
+                # myBTV.run_parse_xlsx(signalfunc_NoRepeatHold_test, filepath, strategy_para_names, [direct,symbol,timeframe],cpu_core)
             finish_symbol.append(symbol)
             mylogging.warning("finished: {} {}".format(timeframe, finish_symbol))
 

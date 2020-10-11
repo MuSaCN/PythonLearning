@@ -55,6 +55,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 说明
 # 根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
 # 画的图中，min-max表示max最大的以max之前的min最小，start-end表示上涨额度最大的区间。
+# 根据训练集获取过滤区间，然后作用到整个样本。
 # 由于并行运算时间长，防止出错输出日志。
 '''
 
@@ -77,8 +78,8 @@ symbol_list = ["EURUSD"]
 
 
 #%%
-# para 传递指标的参数 indi_params 中的元素
-def run(para):
+# para 传递指标的参数和策略的参数，结果输出图片。
+def run_plot(para):
     # 显示进度
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # 非策略参数
@@ -119,7 +120,7 @@ def run(para):
     # 总目录 ***(修改这里)***
     folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
     savefig = folder + "\\{}\\{}\\{}{}.png".format(indi_name, direct, indi_name, para[:-4])
-    # 过滤及测试
+    # 过滤及测试后，输出图片
     myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
 
 
@@ -138,7 +139,7 @@ if __name__ == '__main__':
                     # ---开始多核执行
                     import timeit
                     t0 = timeit.default_timer()
-                    myBTV.multi_processing(run, multi_params, core_num=core_num)
+                    myBTV.multi_processing(run_plot, multi_params, core_num=core_num)
                     t1 = timeit.default_timer()
                     print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
                     # ---记录指标完成
