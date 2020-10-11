@@ -13,7 +13,8 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\信号利润过滤测试输出文档.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -66,7 +67,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 strategy_para_name = ["k", "holding", "lag_trade"]
 
 # 不同方向 BuyOnly、SellOnly、All 的策略参数，根据前面分析后设置固定值。
-strategy_para_direct = [[101,1,1], [201,1,1]] # 其中值对应["k", "holding", "lag_trade"]，且索引对应 BuyOnly、SellOnly、All
+strategy_para_direct = [[101,1,1], [101,1,1]] # 其中值对应["k", "holding", "lag_trade"]，且索引对应 BuyOnly、SellOnly、All
 
 # 技术指标名称，参数设置在 -4 的位置，具体的参数指定，在 if __name__ == '__main__': 中
 indi_name_list=["rsi"]
@@ -135,15 +136,14 @@ if __name__ == '__main__':
                 for i in range(len(strategy_para_name)):
                     suffix = suffix + "{}={};".format(strategy_para_name[i], strat_para[i])
                 suffix = suffix + ")"
-                # 文档路径
-                savefig = folder + "\\{}\\{}{}.xlsx".format(indi_name, direct, suffix)
                 # 由于指标很多，记录指标完成进度
                 finish_indi = []
                 for indi_name in indi_name_list:
+                    # ---文档路径
+                    savefig = folder + "\\{}\\{}{}.xlsx".format(indi_name, direct, suffix)
                     # ---(核心部分)不同名称的技术指标，设定不同的多核运算参数范围
                     if indi_name == "rsi":
                         multi_params = [("Close", i) + (indi_name, direct, timeframe, symbol) for i in range(5, 100 + 1)]
-
                     # ---开始多核执行
                     myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=savefig, core_num=core_num)
                     # ---记录指标完成

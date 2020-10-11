@@ -13,7 +13,6 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-
 mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\信号利润过滤及测试.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
