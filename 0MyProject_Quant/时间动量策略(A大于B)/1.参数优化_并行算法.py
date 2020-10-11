@@ -84,6 +84,7 @@ temp = 0  # 用来显示进度，必须放在这里
 # ---训练集 计算信号，不重复持仓
 def signalfunc_NoRepeatHold_train(para):
     # 策略参数
+    # para = (101, 1, 1, "BuyOnly", "EURUSD", "TIMEFRAME_D1")
     k = para[0]
     holding = para[1]
     lag_trade = para[2]
@@ -99,14 +100,12 @@ def signalfunc_NoRepeatHold_train(para):
     date_from, date_to = myPjMT5.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
     data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
     data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
-    # 不同交易方向下，数据字符串索引
-    sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
     # 获取信号数据
-    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
+    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
     # 信号分析
-    outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_train, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
+    outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[trade_direct], price_DataFrame=data_train, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
     # 设置信号统计
     result = myBTV.filter_strategy(outStrat, outSignal, para, strategy_para_names)
     return result
@@ -129,14 +128,12 @@ def signalfunc_NoRepeatHold_test(para):
     date_from, date_to = myPjMT5.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
     data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
     data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
-    # 不同交易方向下，数据字符串索引
-    sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct)
     # 退出条件
     if holding > k: return None
     # 获取信号数据
-    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
+    signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
     # 信号分析
-    outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[signalname], price_DataFrame=data_test, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
+    outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[trade_direct], price_DataFrame=data_test, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
     # 设置信号统计
     result = myBTV.filter_strategy(outStrat, outSignal, para, strategy_para_names)
     return result

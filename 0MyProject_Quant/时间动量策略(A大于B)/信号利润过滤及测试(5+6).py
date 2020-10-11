@@ -75,19 +75,19 @@ indi_params = [("Close",i) for i in range(5,100+1)]
 holding = 1
 k = 100
 lag_trade = 1
-sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct = "All") # "BuyOnly","SellOnly","All"
+trade_direct = "All" # "BuyOnly","SellOnly","All"
 
 # ---获取训练集的信号
-signaldata_train = myBTV.stra.momentum(price_train, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
-signal_train = signaldata_train[signalname]
+signaldata_train = myBTV.stra.momentum(price_train, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
+signal_train = signaldata_train[trade_direct]
 
 # ---计算整个样本的信号
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
-signal = signaldata[signalname]
+signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
+signal = signaldata[trade_direct]
 
 #%%
 # ---过滤前策略
-folder = __mypath__.get_desktop_path() + "\\__动量指标过滤(%s)__"%sig_mode
+folder = __mypath__.get_desktop_path() + "\\__动量指标过滤(%s)__"%trade_direct
 savefig_initial = folder + "\\过滤前策略.png"
 outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signal, price_DataFrame=eurusd, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=savefig_initial)
 
