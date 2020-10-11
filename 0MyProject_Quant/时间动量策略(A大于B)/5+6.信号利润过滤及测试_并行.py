@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -48,7 +51,6 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-
 '''
 # 说明
 # 根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
@@ -56,25 +58,22 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 由于并行运算时间长，防止出错输出日志。
 '''
 
-myplt.set_backend("agg")  # 后台输出图片，不占pycharm内存
+myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 #%% 分析到此部分，基本确定了 某个品种、某个时间框、某个方向 的策略参数，并行主要体现在多个指标上。
-import warnings
-warnings.filterwarnings('ignore')
 
 # 不同方向 BuyOnly、SellOnly、All 的策略参数，根据前面分析后设置固定值。
-strategy_para_direct = [[100,1,1], [100,1,1], [100,1,1]] # 值对应["k", "holding", "lag_trade"]，且索引对应 direct_para
+strategy_para_direct = [[101,1,1], [101,1,1]] # 值对应["k", "holding", "lag_trade"]，且索引对应 direct_para
 
 # 技术指标名称，参数设置在 -4 的位置，具体的参数指定，在 if __name__ == '__main__': 中
 indi_name_list=["rsi"]
 
 # 方向参数："BuyOnly" "SellOnly" "All"，保存在 para 的 -3 位置
-direct_para = ["BuyOnly","SellOnly","All"]
+direct_para = ["BuyOnly","SellOnly"]
 
 # timeframe、symbol 参数设置在 -2、-1 的位置
 timeframe_list = ["TIMEFRAME_D1"]
 symbol_list = ["EURUSD"]
-
 
 
 #%%
@@ -83,10 +82,16 @@ def run(para):
     # 显示进度
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # 非策略参数
+    # indi_name = "rsi"
+    # direct = "BuyOnly"
+    # timeframe = "TIMEFRAME_D1"
+    # symbol = "EURUSD"
+    # para = ("Close", 20) + (indi_name, direct, timeframe, symbol)
     indi_name = para[-4]
     direct = para[-3]
     timeframe = para[-2]
     symbol = para[-1]
+
     # ---获取数据
     date_from, date_to = myPjMT5.get_date_range(timeframe)
     data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
@@ -95,23 +100,35 @@ def run(para):
     # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
     train_x0 = data_train.index[0]
     train_x1 = data_train.index[-1]
-    sig_mode, signalname, tradename = myBTV.get_direct_str_index(trade_direct=direct)
-    # 加载固定的参数
+    # 把训练集的时间进行左右扩展
+    bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
+    # 再次重新加载下全部的数据
+    data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
+
+    # ---加载固定的参数
     k, holding, lag_trade = strategy_para_direct[direct_para.index(direct)]
-    # ---获取训练集的信号 ***(修改这里)***
-    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
-    signal_train = signaldata_train[signalname]
-    # ---计算整个样本的信号 ***(修改这里)***
-    signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
-    signal_all = signaldata_all[signalname]
+
+    # ---获取训练集和整个样本的信号
+    # 获取训练集的信号 ***(修改这里)***
+    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+    signal_train = signaldata_train[direct]
+    # 计算整个样本的信号 ***(修改这里)***
+    signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+    signal_all = signaldata_all[direct]
+
     # ---(核心，在库中添加)获取指标
     indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, para)
+
     # ---信号利润过滤及测试
     # 总目录 ***(修改这里)***
-    folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}.指标过滤".format(symbol, timeframe)
+    folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
     savefig = folder + "\\{}\\{}\\{}{}.png".format(indi_name, direct, indi_name, para[:-4])
+    # 过滤及测试
     myBTV.signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
 
+
+#%%
+core_num = -1
 if __name__ == '__main__':
     for timeframe in timeframe_list:
         finish_symbol = [] # 记录品种完成进度
@@ -125,14 +142,15 @@ if __name__ == '__main__':
                     # ---开始多核执行
                     import timeit
                     t0 = timeit.default_timer()
-                    myBTV.multi_processing(run, multi_params, core_num=7)
+                    myBTV.multi_processing(run, multi_params, core_num=core_num)
                     t1 = timeit.default_timer()
                     print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
                     # ---记录指标完成
                     finish_indi.append(indi_name)
+                    # 由于并行时间长，要记录到logging
                     mylogging.warning("indi finished: {} {} {} {}".format(timeframe, symbol, direct, finish_indi))
             finish_symbol.append(symbol)
-            mylogging.warning("finished: {} {}".format(timeframe, finish_symbol))
+            mylogging.warning("symbol finished: {} {}".format(timeframe, finish_symbol))
 
 
 
