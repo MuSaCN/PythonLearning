@@ -84,7 +84,7 @@ for k in k_range:
             # ---获取信号数据 ***(修改这句)***
             signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Reverse")
             # 信号分析，不重复持仓
-            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_buy["buysignal"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
+            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_buy["BuyOnly"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
 
 # ---
 myBTV.signal_quality_explain()
@@ -103,7 +103,7 @@ for k in k_range:
             # ---获取信号数据 ***(修改这句)***
             signaldata_sell = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode="SellOnly", stra_mode="Reverse")
             # 信号分析，不重复持仓
-            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_sell["sellsignal"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
+            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_sell["SellOnly"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
 
 myBTV.signal_quality_explain()
 
@@ -118,7 +118,7 @@ lag_trade = 1
 # ---获取多空信号 ***(修改这句)***
 signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k_buy, holding=holding, sig_mode="BuyOnly", stra_mode="Reverse")
 signaldata_sell = myBTV.stra.momentum(data_total.Close, k=k_sell, holding=holding, sig_mode="SellOnly", stra_mode="Reverse")
-signal_add = signaldata_buy["buysignal"] + signaldata_sell["sellsignal"]
+signal_add = signaldata_buy["BuyOnly"] + signaldata_sell["SellOnly"]
 
 # ---信号分析，不重复持仓
 outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signal_add, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
@@ -128,7 +128,7 @@ myBTV.signal_quality_explain()
 
 # %%
 # ---多空都做分析，相同参数
-k_range = [k for k in range(139, 139 + 1)]
+k_range = [k for k in range(56, 56 + 1)]
 holding_range = [holding for holding in range(1, 1 + 1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1 + 1)]
 
@@ -139,7 +139,7 @@ for k in k_range:
             # ---获取信号数据 ***(修改这句)***
             signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode="All", stra_mode="Reverse")
             # 信号分析，不重复持仓
-            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_all["allsignal"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
+            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_all["All"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
 
 myBTV.signal_quality_explain()
 

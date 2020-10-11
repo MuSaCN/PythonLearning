@@ -65,6 +65,7 @@ evaluate = ["sharpe", "cumRet", "calmar_ratio", "maxDD", "winRate"]
 #%%
 # 自动策略测试 order = para[0]； symbol = para[1]； filter_level = para[2]；
 def run_auto_stratgy_test(para):
+    # para = (30, "EURUSD", "filter0")
     order = para[0]
     symbol = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
@@ -75,7 +76,7 @@ def run_auto_stratgy_test(para):
     filecontent = pd.read_excel(filepath_para1D)
 
     # ---解析，显然没有内容则直接跳过
-    for i in range(len(filecontent)):
+    for i in range(len(filecontent)): # i=0
         # ---获取各参数和策略评价
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
@@ -104,10 +105,8 @@ def run_auto_stratgy_test(para):
 
         # ---获取信号数据 ***修改这里***
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
-        if direct == "BuyOnly":
-            signaldata_input = signaldata["buysignal"]
-        elif direct == "SellOnly":
-            signaldata_input = signaldata["sellsignal"]
+        signaldata_input = signaldata[direct]
+
 
         # ---信号分析，不重复持仓
         myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)

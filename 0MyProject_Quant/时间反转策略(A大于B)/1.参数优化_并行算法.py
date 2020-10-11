@@ -83,6 +83,7 @@ temp = 0  # 用来显示进度，必须放在这里
 
 # ---训练集 计算信号，不重复持仓
 def signalfunc_NoRepeatHold_train(para):
+    # para = (101, 1, 1, "BuyOnly", "EURUSD", "TIMEFRAME_D1")
     # 策略参数
     k = para[0]
     holding = para[1]
@@ -154,16 +155,14 @@ if __name__ == '__main__':
     # ---开始并行运算
     for timeframe in timeframe_list:
         # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
-        if timeframe in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
-                         "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
-                         "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12"]:
-            continue
+        # if timeframe in ["TIMEFRAME_D1"]:
+        #     continue
         finish_symbol = [] # 用于记录品种进度
         for symbol in symbol_list:
             # 已经执行过的则跳过，用于长期运算时出错后不至于重头再算。
-            if timeframe ==  "TIMEFRAME_M10" and symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK', 'USDSGD', 'USDTRY', 'AUDJPY', 'AUDUSD', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURUSD']:
-                finish_symbol.append(symbol)
-                continue
+            # if timeframe ==  "TIMEFRAME_M10" and symbol in ['AUDCAD']:
+            #     finish_symbol.append(symbol)
+            #     continue
             # 设置输出目录 ***(修改这句)***：one symbol + one timeframe + three direct --> one folder
             folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             # 仅做多、仅做空、多空都做，保存在一个目录下

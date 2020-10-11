@@ -106,10 +106,8 @@ def run_auto_stratgy_test(para):
 
         # ---获取信号数据 ***修改这里***
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
-        if direct == "BuyOnly":
-            signaldata_input = signaldata["buysignal"]
-        elif direct == "SellOnly":
-            signaldata_input = signaldata["sellsignal"]
+        signaldata_input = signaldata[direct]
+
 
         # ---信号分析，不重复持仓
         myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
