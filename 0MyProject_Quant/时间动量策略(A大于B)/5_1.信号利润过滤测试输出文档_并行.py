@@ -131,11 +131,7 @@ if __name__ == '__main__':
             folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
             for direct in direct_para:
                 # 生成策略参数字符串，用于文档命名
-                strat_para = strategy_para_direct[direct_para.index(direct)]
-                suffix = "("
-                for i in range(len(strategy_para_name)):
-                    suffix = suffix + "{}={};".format(strategy_para_name[i], strat_para[i])
-                suffix = suffix + ")"
+                suffix = myBTV.string_strat_para(strategy_para_name, strategy_para_direct[direct_para.index(direct)])
                 # 由于指标很多，记录指标完成进度
                 finish_indi = []
                 for indi_name in indi_name_list:
