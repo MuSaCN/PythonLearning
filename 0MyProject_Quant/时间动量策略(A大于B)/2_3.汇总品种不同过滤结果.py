@@ -52,6 +52,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 # 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
 # 保存到 ...\_动量研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
+# 汇总目的在于为后续分析提供便利。
 '''
 
 

@@ -58,24 +58,23 @@
 
 
 2_3.汇总品种不同过滤结果：
-    由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
+    由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。汇总的目的在于为后续分析提供便利。
     # 输出 xlsx 路径，且命名规则：品种.total.过滤等级.xlsx
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter0.xlsx"
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter1.xlsx"
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter2.xlsx"
 ...
 
-########################################
 
 5_1.信号利润过滤测试输出文档：
-    前面输出的 品种_filter1.xlsx 存放潜在的策略参数备选方案。此部分把这些所有的备选都过滤分析一下。最后输出文档。
+    前面输出的汇总 symbol.total.filter1.xlsx 存放潜在的策略参数备选方案，此处只分析 filter1。此部分把这些所有的备选都用指标过滤回测一下。最后输出文档。
     过滤方案采用范围过滤方案。由于指标过滤是 对一个品种、一个时间框、一个方向、一组策略参数 而言。我们要分析的是 哪个指标 过滤比较好。而情况是 一个品种、一个时间框、一个方向 下可能有好几组策略参数。
     # 目录安排如下
 "C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择" --- 总目录
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly" --- 存放对应的输出文档
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1" --- 存放对应的输出文档
 ...
-    # 输出 xlsx 路径，且命名规则：(策略参数).xlsx
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1;).xlsx"
+    # 输出 xlsx 路径，且命名规则：方向.(策略参数).xlsx
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1;).xlsx" --- 内容为该方向和参数下所有指标的回测结果。
 ...
 
 
