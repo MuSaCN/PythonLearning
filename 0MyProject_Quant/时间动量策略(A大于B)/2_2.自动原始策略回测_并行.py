@@ -72,7 +72,7 @@ def run_auto_stratgy_test(para):
 
     # ---文档定位 ***修改这里***
     folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
-    filepath_para1D = folder_para1D + "\\%s_%s.xlsx" % (symbol, filter_level)
+    filepath_para1D = folder_para1D + "\\%s.%s.xlsx" % (symbol, filter_level)
 
 
     filecontent = pd.read_excel(filepath_para1D)
@@ -123,7 +123,7 @@ def run_auto_stratgy_test(para):
         myfig.axeslist[1].annotate(s=content, xy=[train_x0, y1], xytext=[train_x0, y1])
 
         # ---保存输出图片
-        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}{}.png".format(filter_level,timeframe,direct,para_str)
+        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}.{}.png".format(filter_level,timeframe,direct,para_str)
         myfig.savefig(savefig)
         # 关闭图片，删除变量，在批量操作时，释放内存
         myfig.close(check=False)

@@ -2,7 +2,7 @@
 # 品种(...)、时间框(...)、方向(BuyOnly SellOnly All)，这三个是通用划分。
 # 所有的输出文件，都存放在 "_**研究" 的文件夹里。且内部各级文件夹设计都遵循逻辑性。比如 "_动量研究"
 # 路径的逻辑与并行的逻辑不一样要一样，路径安排是基于分析方便，并行安排是基于运算效率高、防内存溢出。
-
+# 全局命名规则：点号 "a.b" 表示分段；下划线 "a_b" 表示连接为一个整体；
 
 1.参数优化：
     对一个策略不同策略参数的信号质量进行运算，运算结果用 xlsx 格式文件保存。
@@ -24,36 +24,70 @@
     此处分析是针对 策略参数 进行自动选择，会输出图片和表格。
     图片内容是 三种数据的走势 和 自动标注上的极大值。这些图片用于极值判断在直观上的合理性。
     表格内容是 一个品种下、所有时间框、所有方向，以n个点(比如30)比较后的极大值，所对应的策略信息和策略评测结果。这些汇总结果用于下一步的分析。
-    存放路径安排如下：
+    此部分主要是分析一个品种有哪些时间框、有哪些方向，以及有哪些对应的策略参数可以用。由于时间框、方向不一定有策略参数，所以不做目录划分。
+    # 存放路径安排如下：
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择" --- 总目录存放此部分所有内容
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD" --- 存放该品种此部分内容
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30" --- 存放30个点比较后的结果
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_40" --- 存放40个点比较后的结果
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_50" --- 存放50个点比较后的结果
 ...
-    由于时间框、方向所对应的信息不多，所以不做目录划分。
-    文件路径和命名规则如下：
-    # 输出图片路径，且命名规则：timeframe.direct.浮动参数-策略评测指标(固定参数).png
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\TIMEFRAME_D1.BuyOnly.k-sharpe(holding=1;lag_trade=1;).png"
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\TIMEFRAME_H1.SellOnly.k-sharpe(holding=1;lag_trade=1;).png"
+    # 文件路径和命名规则如下：
+    # 输出图片路径，且命名规则：timeframe.direct.浮动参数-策略评测指标.(策略固定参数).png
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\TIMEFRAME_D1.BuyOnly.k-sharpe.(holding=1;lag_trade=1;).png"
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\TIMEFRAME_H1.SellOnly.k-sharpe.(holding=1;lag_trade=1;).png"
 ...
-    # 输出 xlsx 路径，且命名规则：symbol_过滤等级(filter0/filter1/filter2)。内容为该品种 过滤n次 的极值点对应的所有策略信息和评测信息。
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD_filter0.xlsx"
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD_filter1.xlsx"
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD_filter2.xlsx"
+    # 输出 xlsx 路径，且命名规则：symbol.过滤等级(filter0/filter1/filter2)。内容为该品种 过滤n次 的极值点对应的所有策略信息和评测信息。
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD.filter0.xlsx"
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD.filter1.xlsx"
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\EURUSD.filter2.xlsx"
 ...
 
 
 2_2.自动原始策略回测：
     此部分分析上部分输出的过滤文档。从经验来看，我们主要分析 filter1 为后缀的表格。因为 filter0 的结果包含过拟合的结果，filter2 的结果偏移性太大。
     通过读取各表格每一行的参数，回测每一行的策略走势情况。结果输出图片。
-    # 路径安排如下，不同极值判断标准都回测一下，以供后续分析。且只分析 filter1：
+    策略参数极值选择 filter1 虽然有30、40、50划分，但是都是找寻策略参数。所以我们在外一层目录做一个整合。
+    # 目录安排如下，不同极值判断标准都回测一下，以供后续分析。且只分析 filter1：
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\原始策略回测_filter1"
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_40\原始策略回测_filter1"
 "C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_50\原始策略回测_filter1"
-    # 图片命名规则：时间框.方向(策略参数).png
-"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\原始策略回测_filter1\TIMEFRAME_H1.BuyOnly(k=135;holding=1;lag_trade=1;).png"
+    # 图片命名规则：时间框.方向.(策略参数).png
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\auto_para_1D_30\原始策略回测_filter1\TIMEFRAME_H1.BuyOnly.(k=135;holding=1;lag_trade=1;).png"
 ...
+
+
+2_3.汇总品种不同过滤结果：
+    由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
+    # 输出 xlsx 路径，且命名规则：品种.total.过滤等级.xlsx
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter0.xlsx"
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter1.xlsx"
+"C:\Users\i2011\Desktop\_动量研究\策略参数自动选择\EURUSD\EURUSD.total.filter2.xlsx"
+...
+
+########################################
+
+5_1.信号利润过滤测试输出文档：
+    前面输出的 品种_filter1.xlsx 存放潜在的策略参数备选方案。此部分把这些所有的备选都过滤分析一下。最后输出文档。
+    过滤方案采用范围过滤方案。由于指标过滤是 对一个品种、一个时间框、一个方向、一组策略参数 而言。我们要分析的是 哪个指标 过滤比较好。而情况是 一个品种、一个时间框、一个方向 下可能有好几组策略参数。
+    # 目录安排如下
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择" --- 总目录
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly" --- 存放对应的输出文档
+...
+    # 输出 xlsx 路径，且命名规则：(策略参数).xlsx
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1;).xlsx"
+...
+
+
+
+
+
+
+
+过滤的指标参数走势较为平稳，所以我们只用30作为左右极值判断点数。
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1)" --- 以策略参数字符串为目录名，存放该策略参数下所有的过滤情况。
+    # 图片命名规则：指标名.指标浮动参数-策略评测指标.(指标固定).png
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1)\rsi.indi_para1-sharpe.(indi_para0=Close;).png"
 
 
 

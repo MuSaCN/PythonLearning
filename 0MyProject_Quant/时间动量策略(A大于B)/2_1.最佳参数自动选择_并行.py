@@ -105,9 +105,9 @@ def run_auto_choose_opt(para):
                 total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
         print("\r", symbol, timeframe, "OK", end="", flush=True)
     # 输出表格
-    total_df0.to_excel(out_folder + "\\%s_filter0.xlsx" % symbol)
-    total_df1.to_excel(out_folder + "\\%s_filter1.xlsx" % symbol)
-    total_df2.to_excel(out_folder + "\\%s_filter2.xlsx" % symbol)
+    total_df0.to_excel(out_folder + "\\%s.filter0.xlsx" % symbol)
+    total_df1.to_excel(out_folder + "\\%s.filter1.xlsx" % symbol)
+    total_df2.to_excel(out_folder + "\\%s.filter2.xlsx" % symbol)
     # 显示进度
     print(symbol, "auto_para_1D_%s finished:"%order)
 
