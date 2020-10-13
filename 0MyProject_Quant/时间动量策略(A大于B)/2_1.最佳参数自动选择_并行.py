@@ -51,10 +51,9 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 # 1.根据前面输出的优化结果，自动寻找最佳参数点。由于品种较多，再算上极值点判断方法，耗时较长，故采用多核运算。
 # 2.自动寻找的思路为：对 过滤0次、过滤1次、过滤2次 的数据寻找极值点。会输出图片和表格。注意过滤后的数据判断完极值后，会根据其位置索引到源数据，再组成表格的内容。注意图片中的过滤部分极值，并没有更改为源数据，仅表格更改了。
-# 3.并行运算必须处理好图片释放内存的问题。
-# 4.运算后的输出内容都放在主目录下的“自动参数选择1D”文件夹，然后在里面分别建立品种目录存档结果。
-# 5.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
-# 6.为下一步批量自动回测做准备。
+# 3.并行运算必须处理好图片释放内存的问题，且并行逻辑与目录逻辑不一样要一样。此处是以品种作为并行方案。
+# 4.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
+# 5.为下一步批量自动回测做准备。
 '''
 
 
@@ -70,24 +69,25 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
 #%%
 myDefault.set_backend_default("agg")
 # 仅检测 holding=1 就可以了
-para_fixed_list = [{"k":None, "holding":i, "lag_trade":1} for i in range(1,1+1)]
-# 仅根据夏普选择就可以了. ["sharpe", "calmar_ratio", "cumRet", "maxDD"]
+para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}]
+# 仅根据夏普选择就可以了.
 y_name = ["sharpe"] # 过滤的y轴，不能太多
 
 
 #%%
 # ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
 def run_auto_choose_opt(para):
-    order = para[0]
-    symbol = para[1]
+    symbol = para[0]
+    order = para[1]
     # 批量运算，最后合并且输出表格
     total_df0 = pd.DataFrame([])
     total_df1 = pd.DataFrame([])
     total_df2 = pd.DataFrame([])
+    # 把所有的timeframe和direct都整理到一个文档中
     for timeframe in timeframe_list:
         # ---输入目录和输出目录 ***修改这里***
         in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
-        out_folder = __mypath__.dirname(in_folder) + "\\自动参数选择1D_%s\\" % order + symbol
+        out_folder = __mypath__.dirname(in_folder,uplevel=0) + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
         # ---
         for direct in direct_para:
             # ---路径 ***修改这里***
@@ -105,11 +105,11 @@ def run_auto_choose_opt(para):
                 total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
         print("\r", symbol, timeframe, "OK", end="", flush=True)
     # 输出表格
-    total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_filter0.xlsx" % symbol)
-    total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_filter1.xlsx" % symbol)
-    total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_filter2.xlsx" % symbol)
+    total_df0.to_excel(out_folder + "\\%s_filter0.xlsx" % symbol)
+    total_df1.to_excel(out_folder + "\\%s_filter1.xlsx" % symbol)
+    total_df2.to_excel(out_folder + "\\%s_filter2.xlsx" % symbol)
     # 显示进度
-    print("自动选择最佳参数1D_%s finished:"%order, symbol)
+    print(symbol, "auto_para_1D_%s finished:"%order)
 
 
 #%%
@@ -117,11 +117,11 @@ def run_auto_choose_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30, 40, 50]  # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    order_list = [30, 40, 50]  # [30,40,50]
     # ---多步并行，以更好的控制进度
     for order in order_list:
-        para_muilt = [(order, symbol) for symbol in symbol_list]
+        para_muilt = [(symbol, order) for symbol in symbol_list]
         import timeit
         # ---开始多核执行
         t0 = timeit.default_timer()
