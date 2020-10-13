@@ -132,9 +132,9 @@ if __name__ == '__main__':
             # ---开始多核执行
             myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=out_file, core_num=core_num)
             print("para finished:", symbol, timeframe, direct, suffix)
-    # ---记录对应时间框下完成的品种
-    finish_symbol.append(symbol)
-    mylogging.warning("symbol finished: {} {}".format(finish_symbol))
+        # ---记录对应时间框下完成的品种
+        finish_symbol.append(symbol)
+        mylogging.warning("symbol finished: {} {}".format(finish_symbol))
 
 
 
@@ -144,42 +144,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-
-
-
-
-    #
-    # for timeframe in timeframe_list:
-    #     finish_symbol = [] # 记录品种完成进度
-    #     for symbol in symbol_list:
-    #         # 设置目录，类似'C:\\Users\\i2011\\Deskto\\***\\指标过滤\\EURUSD.TIMEFRAME_D1'
-    #         folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
-    #         for direct in direct_para:
-    #             # 生成策略参数字符串，用于文档命名
-    #             suffix = myBTV.string_strat_para(strategy_para_name, strategy_para_direct[direct_para.index(direct)])
-    #             # 由于指标很多，记录指标完成进度
-    #             finish_indi = []
-    #             for indi_name in indi_name_list:
-    #                 # ---文档路径
-    #                 savefig = folder + "\\{}\\{}{}.xlsx".format(indi_name, direct, suffix)
-    #                 # ---(核心部分)不同名称的技术指标，设定不同的多核运算参数范围
-    #                 if indi_name == "rsi":
-    #                     multi_params = [("Close", i) + (indi_name, direct, timeframe, symbol) for i in range(5, 100 + 1)]
-    #                 # ---开始多核执行
-    #                 myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=savefig, core_num=core_num)
-    #                 # ---记录指标完成
-    #                 finish_indi.append(indi_name)
-    #                 # 由于并行时间长，要记录到logging
-    #                 mylogging.warning("indi finished: {} {} {} {}".format(timeframe, symbol, direct, finish_indi))
-    #         # ---记录对应时间框下完成的品种
-    #         finish_symbol.append(symbol)
-    #         mylogging.warning("symbol finished: {} {}".format(timeframe, finish_symbol))
-    #
 
 
 
