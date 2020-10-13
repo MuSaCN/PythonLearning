@@ -65,11 +65,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 def run_filter_result(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
+    # para = ('Close', 135, 'roc', [314, 1, 1], 'SellOnly', 'TIMEFRAME_H1', 'AUDNZD')
     symbol = para[-1]
     timeframe = para[-2]
     direct = para[-3]
-    indi_name = para[1]
-    indi_para = para[0] # ("Close", 30)
+    [k, holding, lag_trade] = para[-4]
+    indi_name = para[-5]
+    indi_para = para[0:-5]  # ("Close", 30)
 
     # ---获取数据
     date_from, date_to = myPjMT5.get_date_range(timeframe, to_Timestamp=True)
@@ -101,7 +103,6 @@ def run_filter_result(para):
 core_num = -1
 if __name__ == '__main__':
     strategy_para_name = ["k", "holding", "lag_trade"] # 策略参数名称，用于文档中解析参数
-    indi_name_list = ["rsi", "roc"] # 技术指标名称
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
@@ -120,12 +121,13 @@ if __name__ == '__main__':
             k = filecontent.iloc[i][strategy_para_name[0]]
             holding = filecontent.iloc[i][strategy_para_name[1]]
             lag_trade = filecontent.iloc[i][strategy_para_name[2]]
+            strat_para = [k, holding, lag_trade]
             # 输出的文档路径
-            suffix = myBTV.string_strat_para(strategy_para_name, [k, holding, lag_trade])
+            suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
             out_file = __mypath__.get_desktop_path() + "\\_动量研究\\过滤指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
-            # ---设定并行参数
-            rsi_params = [("Close", i) + ("rsi", direct, timeframe, symbol) for i in range(5, 144 + 1)]
-            roc_params = [("Close", i) + ("roc", direct, timeframe, symbol) for i in range(5, 144 + 1)]
+            # ---设定并行参数，分别设定再合并
+            rsi_params = [("Close", i) + ("rsi", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
+            roc_params = [("Close", i) + ("roc", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
             multi_params = rsi_params + roc_params
             # ---开始多核执行
             myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=out_file, core_num=core_num)
