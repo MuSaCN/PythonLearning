@@ -134,7 +134,7 @@ if __name__ == '__main__':
             print("para finished:", symbol, timeframe, direct, suffix)
         # ---记录对应时间框下完成的品种
         finish_symbol.append(symbol)
-        mylogging.warning("symbol finished: {} {}".format(finish_symbol))
+        mylogging.warning("symbol finished: {}".format(finish_symbol))
 
 
 
