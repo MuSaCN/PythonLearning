@@ -50,7 +50,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 '''
 # 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
-# 2.策略结果保存到“自动参数选择1D_**\品种\原始策略测试”文件夹下面。
+# 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
 # 3.策略测试所用的区间要增大。
 # 4.回测结果较多，构成策略库供后续选择研究。
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
@@ -59,25 +59,28 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%% 根据 非策略参数 定位文件 ###########################
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
 para_name = ["k", "holding", "lag_trade"]
-# 仅根据夏普选择就可以了.
+# 图片上需要标准的策略评测标准，不能仅仅夏普
 evaluate = ["sharpe", "cumRet", "calmar_ratio", "maxDD", "winRate"]
 
 #%%
-# 自动策略测试 order = para[0]； symbol = para[1]； filter_level = para[2]；
+# 自动策略测试 symbol = para[0]； order = para[1]； filter_level = para[2]；
 def run_auto_stratgy_test(para):
-    # para = (30, "EURUSD", "filter0")
-    order = para[0]
-    symbol = para[1]
+    # para = ("EURUSD", 30, "filter0")
+    symbol = para[0]
+    order = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
 
     # ---文档定位 ***修改这里***
-    folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\自动参数选择1D_%s\\%s"%(order, symbol)
-    filepath_para1D = folder_para1D + "\\%s_aotu_para_1D_%s.xlsx" % (symbol, filter_level)
+    folder_para1D = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
+    filepath_para1D = folder_para1D + "\\%s_%s.xlsx" % (symbol, filter_level)
+
+
     filecontent = pd.read_excel(filepath_para1D)
 
     # ---解析，显然没有内容则直接跳过
     for i in range(len(filecontent)): # i=0
         # ---获取各参数和策略评价
+        symbol = filecontent.iloc[i]["symbol"]
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
         # 策略参数 ***修改这里***
@@ -87,17 +90,12 @@ def run_auto_stratgy_test(para):
         # 训练集策略评价
         eva_train = filecontent.iloc[i][evaluate]
         # 解析参数生成字符串变量，用于 添加策略图的标注 和 输出图片命名。
-        para_str = ""
-        for name in para_name:
-            para_str = para_str + name + "=%s" % filecontent.iloc[i][name] + ";"
+        para_str = myBTV.string_strat_para(para_name, [k,holding,lag_trade])
 
-        # ---加载测试数据
-        date_from, date_to = myPjMT5.get_date_range(timeframe)
-        data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-        data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
-        # 单独测试对全数据进行测试，训练集、测试集仅画区间就可以了
-        train_x0 = data_train.index[0]
-        train_x1 = data_train.index[-1]
+        # ---加载测试数据，由于不需要训练集、测试集数据，只需要对应时间即可。
+        date_from, date_to = myPjMT5.get_date_range(timeframe,to_Timestamp=True)
+        train_x0 = date_from
+        train_x1 = myPjMT5.get_train_test(data=None,t0=date_from,t1=date_to,train_scale=0.8)
         # 把训练集的时间进行左右扩展
         bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
         # 再次重新加载下全部的数据
@@ -106,7 +104,6 @@ def run_auto_stratgy_test(para):
         # ---获取信号数据 ***修改这里***
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
         signaldata_input = signaldata[direct]
-
 
         # ---信号分析，不重复持仓
         myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
@@ -126,13 +123,13 @@ def run_auto_stratgy_test(para):
         myfig.axeslist[1].annotate(s=content, xy=[train_x0, y1], xytext=[train_x0, y1])
 
         # ---保存输出图片
-        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}({}).png".format(filter_level,timeframe,direct,para_str)
+        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}{}.png".format(filter_level,timeframe,direct,para_str)
         myfig.savefig(savefig)
         # 关闭图片，删除变量，在批量操作时，释放内存
         myfig.close(check=False)
         myfig.close(check=False)
         plt.show()
-        del data_total, data_train, data_test, signaldata
+        del data_total, signaldata # 手动释放内存 与 下一次循环被覆盖 在内存中是不一样的。
         # print(symbol,timeframe,direct,para_str,"完成！")
 
     # ---显示进度
@@ -144,12 +141,12 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30,40,50] # [30,40,50]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    order_list = [30, 40, 50]  # [30,40,50]
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
     # ---设置多步，以更好的控制进度，更好的释放内存。
     for order in order_list:
-        para_muilt = [(order, symbol, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+        para_muilt = [(symbol, order, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
         import timeit
         # ---开始多核执行
         t0 = timeit.default_timer()
