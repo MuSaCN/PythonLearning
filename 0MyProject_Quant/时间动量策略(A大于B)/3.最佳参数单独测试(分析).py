@@ -83,7 +83,7 @@ y_name = ["sharpe"] # ["sharpe", "calmar_ratio", "cumRet"]
 
 myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
 
-myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=30, filterlevel=2, plot=False, savefolder=None, batch=False)
+myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=30, filterlevel=0, plot=True, savefolder=None, batch=False)
 
 
 

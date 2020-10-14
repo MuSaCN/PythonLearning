@@ -51,76 +51,75 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 '''
-# 1.根据前面 信号利润过滤测试 输出的文档，读取参数，选择极值，再做原始的策略测试，选择合适的指标参数。
-# 2.策略结果保存到“...\指标过滤\品种.时间框\指标名称\自动指标参数1D_*\”文件夹下面。
-# 3.策略测试所用的区间要增大。
-# 4.回测结果较多，构成策略库供后续选择研究。
+# 1.根据前面 信号利润过滤测试 输出的文档，解析文档名称，读取参数，选择极值。
+# 2.一个特定的策略参数作为一个目录，存放该下面所有指标的结果。
+# 3.不同名称的指标会自动判断极值，且输出图片。最后会输出表格文档，整理这些极值。
+# 4.并行是针对不同品种进行并行
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
-# 6.并行是针对一个品种、一个时间框、一个方向下，不同指标进行并行
-# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
 '''
 
 myDefault.set_backend_default("agg")
 
 #%% 根据 非策略参数 定位文件 ###########################
 y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
-
-indi_name_list=["rsi"] # 参数设置在 para 的 -4 的位置
-indi_para_fixed_list = [{"indi_para0":"Close", "indi_para1":None}]  # 指标参数固定和浮动设定
-
-
-#%%
-order = 30
-symbol = "EURUSD"  # 保存在 para 的 -1 位置
-timeframe = "TIMEFRAME_D1"  # 保存在 para 的 -2 位置
-direct = "BuyOnly"  # 保存在 para 的 -3 位置
-strategy_para_name = ["k", "holding", "lag_trade"]  # 保存在 para 的 -4 位置
-strategy_para_value = [101, 1, 1]  # 保存在 para 的 -5 位置
-
-indi_name = indi_name_list[0]  # 参数设置在 para 的 -4 的位置
-indi_para_fixed = indi_para_fixed_list[indi_name_list.index(indi_name)]
+# 指标名称
+indi_name_list = ["rsi","roc"]
+# 指标参数固定和浮动设定，位置对应 indi_name_list
+indi_para_fixed_list = [{"indi_para0":"Close", "indi_para1":None},
+                        {"indi_para0":"Close", "indi_para1":None}]
 
 #%%
-# 生成策略参数字符串，用于定位文档
-suffix = myBTV.string_strat_para(strategy_para_name, strategy_para_value)
-# 输入路径
-in_folder = __mypath__.get_desktop_path()+"\\_动量研究\\指标过滤\\{}.{}\\{}".format(symbol,timeframe,indi_name)
-# 输入文件
-in_file = in_folder + "\\{}{}.xlsx".format(direct,suffix)
-# 输出路径，名称要有策略参数，因为策略参数可能有多个。
-out_folder = in_folder + "\\%s自动参数选择1D_%s" % (suffix,order)
-# 输出文件0、1、2
-out_file0 = out_folder + "\\{}_auto_{}_1D_filter0.xlsx.xlsx".format(direct,indi_name) # 输出文件0
-out_file1 = out_folder + "\\{}_auto_{}_1D_filter1.xlsx.xlsx".format(direct,indi_name) # 输出文件1
-out_file2 = out_folder + "\\{}_auto_{}_1D_filter2.xlsx.xlsx".format(direct,indi_name) # 输出文件2
-# 批量运算，最后合并且输出表格
-total_df0 = pd.DataFrame([])
-total_df1 = pd.DataFrame([])
-total_df2 = pd.DataFrame([])
+# 指标参数自动判定
+def run_auto_indi_opt(para):
+    symbol = para[0]
+    timeframe = para[1]
 
-#%%
-filecontent = pd.read_excel(in_file)
+    order = 30 # 由于指标参数结果较为稳定，选择30就可以了。
+    in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\过滤指标参数自动选择\\{}.{}".format(symbol,timeframe)
+    # 判断是否存在，不存在则返回
+    if __mypath__.path_exists(in_folder) == False:
+        return
 
-#%%
-# 过滤0，输出图片
-out_df0 = myBTV.auto_indi_para_1D(filepath=in_file,filecontent=filecontent,indi_name=indi_name,indi_para_fixed=indi_para_fixed,y_name=y_name,order=order,filterlevel=0,plot=True,savefolder="default",batch=True)
-total_df0 = pd.concat([total_df0,out_df0 ],axis=0, ignore_index=True)
-# 过滤1，不输出图片
-out_df1 = myBTV.auto_indi_para_1D(filepath=in_file,filecontent=filecontent,indi_name=indi_name,indi_para_fixed=indi_para_fixed,y_name=y_name,order=order,filterlevel=1,plot=False,savefolder="default",batch=True)
-total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
-# 过滤2，不输出图片
-out_df2 = myBTV.auto_indi_para_1D(filepath=in_file,filecontent=filecontent,indi_name=indi_name,indi_para_fixed=indi_para_fixed,y_name=y_name,order=order,filterlevel=2,plot=False,savefolder="default",batch=True)
-total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
-print("\r", symbol, timeframe, "OK", end="", flush=True)
+    # ---以 特定参数的策略 作为研究对象
+    file_dir = __mypath__.listdir(in_folder)
+    for filename in file_dir:
+        # 如果不是 xlsx格式文件则跳过
+        if ".xlsx" not in filename:
+            continue
+        # 解析下文件名称
+        direct, suffix = filename.split(".")[0:2]
+        # 输入路径要重新设置下
+        in_file = in_folder + "\\" + filename
+        filecontent = pd.read_excel(in_file)
+        # 批量运算，最后合并且输出表格，存放 所有指标 的过滤结果，过滤有3个等级。
+        total_df0 = pd.DataFrame([])
+        total_df1 = pd.DataFrame([])
+        total_df2 = pd.DataFrame([])
 
-#%%
+        # ---分别处理不同指标
+        for indi_name in indi_name_list:
+            # 加载指标固定浮动参数
+            indi_para_fixed = indi_para_fixed_list[indi_name_list.index(indi_name)]
+            # 过滤0，输出图片
+            out_df0 = myBTV.auto_indi_para_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder="default", batch=True)
+            total_df0 = pd.concat([total_df0, out_df0], axis=0, ignore_index=True)
+            # 过滤1，不输出图片
+            out_df1 = myBTV.auto_indi_para_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False, savefolder="default", batch=True)
+            total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
+            # 过滤2，不输出图片
+            out_df2 = myBTV.auto_indi_para_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name,indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False, savefolder="default", batch=True)
+            total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
 
-# 输出表格
-total_df0.to_excel(out_folder + "\\%s_aotu_para_1D_filter0.xlsx" % symbol)
-total_df1.to_excel(out_folder + "\\%s_aotu_para_1D_filter1.xlsx" % symbol)
-total_df2.to_excel(out_folder + "\\%s_aotu_para_1D_filter2.xlsx" % symbol)
-# 显示进度
-print("自动选择最佳参数1D_%s finished:"%order, symbol)
+        # ---输出表格文档文件0、1、2，存放 所有指标 的过滤结果
+        # 输出文件夹
+        out_folder = in_folder + "\\{}.{}".format(direct, suffix)
+        total_df0.to_excel(out_folder + "\\{}.filter0.xlsx".format(suffix)) # 输出文件0
+        total_df1.to_excel(out_folder + "\\{}.filter1.xlsx".format(suffix)) # 输出文件1
+        total_df2.to_excel(out_folder + "\\{}.filter2.xlsx".format(suffix)) # 输出文件2
+        # 显示进度
+        print(symbol,timeframe,direct,suffix,"finished!")
+    # 总进度
+    print("指标参数自动选择 finished:", symbol, timeframe,)
 
 
 #%%
@@ -128,8 +127,19 @@ print("自动选择最佳参数1D_%s finished:"%order, symbol)
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    order_list = [30, 40, 50]  # [30,40,50]
-
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
+                      "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
+                      "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
+                      "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
+                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+    para_muilt = [(symbol,timeframe) for symbol in symbol_list for timeframe in timeframe_list]
+    import timeit
+    # ---开始多核执行，内容较少，不用分组。
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_auto_indi_opt, para_muilt, core_num=cpu_core)
+    t1 = timeit.default_timer()
+    print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
 
 
 

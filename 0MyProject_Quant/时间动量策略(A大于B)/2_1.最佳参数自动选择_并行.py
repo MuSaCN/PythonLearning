@@ -76,7 +76,7 @@ y_name = ["sharpe"] # 过滤的y轴，不能太多
 
 #%%
 # ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
-def run_auto_choose_opt(para):
+def run_auto_strat_opt(para):
     symbol = para[0]
     order = para[1]
     # 批量运算，最后合并且输出表格
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         import timeit
         # ---开始多核执行
         t0 = timeit.default_timer()
-        myBTV.multi_processing(run_auto_choose_opt, para_muilt, core_num=cpu_core)
+        myBTV.multi_processing(run_auto_strat_opt, para_muilt, core_num=cpu_core)
         t1 = timeit.default_timer()
         print("\n", 'para_muilt_%s 耗时为：'%order, t1 - t0)
 
