@@ -78,17 +78,17 @@
 ...
 
 
-
-
-
-
-
-过滤的指标参数走势较为平稳，所以我们只用30作为左右极值判断点数。
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1)" --- 以策略参数字符串为目录名，存放该策略参数下所有的过滤情况。
-    # 图片命名规则：指标名.指标浮动参数-策略评测指标.(指标固定).png
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1.BuyOnly\(k=101;holding=1;lag_trade=1)\rsi.indi_para1-sharpe.(indi_para0=Close;).png"
-
-
+5_2.指标参数自动选择：
+    根据前面 信号利润过滤测试 输出的文档，解析文档名称，读取参数，选择极值。过滤的指标参数走势较为平稳，所以我们只用30作为左右极值判断点数。
+    # 把一个具体策略参数作为目录，存放该下面所有指标的结果。目录安排如下：
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)" --- 以策略参数字符串为目录名，存放该策略参数下所有的指标过滤情况。
+...
+    # 过滤结果图片命名规则：指标名.指标浮动参数-策略评测指标.(指标固定参数).png
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)\rsi.indi_para1-sharpe(indi_para0=Close;).png
+...
+    # 过滤结果汇总表格命名规则：策略参数字符串.过滤等级.xlsx
+"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)\ (k=101;holding=1;lag_trade=1;).filter0.xlsx
+...
 
 
 
