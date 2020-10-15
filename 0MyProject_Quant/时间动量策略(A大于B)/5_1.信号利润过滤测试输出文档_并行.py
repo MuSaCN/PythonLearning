@@ -109,6 +109,7 @@ if __name__ == '__main__':
     for symbol in symbol_list: # symbol = "EURUSD"
 
         if symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK', 'USDSGD', 'USDTRY', 'AUDJPY', 'AUDUSD', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURUSD', 'GBPAUD', 'GBPCAD', 'GBPCHF', 'GBPJPY', 'GBPUSD', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAGUSD', 'XAUUSD', 'EURDKK', 'EURNOK', 'EURRUB', 'EURSEK']:
+            finish_symbol.append(symbol)
             continue
 
         # ---定位文档
