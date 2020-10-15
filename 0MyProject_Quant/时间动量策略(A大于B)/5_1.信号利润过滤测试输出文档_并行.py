@@ -107,6 +107,10 @@ if __name__ == '__main__':
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
+
+        if symbol in ['AUDCAD', 'AUDCHF', 'AUDNZD', 'CADCHF', 'CADJPY', 'EURTRY', 'GBPNZD', 'EURNZD', 'USDDKK', 'USDHKD', 'USDNOK', 'USDSEK', 'USDSGD', 'USDTRY', 'AUDJPY', 'AUDUSD', 'CHFJPY', 'EURAUD', 'EURCAD', 'EURCHF', 'EURGBP', 'EURJPY', 'EURUSD', 'GBPAUD', 'GBPCAD', 'GBPCHF', 'GBPJPY', 'GBPUSD', 'NZDJPY', 'NZDUSD', 'USDCAD', 'USDCHF', 'USDJPY', 'XAGUSD', 'XAUUSD', 'EURDKK', 'EURNOK', 'EURRUB', 'EURSEK']:
+            continue
+
         # ---定位文档
         in_file = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
         filecontent = pd.read_excel(in_file)
