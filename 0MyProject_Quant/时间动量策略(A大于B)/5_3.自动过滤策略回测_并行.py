@@ -55,7 +55,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
 # 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
 # 根据训练集获取过滤区间，然后作用到整个样本。
-# 并行以时间框来并行，以品种来分组。
+# 并行以品种来并行，以时间框来分组。
 # 由于指标较多，并行运算时间长，防止出错输出日志。
 '''
 
@@ -150,17 +150,17 @@ if __name__ == '__main__':
                       "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
                       "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
     # 以品种来分组
-    finish_symbol = []
-    for symbol in symbol_list:
-        multi_params = [(symbol,timeframe) for timeframe in timeframe_list]
+    finish_timeframe = []
+    for timeframe in timeframe_list:
+        multi_params = [(symbol,timeframe) for symbol in symbol_list]
         import timeit
         t0 = timeit.default_timer()
         myBTV.multi_processing(run_auto_filter_stratgy_test, multi_params, core_num=core_num)
         t1 = timeit.default_timer()
-        print("\n", '{} 耗时为：'.format(symbol), t1 - t0)
+        print("\n", '{} 耗时为：'.format(timeframe), t1 - t0)
         # ---记录指标完成
-        finish_symbol.append(symbol)
-        mylogging.warning("symbol finished: {}".format(finish_symbol))
+        finish_timeframe.append(timeframe)
+        mylogging.warning("symbol finished: {}".format(finish_timeframe))
 
 
 
