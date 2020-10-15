@@ -66,6 +66,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 def run_filter_result(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # para = ('Close', 135, 'roc', [314, 1, 1], 'SellOnly', 'TIMEFRAME_H1', 'AUDNZD')
+    #  ('Close', 137, 'roc', [352, 1, 1], 'SellOnly', 'TIMEFRAME_H2', 'EURSGD')
     symbol = para[-1]
     timeframe = para[-2]
     direct = para[-3]
