@@ -13,7 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\信号利润过滤及测试.log") # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\自动过滤策略回测.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
@@ -52,101 +52,113 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 '''
 # 说明
-# 根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
-# 画的图中，min-max表示max最大的以max之前的min最小，start-end表示上涨额度最大的区间。
+# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
+# 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
 # 根据训练集获取过滤区间，然后作用到整个样本。
-# 由于并行运算时间长，防止出错输出日志。
+# 并行以时间框来并行，以品种来分组。
+# 由于指标较多，并行运算时间长，防止出错输出日志。
 '''
 
 myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
-#%% 分析到此部分，基本确定了 某个品种、某个时间框、某个方向 的策略参数，并行主要体现在多个指标上。
-
-# 不同方向 BuyOnly、SellOnly、All 的策略参数，根据前面分析后设置固定值。
-strategy_para_direct = [[101,1,1], [101,1,1]] # 值对应["k", "holding", "lag_trade"]，且索引对应 direct_para
-
-# 技术指标名称，参数设置在 -4 的位置，具体的参数指定，在 if __name__ == '__main__': 中
-indi_name_list=["rsi"]
-
-# 方向参数："BuyOnly" "SellOnly" "All"，保存在 para 的 -3 位置
-direct_para = ["BuyOnly","SellOnly"]
-
-# timeframe、symbol 参数设置在 -2、-1 的位置
-timeframe_list = ["TIMEFRAME_D1"]
-symbol_list = ["EURUSD"]
-
 
 #%%
-# para 传递指标的参数和策略的参数，结果输出图片。
-def run_plot(para):
+# 自动过滤策略回测，结果输出图片。
+def run_auto_filter_stratgy_test(para):
     # 显示进度
+    # para = ("AUDUSD","TIMEFRAME_D1")
     print("\r", "当前执行参数为：", para, end="", flush=True)
-    # 非策略参数
-    # para = ("Close", 20) + ("rsi", "BuyOnly", "TIMEFRAME_D1", "EURUSD")
-    indi_name = para[-4]
-    direct = para[-3]
-    timeframe = para[-2]
-    symbol = para[-1]
+    # 定位目录
+    symbol = para[0]
+    timeframe = para[1]
+    in_folder0 = __mypath__.get_desktop_path() + "\\_动量研究\\过滤指标参数自动选择\\{}.{}".format(symbol, timeframe)
+    # 判断是否存在，不存在则返回
+    if __mypath__.path_exists(in_folder0) == False:
+        return
 
-    # ---获取数据
-    date_from, date_to = myPjMT5.get_date_range(timeframe)
-    data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-    # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
-    data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
-    # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
-    train_x0 = data_train.index[0]
-    train_x1 = data_train.index[-1]
-    # 把训练集的时间进行左右扩展
-    bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
-    # 再次重新加载下全部的数据
-    data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
+    # ---以 特定参数的策略 作为研究对象
+    folder_dir = __mypath__.listdir(in_folder0)
+    for foldname in folder_dir:
+        # 如果是文件，不是文件夹，则跳过
+        if __mypath__.is_folder_or_file(in_folder0+"\\"+foldname, check_folder=False):
+            continue
+        # 解析下名称
+        direct, suffix = foldname.split(".")[0:2]
+        # 输入路径要重新设置下
+        in_folder1 = in_folder0 + "\\" + foldname
+        in_file = in_folder1 + "\\{}.{}.xlsx".format(suffix,"filter1") # 只分析 filter1
+        filecontent = pd.read_excel(in_file)
 
-    # ---加载固定的参数
-    k, holding, lag_trade = strategy_para_direct[direct_para.index(direct)]
+        # ---解析，显然没有内容则直接跳过
+        for i in range(len(filecontent)):  # i=0
+            # ---获取各参数
+            # 解析策略参数 ***修改这里***
+            [k, holding, lag_trade] = myBTV.string_strat_para(strat_para=suffix)
+            # 解析下指标信息
+            indi_name = filecontent.iloc[i]["indi_name"]
+            indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
+            indi_para = [value for value in indi_message]
 
-    # ---获取训练集和整个样本的信号
-    # 获取训练集的信号 ***(修改这里)***
-    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
-    signal_train = signaldata_train[direct]
-    # 计算整个样本的信号 ***(修改这里)***
-    signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
-    signal_all = signaldata_all[direct]
+            # ---获取数据
+            date_from, date_to = myPjMT5.get_date_range(timeframe)
+            data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+            # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
+            data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
+            # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
+            train_x0 = data_train.index[0]
+            train_x1 = data_train.index[-1]
+            # 把训练集的时间进行左右扩展
+            bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
+            # 再次重新加载下全部的数据
+            data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
-    # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, para)
+            # ---获取训练集和整个样本的信号
+            # 获取训练集的信号 ***(修改这里)***
+            signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            signal_train = signaldata_train[direct]
+            # 计算整个样本的信号 ***(修改这里)***
+            signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            signal_all = signaldata_all[direct]
 
-    # ---信号利润过滤及测试
-    # 总目录 ***(修改这里)***
-    folder = __mypath__.get_desktop_path() + "\\_动量研究\\指标过滤\\{}.{}".format(symbol, timeframe)
-    savefig = folder + "\\{}\\{}\\{}{}.png".format(indi_name, direct, indi_name, para[:-4])
-    # 过滤及测试后，输出图片
-    myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)" % (indi_name, para[:-4]), savefig=savefig)
+            # ---(核心，在库中添加)获取指标
+            indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, indi_para)
+
+            # ---信号利润过滤及测试
+            # 输出图片的目录
+            out_folder = in_folder1 + "\\指标过滤策略回测_filter1"
+            # 指标参数字符串
+            indi_para_name = []
+            for index in range(len(indi_para)):
+                indi_para_name.append("indi_para%s"%index)
+            indi_suffix = myBTV.string_strat_para(indi_para_name, indi_para)
+            savefig = out_folder + "\\{}.{}.png".format(indi_name,indi_suffix)
+            # 过滤及测试后，输出图片
+            myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
+    # 打印下进度
+    print(symbol, timeframe, "过滤策略回测完成！")
 
 
 #%%
 core_num = -1
 if __name__ == '__main__':
-    for timeframe in timeframe_list:
-        finish_symbol = [] # 记录品种完成进度
-        for symbol in symbol_list:
-            for direct in direct_para:
-                finish_indi = [] # 由于指标很多，记录指标完成进度
-                for indi_name in indi_name_list:
-                    # ---(核心部分)不同名称的技术指标，设定不同的多核运算参数范围
-                    if indi_name == "rsi":
-                        multi_params = [("Close", i) + (indi_name, direct, timeframe, symbol) for i in range(5, 100 + 1)]
-                    # ---开始多核执行
-                    import timeit
-                    t0 = timeit.default_timer()
-                    myBTV.multi_processing(run_plot, multi_params, core_num=core_num)
-                    t1 = timeit.default_timer()
-                    print("\n", '{}.{}.{}.{} 耗时为：'.format(symbol, timeframe, direct, indi_name), t1 - t0)
-                    # ---记录指标完成
-                    finish_indi.append(indi_name)
-                    # 由于并行时间长，要记录到logging
-                    mylogging.warning("indi finished: {} {} {} {}".format(timeframe, symbol, direct, finish_indi))
-            finish_symbol.append(symbol)
-            mylogging.warning("symbol finished: {} {}".format(timeframe, finish_symbol))
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
+                      "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
+                      "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
+                      "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
+                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+    # 以品种来分组
+    finish_symbol = []
+    for symbol in symbol_list:
+        multi_params = [(symbol,timeframe) for timeframe in timeframe_list]
+        import timeit
+        t0 = timeit.default_timer()
+        myBTV.multi_processing(run_auto_filter_stratgy_test, multi_params, core_num=core_num)
+        t1 = timeit.default_timer()
+        print("\n", '{} 耗时为：'.format(symbol), t1 - t0)
+        # ---记录指标完成
+        finish_symbol.append(symbol)
+        mylogging.warning("symbol finished: {}".format(finish_symbol))
 
 
 
