@@ -100,7 +100,7 @@ def run_auto_filter_stratgy_test(para):
             indi_para = [value for value in indi_message]
 
             # ---快速过滤下 ***修改这里***
-            if indi_para[1] in [5,6,7,150,149,148]:
+            if indi_para[1] in [5,6,7,144,143,142]:
                 continue
 
             # ---获取数据
