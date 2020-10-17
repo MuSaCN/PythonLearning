@@ -66,7 +66,7 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 # 自动过滤策略回测，结果输出图片。
 def run_auto_filter_stratgy_test(para):
     # 显示进度
-    # para = ("AUDUSD","TIMEFRAME_D1")
+    # para = ("AUDJPY","TIMEFRAME_D1")
     # print("\r", "当前执行参数为：", para, end="", flush=True)
     # 定位目录
     symbol = para[0]
@@ -98,6 +98,10 @@ def run_auto_filter_stratgy_test(para):
             indi_name = filecontent.iloc[i]["indi_name"]
             indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
             indi_para = [value for value in indi_message]
+
+            # ---快速过滤下 ***修改这里***
+            if indi_para[1] in [5,6,7,150,149,148]:
+                continue
 
             # ---获取数据
             date_from, date_to = myPjMT5.get_date_range(timeframe)
