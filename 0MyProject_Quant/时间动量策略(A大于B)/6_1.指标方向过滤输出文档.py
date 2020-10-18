@@ -65,13 +65,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 def run_filter_result(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
-    # para = ('Close', 135, 'roc', [314, 1, 1], 'SellOnly', 'TIMEFRAME_H1', 'AUDNZD')
+    # para = ('Close', 200, 'sma', [101, 1, 1], 'BuyOnly', 'TIMEFRAME_D1', 'EURUSD')
     symbol = para[-1]
     timeframe = para[-2]
     direct = para[-3]
     [k, holding, lag_trade] = para[-4]
     indi_name = para[-5]
-    indi_para = para[0:-5]  # ("Close", 30)
+    indi_para = para[0:-5]
 
     # ---获取数据
     date_from, date_to = myPjMT5.get_date_range(timeframe, to_Timestamp=True)
@@ -85,10 +85,10 @@ def run_filter_result(para):
     signal_train = signaldata_train[direct]
 
     # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indi.get_momentum_indicator(data_total, indi_name, indi_para)
+    indicator = myBTV.indi.get_trend_indicator(data_total, indi_name, indi_para)
 
-    # ---信号利润过滤及测试
-    result = myBTV.signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
+    # ---信号方向过滤及测试
+    result = myBTV.signal_direct_filter_and_quality(signal=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
     return result
 
 
@@ -100,6 +100,11 @@ if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
+
+
+    symbol_list = ["EURUSD"]
+
+
     for symbol in symbol_list: # symbol = "EURUSD"
         # if symbol in ['AUDCAD']:
         #     finish_symbol.append(symbol)
@@ -121,11 +126,10 @@ if __name__ == '__main__':
             strat_para = [k, holding, lag_trade]
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
-            out_file = __mypath__.get_desktop_path() + "\\_动量研究\\过滤指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
+            out_file = __mypath__.get_desktop_path() + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
             # ---设定并行参数，分别设定再合并
-            rsi_params = [("Close", i) + ("rsi", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
-            roc_params = [("Close", i) + ("roc", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
-            multi_params = rsi_params + roc_params
+            rsi_params = [("Close", i) + ("sma", strat_para, direct, timeframe, symbol) for i in range(5, 500 + 1)]
+            multi_params = rsi_params
             # ---开始多核执行
             myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=out_file, core_num=core_num)
             print("para finished:", symbol, timeframe, direct, suffix)
