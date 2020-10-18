@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-def run_filter_result(para):
+def run_range_filter_result(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # para = ('Close', 135, 'roc', [314, 1, 1], 'SellOnly', 'TIMEFRAME_H1', 'AUDNZD')
     symbol = para[-1]
@@ -127,7 +127,7 @@ if __name__ == '__main__':
             roc_params = [("Close", i) + ("roc", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
             multi_params = rsi_params + roc_params
             # ---开始多核执行
-            myBTV.run_concat_dataframe(run_filter_result, multi_params, filepath=out_file, core_num=core_num)
+            myBTV.run_concat_dataframe(run_range_filter_result, multi_params, filepath=out_file, core_num=core_num)
             print("para finished:", symbol, timeframe, direct, suffix)
         # ---记录对应时间框下完成的品种
         finish_symbol.append(symbol)
