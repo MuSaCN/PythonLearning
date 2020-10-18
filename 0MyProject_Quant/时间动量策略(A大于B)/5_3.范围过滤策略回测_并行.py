@@ -139,7 +139,7 @@ def run_auto_filter_stratgy_test(para):
             indi_suffix = myBTV.string_strat_para(indi_para_name, indi_para)
             savefig = out_folder + "\\{}.{}.png".format(indi_name,indi_suffix)
             # 过滤及测试后，输出图片
-            myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
+            myBTV.plot_signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
             del data_total, data_train, data_test, indicator, signaldata_train, signaldata_all, signal_train, signal_all
     # 打印下进度
     print(symbol, timeframe, "过滤策略回测完成！")

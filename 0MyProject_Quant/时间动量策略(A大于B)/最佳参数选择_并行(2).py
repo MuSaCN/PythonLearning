@@ -82,7 +82,7 @@ def run_choose_opt_1d(para):
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list_1d:
-                myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
+                myBTV.plot_strat_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
                 plt.clf()
                 plt.close()
     print("参数图1D finished:", symbol)
@@ -100,7 +100,7 @@ def run_choose_opt_2d(para):
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list_2d:
                 # ---画参数图2D热力图，batch=True时才能用agg形式画图，否则要用pycharm形式.
-                myBTV.plot_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, annot=False, batch=True) # 若batch=False，要设置画图模式为pycharm.
+                myBTV.plot_strat_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, annot=False, batch=True) # 若batch=False，要设置画图模式为pycharm.
                 plt.clf()
                 plt.close()
     print("参数图2D热力图 finished:", symbol)
@@ -117,7 +117,7 @@ def run_choose_opt_3d(para):
             filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list_3d:
-                myBTV.plot_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
+                myBTV.plot_strat_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=True, batch=True)
                 plt.clf()
                 plt.close()
     print("参数图3D热力图 finished:", symbol)

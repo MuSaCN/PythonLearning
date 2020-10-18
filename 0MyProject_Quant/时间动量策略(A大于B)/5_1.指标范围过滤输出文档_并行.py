@@ -88,7 +88,7 @@ def run_filter_result(para):
     indicator = myBTV.indi.get_momentum_indicator(data_total, indi_name, indi_para)
 
     # ---信号利润过滤及测试
-    result = myBTV.signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
+    result = myBTV.signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
     return result
 
 

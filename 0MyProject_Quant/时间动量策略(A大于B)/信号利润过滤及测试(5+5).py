@@ -101,7 +101,7 @@ for i_para in indi_params:
     # 每个参数存放的文件名不同
     savefig = folder + "\\%s(%s).png" % (indi_name, i_para[1])
     # 信号利润过滤及测试
-    myBTV.plot_signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=total_data, price_Series=price, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)"%(indi_name, i_para[1]), savefig=savefig)
+    myBTV.plot_signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=total_data, price_Series=price, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s(%s)"%(indi_name, i_para[1]), savefig=savefig)
 
 t1 = timeit.default_timer()
 print("\n", 'signal_indicator_filter_and_quality 耗时为：', t1 - t0)

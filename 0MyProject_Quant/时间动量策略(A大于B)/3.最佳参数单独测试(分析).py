@@ -81,9 +81,9 @@ filecontent = pd.read_excel(filepath)
 
 y_name = ["sharpe"] # ["sharpe", "calmar_ratio", "cumRet"]
 
-myBTV.plot_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
+myBTV.plot_strat_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
 
-myBTV.auto_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=30, filterlevel=0, plot=True, savefolder=None, batch=False)
+myBTV.auto_strat_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=30, filterlevel=0, plot=True, savefolder=None, batch=False)
 
 
 
@@ -105,7 +105,7 @@ filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 
 y_name = ["sharpe", "calmar_ratio", "cumRet"]
-myBTV.plot_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False, annot=False)
+myBTV.plot_strat_para_2D_heatmap(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False, annot=False)
 
 
 #%%
@@ -126,7 +126,7 @@ filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 
 y_name = ["sharpe", "calmar_ratio", "cumRet"]
-myBTV.plot_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
+myBTV.plot_strat_para_3D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
 
 
 
