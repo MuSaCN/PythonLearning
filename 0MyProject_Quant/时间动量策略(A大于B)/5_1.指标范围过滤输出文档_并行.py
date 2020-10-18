@@ -85,7 +85,7 @@ def run_filter_result(para):
     signal_train = signaldata_train[direct]
 
     # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, indi_para)
+    indicator = myBTV.indi.get_momentum_indicator(data_total, indi_name, indi_para)
 
     # ---信号利润过滤及测试
     result = myBTV.signal_indicator_filter_and_quality(signal_train=signal_train, signal_all=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
@@ -95,7 +95,8 @@ def run_filter_result(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    strategy_para_name = ["k", "holding", "lag_trade"] # 策略参数名称，用于文档中解析参数
+    # 策略参数名称，用于文档中解析参数 ***修改这里***
+    strategy_para_name = ["k", "holding", "lag_trade"]
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
@@ -111,7 +112,6 @@ if __name__ == '__main__':
         for i in range(len(filecontent)):  # i=0
             # ---解析文档
             # 获取各参数
-            symbol = filecontent.iloc[i]["symbol"]
             timeframe = filecontent.iloc[i]["timeframe"]
             direct = filecontent.iloc[i]["direct"]
             # 策略参数 ***修改这里***

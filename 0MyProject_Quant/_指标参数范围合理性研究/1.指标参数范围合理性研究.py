@@ -82,7 +82,7 @@ volatility = rate
 # 先大致判断下 收益率与指标 相关性范围。若不行，才进一步操作，或并行运算。
 rate_corr_list=[]
 for i_para in indi_params:
-    indicator = myBTV.indi.get_momentum_indicator(indi_name, total_data[i_para[0]], i_para[1])
+    indicator = myBTV.indi.talib_momentum_indicator(indi_name, total_data[i_para[0]], i_para[1])
     rate_corr = rate.corr(indicator)
     rate_corr_list.append(rate_corr)
 rate_corr_series = pd.Series(rate_corr_list, index=[i[1] for i in indi_params])

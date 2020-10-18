@@ -97,7 +97,7 @@ import timeit
 t0 = timeit.default_timer()
 for i_para in indi_params:
     # 指定指标和图片的保存位置
-    indicator = myBTV.indi.get_momentum_indicator(indi_name, total_data[i_para[0]], i_para[1])
+    indicator = myBTV.indi.talib_momentum_indicator(indi_name, total_data[i_para[0]], i_para[1])
     # 每个参数存放的文件名不同
     savefig = folder + "\\%s(%s).png" % (indi_name, i_para[1])
     # 信号利润过滤及测试

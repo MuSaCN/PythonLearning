@@ -127,7 +127,7 @@ def run_auto_filter_stratgy_test(para):
             signal_all = signaldata_all[direct]
 
             # ---(核心，在库中添加)获取指标
-            indicator = myBTV.indi.multicore_get_indicator(data_total, indi_name, indi_para)
+            indicator = myBTV.indi.get_momentum_indicator(data_total, indi_name, indi_para)
 
             # ---信号利润过滤及测试
             # 输出图片的目录
