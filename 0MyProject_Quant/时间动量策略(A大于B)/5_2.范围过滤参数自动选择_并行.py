@@ -70,7 +70,8 @@ indi_para_fixed_list = [{"indi_para0":"Close", "indi_para1":None},
 
 #%%
 # 指标参数自动判定
-def run_auto_indi_opt(para):
+def run_auto_indi_range_opt(para):
+    # para = ("EURUSD", "TIMEFRAME_D1")
     symbol = para[0]
     timeframe = para[1]
 
@@ -82,7 +83,7 @@ def run_auto_indi_opt(para):
 
     # ---以 特定参数的策略 作为研究对象
     file_dir = __mypath__.listdir(in_folder)
-    for filename in file_dir:
+    for filename in file_dir: # filename = file_dir[0]
         # 如果不是 xlsx格式文件则跳过
         if ".xlsx" not in filename:
             continue
@@ -97,7 +98,7 @@ def run_auto_indi_opt(para):
         total_df2 = pd.DataFrame([])
 
         # ---分别处理不同指标
-        for indi_name in indi_name_list:
+        for indi_name in indi_name_list:  # indi_name = indi_name_list[0]
             # 加载指标固定浮动参数
             indi_para_fixed = indi_para_fixed_list[indi_name_list.index(indi_name)]
             # 过滤0，输出图片
@@ -137,7 +138,7 @@ if __name__ == '__main__':
     import timeit
     # ---开始多核执行，内容较少，不用分组。
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_indi_opt, para_muilt, core_num=cpu_core)
+    myBTV.multi_processing(run_auto_indi_range_opt, para_muilt, core_num=cpu_core)
     t1 = timeit.default_timer()
     print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
 
