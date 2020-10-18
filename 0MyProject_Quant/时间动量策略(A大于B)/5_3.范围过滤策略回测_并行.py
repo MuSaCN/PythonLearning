@@ -100,9 +100,10 @@ def run_auto_filter_stratgy_test(para):
             indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
             indi_para = [value for value in indi_message]
 
-            # ---快速过滤下 ***修改这里***
+            # ---快速过滤下，这里表示前面自动选择的指标参数排除在指定范围内。 ***修改这里***
             if indi_para[1] in [5,6,7]:
                 continue
+
 
             # ---获取数据
             date_from, date_to = myPjMT5.get_date_range(timeframe)
@@ -148,7 +149,6 @@ def run_auto_filter_stratgy_test(para):
 core_num = -1
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
-    # symbol_list = ["EURUSD","GBPUSD","AUDUSD","USDJPY","USDCHF","NZDUSD","USDCAD","XAUUSD"]
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
                       "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
                       "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
