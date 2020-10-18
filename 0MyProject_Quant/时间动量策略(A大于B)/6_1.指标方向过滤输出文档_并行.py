@@ -100,11 +100,6 @@ if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
-
-
-    symbol_list = ["EURUSD"]
-
-
     for symbol in symbol_list: # symbol = "EURUSD"
         # if symbol in ['AUDCAD']:
         #     finish_symbol.append(symbol)
