@@ -79,7 +79,7 @@ def run_auto_filter_stratgy_test(para):
 
     # ---以 特定参数的策略 作为研究对象
     folder_dir = __mypath__.listdir(in_folder0)
-    for foldname in folder_dir:
+    for foldname in folder_dir:  # foldname = folder_dir[0]
         # 如果是文件，不是文件夹，则跳过
         if __mypath__.is_folder_or_file(in_folder0+"\\"+foldname, check_folder=False):
             continue

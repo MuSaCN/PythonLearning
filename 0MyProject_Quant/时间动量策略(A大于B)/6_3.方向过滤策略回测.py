@@ -50,13 +50,13 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-#################### 重写 ###########################
+
 
 '''
 # 说明
 # 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
 # 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，。
+# 画的图中，分别展示 过滤前训练集价格和指标、过滤前训练集策略、过滤后全集价格和指标、过滤后全集策略以及训练集策略。
 # 方向过滤作用到整个样本。
 # 并行以品种来并行，以时间框来分组。
 # 由于指标较多，并行运算时间长，防止出错输出日志。
@@ -67,7 +67,7 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 #%%
 # 自动过滤策略回测，结果输出图片。
-def run_auto_filter_stratgy_test(para):
+def run_auto_direct_filter_stratgy_test(para):
     # 显示进度
     # para = ("EURUSD","TIMEFRAME_D1")
     # print("\r", "当前执行参数为：", para, end="", flush=True)
@@ -81,7 +81,7 @@ def run_auto_filter_stratgy_test(para):
 
     # ---以 特定参数的策略 作为研究对象
     folder_dir = __mypath__.listdir(in_folder0)
-    for foldname in folder_dir:
+    for foldname in folder_dir:  # foldname = folder_dir[0]
         # 如果是文件，不是文件夹，则跳过
         if __mypath__.is_folder_or_file(in_folder0+"\\"+foldname, check_folder=False):
             continue
@@ -106,11 +106,10 @@ def run_auto_filter_stratgy_test(para):
             if indi_para[1] in [5,6,7]:
                 continue
 
-
             # ---获取数据
             date_from, date_to = myPjMT5.get_date_range(timeframe)
             data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-            # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
+            # 由于画图要用到训练集，所以要区分
             data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
             # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
             train_x0 = data_train.index[0]
@@ -129,9 +128,10 @@ def run_auto_filter_stratgy_test(para):
             signal_all = signaldata_all[direct]
 
             # ---(核心，在库中添加)获取指标
-            indicator = myBTV.indi.get_oscillator_indicator(data_total, indi_name, indi_para)
+            indicator_train = myBTV.indi.get_trend_indicator(data_train, indi_name, indi_para)
+            indicator_all = myBTV.indi.get_trend_indicator(data_total, indi_name, indi_para)
 
-            # ---信号利润过滤及测试
+            # ---测试
             # 输出图片的目录
             out_folder = in_folder1 + "\\指标过滤策略回测_filter1"
             # 指标参数字符串
@@ -141,8 +141,9 @@ def run_auto_filter_stratgy_test(para):
             indi_suffix = myBTV.string_strat_para(indi_para_name, indi_para)
             savefig = out_folder + "\\{}.{}.png".format(indi_name,indi_suffix)
             # 过滤及测试后，输出图片
-            myBTV.plot_signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
-            del data_total, data_train, data_test, indicator, signaldata_train, signaldata_all, signal_train, signal_all
+            myBTV.plot_signal_direct_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator_train=indicator_train, indicator_all=indicator_all,train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
+            # 过滤及测试后，输出图片
+            del data_total, data_train, data_test, indicator_train, indicator_all, signaldata_train, signaldata_all, signal_train, signal_all
     # 打印下进度
     print(symbol, timeframe, "过滤策略回测完成！")
 
@@ -162,7 +163,7 @@ if __name__ == '__main__':
         multi_params = [(symbol,timeframe) for symbol in symbol_list]
         import timeit
         t0 = timeit.default_timer()
-        myBTV.multi_processing(run_auto_filter_stratgy_test, multi_params, core_num=core_num)
+        myBTV.multi_processing(run_auto_direct_filter_stratgy_test, multi_params, core_num=core_num)
         t1 = timeit.default_timer()
         print("\n", '{} 耗时为：'.format(timeframe), t1 - t0)
         # ---记录指标完成
