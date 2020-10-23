@@ -72,8 +72,6 @@ def run_auto_stratgy_test(para):
     # ---文档定位 ******修改这里******
     folder_para1D = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
     filepath_para1D = folder_para1D + "\\%s.%s.xlsx" % (symbol, filter_level)
-
-
     filecontent = pd.read_excel(filepath_para1D)
 
     # ---解析，显然没有内容则直接跳过
