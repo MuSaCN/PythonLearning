@@ -71,7 +71,7 @@ def run_auto_stratgy_test(para):
     order = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
 
-    # ---文档定位 ***修改这里***
+    # ---文档定位 ******修改这里******
     folder_para1D = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
     filepath_para1D = folder_para1D + "\\%s.%s.xlsx" % (symbol, filter_level)
 
@@ -85,7 +85,7 @@ def run_auto_stratgy_test(para):
         timeframe = filecontent.iloc[i]["timeframe"]
         direct = filecontent.iloc[i]["direct"]
 
-        # 策略参数 ***修改这里***
+        # 策略参数 ******修改这里******
         k = filecontent.iloc[i][para_name[0]]
         holding = filecontent.iloc[i][para_name[1]]
         lag_trade = filecontent.iloc[i][para_name[2]]
@@ -104,7 +104,7 @@ def run_auto_stratgy_test(para):
         # 再次重新加载下全部的数据
         data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
-        # ---获取信号数据 ***修改这里***
+        # ---获取信号数据 ******修改这里******
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
         signaldata_input = signaldata[direct]
 

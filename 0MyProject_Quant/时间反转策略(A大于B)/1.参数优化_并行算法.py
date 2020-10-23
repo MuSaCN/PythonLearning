@@ -102,7 +102,7 @@ def signalfunc_NoRepeatHold_train(para):
     data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
     # 退出条件
     if holding > k: return None
-    # 获取反转策略信号数据 ***(修改这句)***
+    # 获取反转策略信号数据 ******(修改这句)******
     signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[trade_direct], price_DataFrame=data_train, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
@@ -130,7 +130,7 @@ def signalfunc_NoRepeatHold_test(para):
     data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
     # 退出条件
     if holding > k: return None
-    # 获取反转策略信号数据 ***(修改这句)***
+    # 获取反转策略信号数据 ******(修改这句)******
     signaldata = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Reverse")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata[trade_direct], price_DataFrame=data_test, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             for direct in direct_para:
                 # 设定并行参数，只需要指定策略参数的范围即可
                 para_muilt = [(k, holding, lag_trade, direct, symbol, timeframe) for k in range(1, k_end + 1) for holding in range(1, holding_end + 1) for lag_trade in range(1, lag_trade_end + 1)]
-                # 文件位置 ***(修改这句) ***
+                # 文件位置 ******(修改这句) ******
                 filepath = folder + "\\反转_{}.xlsx".format(direct)
                 # 分析训练集(并行)，会把参数优化结果生成文档。
                 myBTV.run_concat_dataframe(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)

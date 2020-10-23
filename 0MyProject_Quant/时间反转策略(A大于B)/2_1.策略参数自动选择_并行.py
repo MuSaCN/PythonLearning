@@ -85,12 +85,12 @@ def run_auto_strat_opt(para):
     total_df2 = pd.DataFrame([])
     # 把所有的timeframe和direct都整理到一个文档中
     for timeframe in timeframe_list:
-        # ---输入目录和输出目录 ***修改这里***
+        # ---输入目录和输出目录 ******修改这里******
         in_folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
         out_folder = __mypath__.dirname(in_folder,uplevel=0) + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
         # ---
         for direct in direct_para:
-            # ---路径 ***修改这里***
+            # ---路径 ******修改这里******
             filepath = in_folder + "\\反转_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
