@@ -60,13 +60,11 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%% 根据 非策略参数 定位文件 ###########################
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
 para_name = ["k", "holding", "lag_trade"]
-# 图片上需要标准的策略评测标准，不能仅仅夏普
-evaluate = ["sharpe", "cumRet", "calmar_ratio", "maxDD", "winRate"]
 
 #%%
 # 自动策略测试 symbol = para[0]； order = para[1]； filter_level = para[2]；
 def run_auto_stratgy_test(para):
-    # para = ("EURUSD", 30, "filter0")
+    # para = ("EURUSD", 30, "filter1")
     symbol = para[0]
     order = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
@@ -90,8 +88,6 @@ def run_auto_stratgy_test(para):
         holding = filecontent.iloc[i][para_name[1]]
         lag_trade = filecontent.iloc[i][para_name[2]]
 
-        # 训练集策略评价
-        eva_train = filecontent.iloc[i][evaluate]
         # 解析参数生成字符串变量，用于 添加策略图的标注 和 输出图片命名。
         para_str = myBTV.string_strat_para(para_name, [k,holding,lag_trade])
 
@@ -108,32 +104,11 @@ def run_auto_stratgy_test(para):
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
         signaldata_input = signaldata[direct]
 
-        # ---信号分析，不重复持仓
-        myfig.__init__(nrows=2, ncols=2, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]"], AddFigure=True)
-        outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_input, price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=myfig.axeslist[0], ax2=myfig.axeslist[1], show=False) # show必须设为False
-
-        # ---在策略图上标注 训练集和全集的策略评价 和 参数字符串para_str
-        eva_all = outStrat[direct][evaluate] # 全集策略评价
-        y1 = (outStrat[direct]["cumRet"] + 1)
-        # 标注策略训练集和全集结果的内容
-        content_train = "train: "
-        content_all = "  all: "
-        for eva_name in evaluate:
-            content_train = content_train + eva_name + "=%.4f" % eva_train[eva_name] + "; "
-            content_all = content_all + eva_name + "=%.4f" % eva_all[eva_name] + "; "
-        # 整合策略结果和策略参数，且标注之。
-        content = content_train + "\n" + content_all + "\n" + para_str
-        myfig.axeslist[1].annotate(s=content, xy=[train_x0, y1], xytext=[train_x0, y1])
-
         # ---保存输出图片
-        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}.{}.png".format(filter_level,timeframe,direct,para_str)
-        myfig.savefig(savefig)
-        # 关闭图片，删除变量，在批量操作时，释放内存
-        myfig.close(check=False)
-        myfig.close(check=False)
-        plt.show()
-        del data_total, signaldata # 手动释放内存 与 下一次循环被覆盖 在内存中是不一样的。
-        # print(symbol,timeframe,direct,para_str,"完成！")
+        savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}.{}.png".format(filter_level, timeframe, direct, para_str)
+        myBTV.plot_signal_no_filter_and_quality(signaldata_input, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, para_str=para_str, train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
+        # 手动释放内存 与 下一次循环被覆盖 在内存中是不一样的。
+        del data_total, signaldata, signaldata_input
 
     # ---显示进度
     print("自动原始策略回测 finished:", order, symbol, filter_level)
