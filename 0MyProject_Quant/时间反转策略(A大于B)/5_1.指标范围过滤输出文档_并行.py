@@ -121,8 +121,12 @@ if __name__ == '__main__':
             strat_para = [k, holding, lag_trade]
 
             # 过滤下参数，反转策略，如果k太小，交易频率太高无意义。 ******修改这里******
-            if k in [1, 2, 3, 4]:
+            # if k in [1, 2, 3, 4]:
+            #     continue
+            if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
+                      "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
                 continue
+
 
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
