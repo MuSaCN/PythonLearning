@@ -97,7 +97,8 @@ core_num = -1
 if __name__ == '__main__':
     # 策略参数名称，用于文档中解析参数 ***修改这里***
     strategy_para_name = ["k", "holding", "lag_trade"]
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    # symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD","XAGUSD"]
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
@@ -123,9 +124,8 @@ if __name__ == '__main__':
             # 过滤下参数，反转策略，如果k太小，交易频率太高无意义。 ******修改这里******
             # if k in [1, 2, 3, 4]:
             #     continue
-            if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
-                      "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
-                continue
+            # if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6","TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
+            #     continue
 
 
             # 输出的文档路径
