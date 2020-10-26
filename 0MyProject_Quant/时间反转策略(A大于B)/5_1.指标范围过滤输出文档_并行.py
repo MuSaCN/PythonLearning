@@ -102,9 +102,9 @@ if __name__ == '__main__':
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
-        # if symbol in ['AUDCAD']:
-        #     finish_symbol.append(symbol)
-        #     continue
+        if symbol in ['EURUSD', 'GBPUSD']:
+            finish_symbol.append(symbol)
+            continue
 
         # ---定位文档 ******修改这里******
         in_file = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
