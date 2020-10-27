@@ -80,8 +80,8 @@ def run_direct_filter_result(para):
     data_train, data_test = myPjMT5.get_train_test(data=data_total, train_scale=0.8)
 
     # ---获取训练集和整个样本的信号
-    # 获取训练集的信号 ***(修改这里)***
-    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct,stra_mode="Continue")
+    # 获取训练集的信号 ******(修改这里)******
+    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct,stra_mode="Reverse")
     signal_train = signaldata_train[direct]
 
     # ---(核心，在库中添加)获取指标
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         #     continue
 
         # ---定位文档 ******修改这里******
-        in_file = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
+        in_file = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
         filecontent = pd.read_excel(in_file)
         # ---解析，显然没有内容则直接跳过
         for i in range(len(filecontent)):  # i=0
@@ -119,10 +119,19 @@ if __name__ == '__main__':
             holding = filecontent.iloc[i][strategy_para_name[1]]
             lag_trade = filecontent.iloc[i][strategy_para_name[2]]
             strat_para = [k, holding, lag_trade]
+
+            # 过滤下参数，反转策略，如果k太小，交易频率太高无意义。 ******修改这里******
+            # 过滤规则为：只有主力品种才全部检测，其他品种只检测大的时间框。
+            if symbol not in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD"]:
+                if timeframe not in ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6", "TIMEFRAME_H4",
+                                     "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1"]:
+                    continue
+
+
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
             # ******修改这里******
-            out_file = __mypath__.get_desktop_path() + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
+            out_file = __mypath__.get_desktop_path() + "\\_反转研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
             # ---设定并行参数，分别设定再合并
             rsi_params = [("Close", i) + ("sma", strat_para, direct, timeframe, symbol) for i in range(5, 500 + 1)]
             multi_params = rsi_params
