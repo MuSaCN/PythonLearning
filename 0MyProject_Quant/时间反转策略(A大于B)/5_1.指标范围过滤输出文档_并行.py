@@ -97,14 +97,13 @@ core_num = -1
 if __name__ == '__main__':
     # 策略参数名称，用于文档中解析参数 ***修改这里***
     strategy_para_name = ["k", "holding", "lag_trade"]
-    # symbol_list = myPjMT5.get_all_symbol_name().tolist()
-    symbol_list = ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD","XAGUSD"]
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
-        if symbol in ['EURUSD', 'GBPUSD']:
-            finish_symbol.append(symbol)
-            continue
+        # if symbol in ['EURUSD', 'GBPUSD']:
+        #     finish_symbol.append(symbol)
+        #     continue
 
         # ---定位文档 ******修改这里******
         in_file = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
@@ -124,8 +123,9 @@ if __name__ == '__main__':
             # 过滤下参数，反转策略，如果k太小，交易频率太高无意义。 ******修改这里******
             # if k in [1, 2, 3, 4]:
             #     continue
-            # if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6","TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
-            #     continue
+            if symbol not in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD","XAGUSD"]:
+                if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6","TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
+                    continue
 
 
             # 输出的文档路径
