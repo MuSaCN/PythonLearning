@@ -147,7 +147,7 @@ def run_auto_filter_stratgy_test(para):
 
 
 #%%
-core_num = -1
+core_num = 4
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
@@ -155,9 +155,6 @@ if __name__ == '__main__':
                       "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
                       "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
                       "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
-
-    timeframe_list = ["TIMEFRAME_M1"]
-
     # 以时间框来分组
     finish_timeframe = []
     for timeframe in timeframe_list:
