@@ -156,8 +156,7 @@ if __name__ == '__main__':
                       "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
                       "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
 
-    timeframe_list = ["TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
-                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+    timeframe_list = ["TIMEFRAME_M1"]
 
     # 以时间框来分组
     finish_timeframe = []
