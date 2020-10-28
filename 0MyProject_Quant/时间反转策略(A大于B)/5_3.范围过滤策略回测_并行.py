@@ -147,7 +147,7 @@ def run_auto_filter_stratgy_test(para):
 
 
 #%%
-core_num = 4
+core_num = -1
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
