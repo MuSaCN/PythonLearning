@@ -71,10 +71,10 @@ def run_auto_direct_filter_stratgy_test(para):
     # 显示进度
     # para = ("EURUSD","TIMEFRAME_D1")
     # print("\r", "当前执行参数为：", para, end="", flush=True)
-    # 定位目录
     symbol = para[0]
     timeframe = para[1]
-    in_folder0 = __mypath__.get_desktop_path() + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
+    # 目录定位 ******修改这里******
+    in_folder0 = __mypath__.get_desktop_path() + "\\_反转研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder0) == False:
         return
@@ -120,11 +120,11 @@ def run_auto_direct_filter_stratgy_test(para):
             data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
             # ---获取训练集和整个样本的信号
-            # 获取训练集的信号 ***(修改这里)***
-            signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            # 获取训练集的信号 ******(修改这里)******
+            signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
             signal_train = signaldata_train[direct]
             # 计算整个样本的信号 ***(修改这里)***
-            signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
             signal_all = signaldata_all[direct]
 
             # ---(核心，在库中添加)获取指标
