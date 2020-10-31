@@ -161,6 +161,10 @@ if __name__ == '__main__':
     # 以时间框来分组
     finish_timeframe = []
     for timeframe in timeframe_list:
+        # --- 1分钟时间框内存容易爆
+        if timeframe == "TIMEFRAME_M1":
+            core_num = 4
+        # ---
         multi_params = [(symbol,timeframe) for symbol in symbol_list]
         import timeit
         t0 = timeit.default_timer()
