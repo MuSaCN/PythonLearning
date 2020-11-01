@@ -70,15 +70,15 @@
     前面输出的汇总 symbol.total.filter1.xlsx 存放潜在的策略参数备选方案，此处只分析 filter1。此部分把这些所有的备选都用指标过滤回测一下。最后输出文档。
     过滤方案采用范围过滤方案。由于指标过滤是 对一个品种、一个时间框、一个方向、一组策略参数 而言。我们要分析的是 哪个指标 过滤比较好。而情况是 一个品种、一个时间框、一个方向 下可能有好几组策略参数。
     # 目录安排如下
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择" --- 总目录
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1" --- 存放对应的输出文档
+"C:\Users\i2011\Desktop\_动量研究\范围指标参数自动选择" --- 总目录
+"C:\Users\i2011\Desktop\_动量研究\范围指标参数自动选择\EURUSD.TIMEFRAME_D1" --- 存放对应的输出文档
 ...
     # 输出 xlsx 路径，且命名规则：方向.(策略参数).xlsx
-"C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1;).xlsx" --- 内容为该方向和参数下所有指标的回测结果。
+"C:\Users\i2011\Desktop\_动量研究\范围指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1;).xlsx" --- 内容为该方向和参数下所有指标的回测结果。
 ...
 
 
-5_2.指标参数自动选择：
+5_2.范围过滤参数自动选择：
     根据前面 信号利润过滤测试 输出的文档，解析文档名称，读取参数，选择极值。过滤的指标参数走势较为平稳，所以我们只用30作为左右极值判断点数。
     # 把一个具体策略参数作为目录，存放该下面所有指标的结果。目录安排如下：
 "C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)" --- 以策略参数字符串为目录名，存放该策略参数下所有的指标过滤情况。
@@ -91,7 +91,7 @@
 ...
 
 
-5_3.自动过滤策略回测
+5_3.范围过滤策略回测
     上一步对每个具体参数的策略都建立的文件夹，里面存放着其指标过滤的情况。我们依然默认选择 filter1，读取文档，里面内容为过滤极值的指标参数。我们根据文档中的内容，做相应的回测。这次的回测是包含指标过滤的回测。所以我们扩大训练集到全集。回测结果以图片输出，便于分析。
     # 文档目录是在每个具体参数的策略文件夹下建立 指标过滤策略回测_filter1。
 "C:\Users\i2011\Desktop\_动量研究\过滤指标参数自动选择\AUDUSD.TIMEFRAME_D1\BuyOnly.(k=112;holding=1;lag_trade=1;)\指标过滤策略回测_filter1" --- 该参数策略下文件夹，存放策略图片
@@ -120,7 +120,7 @@
 "C:\Users\i2011\Desktop\_动量研究\方向指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)" --- 以策略参数字符串为目录名，存放该策略参数下所有的指标过滤情况。
 ...
     # 过滤结果图片命名规则：指标名.指标浮动参数-策略评测指标.(指标固定参数).png
-"C:\Users\i2011\Desktop\_动量研究\方向指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)\rsi.indi_para1-sharpe(indi_para0=Close;).png
+"C:\Users\i2011\Desktop\_动量研究\方向指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)\sma.indi_para1-sharpe(indi_para0=Close;).png
 ...
     # 过滤结果汇总表格命名规则：策略参数字符串.过滤等级.xlsx
 "C:\Users\i2011\Desktop\_动量研究\方向指标参数自动选择\EURUSD.TIMEFRAME_D1\BuyOnly.(k=101;holding=1;lag_trade=1)\ (k=101;holding=1;lag_trade=1;).filter0.xlsx
