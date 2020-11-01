@@ -132,7 +132,7 @@ if __name__ == '__main__':
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
             # ******修改这里******
-            out_file = __mypath__.get_desktop_path() + "\\_反转研究\\过滤指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
+            out_file = __mypath__.get_desktop_path() + "\\_反转研究\\范围指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
             # ---设定并行参数，分别设定再合并
             rsi_params = [("Close", i) + ("rsi", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
             roc_params = [("Close", i) + ("roc", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
