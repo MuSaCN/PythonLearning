@@ -124,10 +124,9 @@ if __name__ == '__main__':
             # if k in [1, 2, 3, 4]:
             #     continue
             # 过滤规则为：只有主力品种才全部检测，其他品种只检测大的时间框。
-            if symbol not in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD","XAGUSD"]:
+            if symbol not in myPjMT5.get_main_symbol_name_list():
                 if timeframe not in ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6","TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1"]:
                     continue
-
 
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
