@@ -151,8 +151,8 @@ def run_auto_direct_filter_stratgy_test(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    # symbol_list = myPjMT5.get_all_symbol_name().tolist()
-    symbol_list = myPjMT5.get_main_symbol_name_list()
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    # symbol_list = myPjMT5.get_main_symbol_name_list()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
                       "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
                       "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
