@@ -1,7 +1,4 @@
 # Author:Zhang Yuan
-import warnings
-warnings.filterwarnings('ignore')
-
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -49,33 +46,10 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-'''
-# 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
-# 保存到 ...\_动量研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
-# 汇总目的在于为后续分析提供便利。
-'''
 
 
-#%%
-strat_para_name = ["k", "holding", "lag_trade"]
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
-order_list = [30,40,50]
-flevel_list = ["filter0","filter1","filter2"]
 
 
-#%%
-for symbol in symbol_list:
-    for flevel in flevel_list:
-        # ---
-        total_df = pd.DataFrame()
-        total_folder = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\%s" % symbol
-        for order in order_list:
-            in_folder = total_folder + "\\auto_para_1D_{}".format(order)
-            in_file = in_folder + "\\" + "{}.{}.xlsx".format(symbol,flevel)
-            filecontent = pd.read_excel(in_file, index_col="Unnamed: 0")
-            total_df = pd.concat((total_df, filecontent), ignore_index=True)
-        # ---
-        total_df = total_df.sort_values(by=["symbol","timeframe", "direct"] + strat_para_name, ignore_index=True)
-        total_df = total_df.drop_duplicates(ignore_index=True)
-        total_df.to_excel(total_folder + "\\{}.total.{}.xlsx".format(symbol, flevel))
-    print(symbol, "文档合并完成！")
+
+
+

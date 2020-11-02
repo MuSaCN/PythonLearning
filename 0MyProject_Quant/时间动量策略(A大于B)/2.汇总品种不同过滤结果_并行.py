@@ -51,25 +51,25 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 '''
 # 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
-# 保存到 ...\_动量研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
+# 保存到 ...\_**研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
 # 汇总目的在于为后续分析提供便利。
 '''
 
 
 #%%
 strat_para_name = ["k", "holding", "lag_trade"]
-symbol_list = myPjMT5.get_all_symbol_name().tolist()
 order_list = [30,40,50]
 flevel_list = ["filter0","filter1","filter2"]
 
 
 #%%
-for symbol in symbol_list:
+def run_flevel_concat(para):
+    symbol = para[0]
+    # 各过滤等级分别输出文档
     for flevel in flevel_list:
-        # ---
         total_df = pd.DataFrame()
-        # ******修改这里******
-        total_folder = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\%s" % symbol
+        # ---目录定位 ******修改这里******
+        total_folder = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\%s" % symbol
         for order in order_list:
             in_folder = total_folder + "\\auto_para_1D_{}".format(order)
             in_file = in_folder + "\\" + "{}.{}.xlsx".format(symbol,flevel)
@@ -80,4 +80,16 @@ for symbol in symbol_list:
         total_df = total_df.drop_duplicates(ignore_index=True)
         total_df.to_excel(total_folder + "\\{}.total.{}.xlsx".format(symbol, flevel))
     print(symbol, "文档合并完成！")
+
+#%%
+core_num = -1
+if __name__ == '__main__':
+    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    para_muilt = [(symbol,) for symbol in symbol_list]
+    import timeit
+    # ---开始多核执行
+    t0 = timeit.default_timer()
+    myBTV.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
+    t1 = timeit.default_timer()
+    print("\n", 'run_level_concat 耗时为：', t1 - t0)
 
