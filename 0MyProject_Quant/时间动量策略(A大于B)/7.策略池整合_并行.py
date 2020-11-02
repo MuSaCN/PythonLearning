@@ -56,12 +56,53 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
+# 策略参数名称，用于文档中解析参数 ******修改这里******
+strategy_para_name = ["k", "holding", "lag_trade"]
+
+#%%
+symbol = "EURUSD"
+# ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
+total_folder = __mypath__.get_desktop_path() + "\\_动量研究"
+strat_file = total_folder + "\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
+strat_filecontent = pd.read_excel(strat_file)
+# ---解析，显然没有内容则直接跳过
+for i in range(len(strat_filecontent)):  # i=0
+    # ---解析文档
+    # 获取各参数
+    timeframe = strat_filecontent.iloc[i]["timeframe"]
+    direct = strat_filecontent.iloc[i]["direct"]
+    # 策略参数 ******修改这里******
+    k = strat_filecontent.iloc[i][strategy_para_name[0]]
+    holding = strat_filecontent.iloc[i][strategy_para_name[1]]
+    lag_trade = strat_filecontent.iloc[i][strategy_para_name[2]]
+    strat_para = [k, holding, lag_trade]
+    # 输出的文档路径
+    suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
+
+    # ---定位范围指标参数自动选择文档
+    range_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
+    range_file = range_folder + "\\{}.filter1.xlsx".format(suffix) # 固定只分析 filter1
+    # 检测文件是否存在，不存在则跳过
+    if __mypath__.path_exists(range_file) == False:
+        continue
+    # 读取范围文档
+    range_filecontent = pd.read_excel(range_file)
+    range_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True)
+
+    range_filecontent.iloc[0]
+    strat_filecontent.iloc[i]
 
 
 
 
-
-
+    # ---定位方向指标参数自动选择文档
+    direct_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
+    direct_file = direct_folder + "\\{}.filter1.xlsx".format(suffix)  # 固定只分析 filter1
+    # 检测文件是否存在，不存在则跳过
+    if __mypath__.path_exists(direct_file) == False:
+        continue
+    # 读取范围文档
+    direct_filecontent = pd.read_excel(direct_file)
 
 
 
