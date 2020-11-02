@@ -66,6 +66,7 @@ total_folder = __mypath__.get_desktop_path() + "\\_动量研究"
 strat_file = total_folder + "\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
 strat_filecontent = pd.read_excel(strat_file)
 # ---解析，显然没有内容则直接跳过
+out_total = pd.DataFrame()
 for i in range(len(strat_filecontent)):  # i=0
     # ---解析文档
     # 获取各参数
@@ -79,31 +80,41 @@ for i in range(len(strat_filecontent)):  # i=0
     # 输出的文档路径
     suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
 
+    # ---解析原策略内容，生成指定格式
+    out_strat = strat_filecontent.iloc[i]["symbol":"winRate"]
+    out_strat = pd.DataFrame(out_strat).unstack().unstack()
+    out_strat.columns = [["original"] * len(out_strat.columns), out_strat.columns]
+
     # ---定位范围指标参数自动选择文档
     range_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
     range_file = range_folder + "\\{}.filter1.xlsx".format(suffix) # 固定只分析 filter1
-    # 检测文件是否存在，不存在则跳过
-    if __mypath__.path_exists(range_file) == False:
-        continue
-    # 读取范围文档
-    range_filecontent = pd.read_excel(range_file)
-    range_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True)
-
-    range_filecontent.iloc[0]
-    strat_filecontent.iloc[i]
-
-
-
+    # 检测文件是否存在
+    if __mypath__.path_exists(range_file) == True:
+        # 读取范围文档，生成指定格式
+        range_filecontent = pd.read_excel(range_file)
+        range_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
+        out_range = range_filecontent.iloc[0]["symbol":"winRate"]
+        out_range = pd.DataFrame(out_range).unstack().unstack()
+        out_range.columns = [["range_filter_only"] * len(out_range.columns), out_range.columns]
+    else:
+        out_range = pd.DataFrame()
 
     # ---定位方向指标参数自动选择文档
     direct_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
     direct_file = direct_folder + "\\{}.filter1.xlsx".format(suffix)  # 固定只分析 filter1
     # 检测文件是否存在，不存在则跳过
-    if __mypath__.path_exists(direct_file) == False:
-        continue
-    # 读取范围文档
-    direct_filecontent = pd.read_excel(direct_file)
+    if __mypath__.path_exists(direct_file) == True:
+        # 读取范围文档，生成指定格式
+        direct_filecontent = pd.read_excel(direct_file)
+        # direct_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
+        out_direct = direct_filecontent.iloc[0]["symbol":"winRate"]
+        out_direct = pd.DataFrame(out_direct).unstack().unstack()
+        out_direct.columns = [["direct_filter_only"] * len(out_direct.columns), out_direct.columns]
+    else:
+        out_direct = pd.DataFrame()
 
-
+    # ---合并
+    out = pd.concat((out_strat, out_range, out_direct), axis=1)
+    out_total = pd.concat((out_total,out), axis=0, ignore_index=True)
 
 
