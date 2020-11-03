@@ -152,6 +152,11 @@ def run_strategy_pool(para):
 core_num = -1
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    # finished_symbol = []
+    # for symbol in symbol_list:
+    #     run_strategy_pool((symbol,))
+    #     finished_symbol.append(symbol)
+    #     print(finished_symbol)
     para_muilt = [(symbol,) for symbol in symbol_list]
     import timeit
     # ---开始多核执行
