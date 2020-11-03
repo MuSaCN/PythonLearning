@@ -67,7 +67,7 @@ strategy_para_name = ["k", "holding", "lag_trade"]
 #%%
 # ---并行执行策略池生成
 def run_strategy_pool(para):
-    symbol = para[0] # symbol = "AUDCAD"
+    symbol = para[0] # symbol = "GBPAUD"
     print("%s 开始生成策略池..." %symbol)
     # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
     total_folder = __mypath__.get_desktop_path() + "\\_反转研究"
@@ -133,11 +133,15 @@ def run_strategy_pool(para):
         out = pd.concat((out_strat, out_range, out_direct), axis=1)
         out_total = pd.concat((out_total,out), axis=0, ignore_index=True)
 
+
     # ---必须要有内容才行
     if len(out_total) > 0:
-        # ---过滤后策略的sharpe如果减少则赋值nan。(必须放到外面写，不然表格顺序会乱)
-        out_total["range_filter_only"] = out_total["range_filter_only"][out_total[("range_filter_only", "sharpe")] > out_total[("original","sharpe")]]
-        out_total["direct_filter_only"] = out_total["direct_filter_only"][out_total[("direct_filter_only", "sharpe")] > out_total[("original","sharpe")]]
+        # 表格中要有过滤的列才行
+        if "range_filter_only" in out_total.columns:
+            # 过滤后策略的sharpe如果减少则赋值nan。(必须放到外面写，不然表格顺序会乱)
+            out_total["range_filter_only"] = out_total["range_filter_only"][out_total[("range_filter_only", "sharpe")] > out_total[("original","sharpe")]]
+        if "direct_filter_only" in out_total.columns:
+            out_total["direct_filter_only"] = out_total["direct_filter_only"][out_total[("direct_filter_only", "sharpe")] > out_total[("original","sharpe")]]
 
     # ---输出文档
     out_folder = total_folder + "\\策略池整合"
@@ -149,6 +153,11 @@ def run_strategy_pool(para):
 core_num = -1
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    # finished_symbol = []
+    # for symbol in symbol_list:
+    #     run_strategy_pool((symbol,))
+    #     finished_symbol.append(symbol)
+    #     print(finished_symbol)
     para_muilt = [(symbol,) for symbol in symbol_list]
     import timeit
     # ---开始多核执行

@@ -135,9 +135,12 @@ def run_strategy_pool(para):
 
     # ---必须要有内容才行
     if len(out_total) > 0:
-        # ---过滤后策略的sharpe如果减少则赋值nan。(必须放到外面写，不然表格顺序会乱)
-        out_total["range_filter_only"] = out_total["range_filter_only"][out_total[("range_filter_only", "sharpe")] > out_total[("original","sharpe")]]
-        out_total["direct_filter_only"] = out_total["direct_filter_only"][out_total[("direct_filter_only", "sharpe")] > out_total[("original","sharpe")]]
+        # 表格中要有过滤的列才行
+        if "range_filter_only" in out_total.columns:
+            # 过滤后策略的sharpe如果减少则赋值nan。(必须放到外面写，不然表格顺序会乱)
+            out_total["range_filter_only"] = out_total["range_filter_only"][out_total[("range_filter_only", "sharpe")] > out_total[("original", "sharpe")]]
+        if "direct_filter_only" in out_total.columns:
+            out_total["direct_filter_only"] = out_total["direct_filter_only"][out_total[("direct_filter_only", "sharpe")] > out_total[("original", "sharpe")]]
 
     # ---输出文档
     out_folder = total_folder + "\\策略池整合"
