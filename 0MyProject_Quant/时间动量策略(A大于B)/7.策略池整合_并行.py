@@ -94,6 +94,7 @@ def run_strategy_pool(para):
 
         # ---解析原策略内容，生成指定格式
         out_strat = strat_filecontent.iloc[i]["symbol":"winRate"]
+        sharpe_original = out_strat.sharpe
         out_strat.name = 0 # 必须设置Series的名称为0，后面才能合并到一行
         out_strat = pd.DataFrame(out_strat).unstack().unstack()
         out_strat.columns = [["original"] * len(out_strat.columns), out_strat.columns]
@@ -115,6 +116,7 @@ def run_strategy_pool(para):
             range_filecontent = pd.read_excel(range_file)
             range_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
             out_range = range_filecontent.iloc[0]["symbol":"winRate"]
+            sharpe_range = out_range.sharpe
             # 解析指标参数字符串
             indi_name = out_range["indi_name"]
             indi_para = out_range["direct":"indi_name"][1:-1]
@@ -125,14 +127,15 @@ def run_strategy_pool(para):
             # 生成指定格式
             out_range = pd.DataFrame(out_range).unstack().unstack()
             out_range.columns = [["range_filter_only"] * len(out_range.columns), out_range.columns]
-            # 复制图片
-            pic_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol,timeframe,direct,suffix)
-            pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
-            pic_file = pic_folder + "\\" + pic_name
-            if __mypath__.path_exists(pic_file):
-                # 在策略参数目录里放图片
-                pic_to = pic_to_folder + "\\{}".format(pic_name)
-                myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
+            # 复制图片，策略有提高才复制图片
+            if sharpe_range > sharpe_original:
+                pic_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol,timeframe,direct,suffix)
+                pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
+                pic_file = pic_folder + "\\" + pic_name
+                if __mypath__.path_exists(pic_file):
+                    # 在策略参数目录里放图片
+                    pic_to = pic_to_folder + "\\{}".format(pic_name)
+                    myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
         else:
             out_range = pd.DataFrame()
 
@@ -145,6 +148,7 @@ def run_strategy_pool(para):
             direct_filecontent = pd.read_excel(direct_file)
             direct_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
             out_direct = direct_filecontent.iloc[0]["symbol":"winRate"]
+            sharpe_direct = out_direct.sharpe
             # 解析指标参数字符串
             indi_name = out_direct["indi_name"]
             indi_para = out_direct["direct":"indi_name"][1:-1]
@@ -155,14 +159,15 @@ def run_strategy_pool(para):
             # 生成指定格式
             out_direct = pd.DataFrame(out_direct).unstack().unstack()
             out_direct.columns = [["direct_filter_only"] * len(out_direct.columns), out_direct.columns]
-            # 复制图片
-            pic_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol, timeframe, direct, suffix)
-            pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
-            pic_file = pic_folder + "\\" + pic_name
-            if __mypath__.path_exists(pic_file):
-                # 在策略参数目录里放图片
-                pic_to = pic_to_folder + "\\{}".format(pic_name)
-                myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
+            # 复制图片，策略提高才复制
+            if sharpe_direct > sharpe_original:
+                pic_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol, timeframe, direct, suffix)
+                pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
+                pic_file = pic_folder + "\\" + pic_name
+                if __mypath__.path_exists(pic_file):
+                    # 在策略参数目录里放图片
+                    pic_to = pic_to_folder + "\\{}".format(pic_name)
+                    myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
         else:
             out_direct = pd.DataFrame()
         # ---合并
