@@ -123,7 +123,7 @@ def run_auto_direct_filter_stratgy_test(para):
             # 获取训练集的信号 ******(修改这里)******
             signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
             signal_train = signaldata_train[direct]
-            # 计算整个样本的信号 ***(修改这里)***
+            # 计算整个样本的信号 ******(修改这里)******
             signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
             signal_all = signaldata_all[direct]
 

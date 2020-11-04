@@ -119,10 +119,10 @@ def run_auto_filter_stratgy_test(para):
             data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
             # ---获取训练集和整个样本的信号
-            # 获取训练集的信号 ***(修改这里)***
+            # 获取训练集的信号 ******(修改这里)******
             signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
             signal_train = signaldata_train[direct]
-            # 计算整个样本的信号 ***(修改这里)***
+            # 计算整个样本的信号 ******(修改这里)******
             signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
             signal_all = signaldata_all[direct]
 
