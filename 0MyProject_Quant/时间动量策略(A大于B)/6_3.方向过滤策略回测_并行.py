@@ -102,9 +102,9 @@ def run_auto_direct_filter_stratgy_test(para):
             indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
             indi_para = [value for value in indi_message]
 
-            # ---快速过滤下，这里表示前面自动选择的指标参数排除在指定范围内。 ***修改这里***
-            if indi_para[1] in [5,6,7]:
-                continue
+            # ---前面自动选择的指标参数排除在指定范围内，不一定要排除。******修改这里******
+            # if indi_para[1] in [5,6,7]:
+            #     continue
 
             # ---获取数据
             date_from, date_to = myPjMT5.get_date_range(timeframe)

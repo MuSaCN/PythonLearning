@@ -120,7 +120,7 @@ if __name__ == '__main__':
             lag_trade = filecontent.iloc[i][strategy_para_name[2]]
             strat_para = [k, holding, lag_trade]
 
-            # 过滤下参数，反转策略，如果k太小，交易频率太高无意义。 ******修改这里******
+            # ******修改这里******
             # 过滤规则为：只有主力品种才全部检测，其他品种只检测大的时间框。
             if symbol not in myPjMT5.get_main_symbol_name_list():
                 if timeframe not in ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6", "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1"]:
