@@ -159,7 +159,7 @@ if __name__ == '__main__':
     for timeframe in timeframe_list:
         # --- 1分钟时间框内存容易爆
         if timeframe == "TIMEFRAME_M1":
-            core_num = 3
+            core_num = 4
         # ---
         multi_params = [(symbol,timeframe) for symbol in symbol_list]
         import timeit
