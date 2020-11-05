@@ -57,8 +57,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ---获取数据
-symbol = "AUS200"
-timeframe = "TIMEFRAME_M10"
+symbol = "EURUSD"
+timeframe = "TIMEFRAME_D1"
 
 date_from, date_to = myPjMT5.get_date_range(timeframe)
 data_total = myPjMT5.getsymboldata(symbol,timeframe,date_from,date_to,index_time=True, col_capitalize=True)
@@ -71,7 +71,7 @@ train_x1 = data_train.index[-1]
 
 #%%
 # ---仅做多分析
-k_range = [k for k in range(333, 333+1)]
+k_range = [k for k in range(101, 101+1)]
 holding_range = [holding for holding in range(1, 1+1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1+1)]
 
@@ -84,7 +84,7 @@ for k in k_range:
             # 信号分析
             # savefig = __mypath__.get_desktop_path()+"\\holding={};k={};lag_trade={}.png".format(holding,k,lag_trade)
             # 信号分析，不重复持仓
-            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_buy["BuyOnly"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
+            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signal=signaldata_buy["BuyOnly"], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
 
 # ---
 myBTV.signal_quality_explain()
