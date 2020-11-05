@@ -103,9 +103,17 @@ class TestStrategy(myBT.bt.Strategy):
 myBT = MyBackTest.MyClass_BackTestEvent()  # 回测类
 myBT.setcash(100000)
 myBT.setcommission(0.000)
-myBT.adddata(data0, fromdate=None, todate=None, filter_mode=None)
+# myBT.adddata(data0, fromdate=None, todate=None, filter_mode=None)
 # 数据过滤，转成平均K线
 myBT.adddata(data0, fromdate=None, todate=None, filter_mode="HeikinAshi", name="EURUSD")
+# myBT.addanalyzer_all()
+myBT.addanalyzer(myBT.bt.analyzers.SharpeRatio, _name = 'SharpeRatio')
+#不同时间周期 bt.TimeFrame.Days, bt.TimeFrame.Weeks, bt.TimeFrame.Months, bt.TimeFrame.Years)
+myBT.addanalyzer(myBT.bt.analyzers.TimeReturn, _name='TimeReturn')
+myBT.addanalyzer(myBT.bt.analyzers.TimeReturn, _name='TimeReturn_Days', timeframe=myBT.bt.TimeFrame.Days)
+myBT.addanalyzer(myBT.bt.analyzers.TimeReturn, _name='TimeReturn_Weeks', timeframe=myBT.bt.TimeFrame.Weeks)
+myBT.addanalyzer(myBT.bt.analyzers.TimeReturn, _name='TimeReturn_Months', timeframe=myBT.bt.TimeFrame.Months)
+myBT.addanalyzer(myBT.bt.analyzers.TimeReturn, _name='TimeReturn_Years', timeframe=myBT.bt.TimeFrame.Years)
 
 
 #%%
@@ -114,5 +122,14 @@ myBT.addstrategy(TestStrategy)
 myBT.run(maxcpus=1 ,plot = True, backend="tkagg", style="candle", volume=True, voloverlay=True, numfigs = 1)
 # 15 99999.94443999976 99998.82211999976
 myBT.every_cash_value()
+
+# analy_list = myBT.get_analysis_all()
+# analy_list[0]["SQN"]
+myBT.get_analysis("SharpeRatio")
+myBT.get_analysis("TimeReturn")
+myBT.get_analysis("TimeReturn_Days")
+myBT.get_analysis("TimeReturn_Weeks")
+myBT.get_analysis("TimeReturn_Months")
+myBT.get_analysis("TimeReturn_Years")
 
 
