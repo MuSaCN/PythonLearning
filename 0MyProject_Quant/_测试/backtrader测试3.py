@@ -163,7 +163,9 @@ returns.index
 import pyfolio as pf
 # ?不知道为什么不行！！！！！！
 pf.create_full_tear_sheet(returns , positions=positions , transactions=transactions , benchmark_rets=returns, round_trips=True)
+pf.create_returns_tear_sheet(returns, benchmark_rets=benchmark_rets, live_start_date=live_start_date)
 
+plt.show()
 myBT.cerebro.plot(iplot=False)
 
 
