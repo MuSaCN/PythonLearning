@@ -52,6 +52,7 @@ eurusd = myPjMT5.getsymboldata("EURUSD", "TIMEFRAME_D1", [2018, 1, 1, 0, 0, 0], 
 data0 = eurusd
 
 # %%
+a = None
 class TestStrategy(myBT.bt.Strategy):
     # 定义MA均线策略的周期参数变量，默认值是15
     # 增加类一个log打印开关变量： fgPrint，默认自是关闭
@@ -68,6 +69,9 @@ class TestStrategy(myBT.bt.Strategy):
 
     # ---只开头执行一次
     def __init__(self):
+        # 把策略传到外面，方便查看属性和方法
+        global a
+        a = self
         print("init", len(self))
         # 检查完成，没有交易中订单（pending order）
         self.order = None
@@ -125,6 +129,10 @@ myBT.addanalyzer_pyfolio()
 myBT.addstrategy(TestStrategy)
 # 画的价格图 style 默认是"line"，style = "line" 线条图, "candle" 蜡烛图, style="bar"美式k线图, style="ohlc"美式k线图
 myBT.run(maxcpus=1, plot=False, backend="tkagg", style="candle", volume=True, voloverlay=True, numfigs=1) # 设置了 plot为False
+# myBT.cerebro.plot(iplot=False)
+
+a
+
 
 #%%
 # analy_list = myBT.get_analysis_all()

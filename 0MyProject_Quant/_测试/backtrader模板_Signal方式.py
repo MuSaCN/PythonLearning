@@ -54,7 +54,7 @@ data0 = eurusd
 
 # ---Signal信号方式构建快速策略
 class MySignal(myBT.bt.Indicator):
-    lines = ('signal',) # 设定返回的lines
+    lines = ('signal',) # 设定返回的lines，必须是lines
     params = (('period', 30),)
     def __init__(self):
         # 这里指定信号的意思就是：> 0 买入 ； < 0 卖出； == 0 没有指令
