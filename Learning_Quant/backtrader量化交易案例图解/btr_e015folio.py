@@ -11,7 +11,7 @@ QQ群: Top极宽量化总群，124134140
 
 '''
 import sys;
-sys.path.append("topqt/")
+sys.path.append("Learning_Quant/backtrader量化交易案例图解/topqt/")
 
 #
 import matplotlib as mpl
@@ -170,13 +170,44 @@ xcod='002046'
 fdat=rs0+xcod+'.csv'
 print('\t@数据文件名：',fdat)
 
-# 
+#
+import pandas as pd
+def pools_get4fn(fnam, tim0str, tim9str, fgSort=True, fgCov=True):
+    '''
+     从csv文件，数据读取函数，兼容csv标准OHLC数据格式文件
+
+    【输入参数】
+       fnam：csv数据文件名
+       tim0str,tim9str：回测起始时间，终止时间，字符串格式
+       fgSort：正序排序标志，默认为 True
+    【输出数据】
+       data：BT回测内部格式的数据包
+    '''
+
+    # skiprows=skiprows,header=header,parse_dates=True, index_col=0,
+    df = pd.read_csv(fnam, index_col=0, parse_dates=True)
+    df.sort_index(ascending=fgSort, inplace=True)  # True：正序
+    #
+    tim0 = None if tim0str == '' else dt.datetime.strptime(tim0str, '%Y-%m-%d')
+    tim9 = None if tim9str == '' else dt.datetime.strptime(tim9str, '%Y-%m-%d')
+    # prDF(df)
+    # xxx
+    #
+    df['openinterest'] = 0
+    if fgCov:
+        data = bt.feeds.PandasData(dataname=df, fromdate=tim0, todate=tim9)
+    else:
+        data = df
+    #
+    return data
+
+
 print('\t设置数据BT回溯运算：起始时间、结束时间')  
 print('\t数据文件,可以是股票期货、外汇黄金、数字货币等交易数据')  
 print('\t格式为：标准OHLC格式，可以是日线、分时数据。')  
 #t0str,t9str='2015-01-01','2018-12-31'
 t0str,t9str='2018-01-01','2018-12-31'
-data=tq.pools_get4fn(fdat,t0str,t9str)
+data=pools_get4fn(fdat,t0str,t9str)
 
 #
 # 增加一个股票名称变量xcod，可以在策略函数、绘图中使用
