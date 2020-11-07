@@ -59,7 +59,7 @@ warnings.filterwarnings('ignore')
 
 # ---获取数据
 symbol = "AUDUSD"
-timeframe = "TIMEFRAME_H8"
+timeframe = "TIMEFRAME_M3"
 
 date_from, date_to = myPjMT5.get_date_range(timeframe)
 data_total = myPjMT5.getsymboldata(symbol,timeframe,date_from,date_to,index_time=True, col_capitalize=True)
@@ -100,23 +100,27 @@ myBTV.signal_quality_explain()
 #%%
 # ---仅做空分析
 direct = "SellOnly"
-k_range = [k for k in range(112, 112+1)]
-holding_range = [holding for holding in range(1, 1+1)]
+k_range = [k for k in range(275, 275+1)]
+holding_range = [holding for holding in range(1, 20+1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1+1)]
 
 # ---策略结果分析
-out_list = []
+out_list1 = []
+out_list2 = []
+# 选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
+label1 = "sharpe"
+label2 = "winRate"
 for k in k_range:
     for holding in holding_range:
         for lag_trade in lag_trade_range:
             # ---获取信号数据
             signaldata_sell = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
             # 信号分析: signal_quality_NoRepeatHold / signal_quality
-            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_sell[direct], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
-            out_list.append(outStrat[direct]["sortino_ratio"])
+            outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_sell[direct], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False, train_x0=train_x0, train_x1=train_x1, savefig=None)
+            out_list1.append(outStrat[direct][label1])
+            out_list2.append(outStrat[direct][label2])
 # ---
-pd.Series(out_list).plot()
-plt.show()
+myplt.plot_twoline_twinx(out_list1, out_list2, label1, label2)
 myBTV.signal_quality_explain()
 
 
@@ -128,7 +132,11 @@ holding_range = [holding for holding in range(1, 1 + 1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1 + 1)]
 
 # ---策略结果分析
-out_list = []
+out_list1 = []
+out_list2 = []
+# 选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
+label1 = "sharpe"
+label2 = "winRate"
 for k in k_range:
     for holding in holding_range:
         for lag_trade in lag_trade_range:
@@ -136,10 +144,10 @@ for k in k_range:
             signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
             # 信号分析，不重复持仓
             outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signaldata_all[direct], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None)
-            out_list.append(outStrat[direct]["sortino_ratio"])
+            out_list1.append(outStrat[direct][label1])
+            out_list2.append(outStrat[direct][label2])
 # ---
-pd.Series(out_list).plot()
-plt.show()
+myplt.plot_twoline_twinx(out_list1, out_list2, label1, label2)
 myBTV.signal_quality_explain()
 
 
