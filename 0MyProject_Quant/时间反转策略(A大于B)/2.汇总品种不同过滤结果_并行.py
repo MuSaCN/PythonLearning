@@ -89,7 +89,7 @@ if __name__ == '__main__':
     import timeit
     # ---开始多核执行
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
+    myBTV.muiltcore.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
     t1 = timeit.default_timer()
     print("\n", 'run_level_concat 耗时为：', t1 - t0)
 

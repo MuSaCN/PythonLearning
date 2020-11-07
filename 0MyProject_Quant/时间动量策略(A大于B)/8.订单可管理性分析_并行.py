@@ -10,6 +10,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -45,19 +46,9 @@ myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-# 多核并行返回结果list，是以输入参数的顺序来定的，不改变原参数的顺序。
 
-def func(para):
-    index = para + 1
-    return index
 
-if __name__ == '__main__':
-    multi_para = [i for i in range(10000)]
-    list = myBTV.muiltcore.multi_processing(func, multi_para, core_num=0)
-    print(list)
-    data = pd.Series(list, index = multi_para)
-    data.plot()
-    plt.show()
+
 
 
 

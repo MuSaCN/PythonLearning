@@ -88,7 +88,7 @@ noise_df = pd.DataFrame(np.random.randn(len(total_data), totalstep), index=total
 
 # 用于多核，计算概率，para 传递指标参数 indi_params 中元素
 def cal_prob(para):
-    prob = myBTV.indicator_param1D_prob(volatility, noise_df, indi_name, total_data[para[0]], para[1])
+    prob = myDA.indi.indicator_param1D_prob(volatility, noise_df, indi_name, total_data[para[0]], para[1])
     print("\r", "{}/{} finished !".format(para[1] - indi_params[0][1], len(indi_params)), end="", flush=True)
     return prob
 
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     multi_para = indi_params
     import timeit
     t0 = timeit.default_timer()
-    prob_list = myBTV.multi_processing(cal_prob, multi_para, core_num=0)
+    prob_list = myBTV.muiltcore.multi_processing(cal_prob, multi_para, core_num=0)
     t1 = timeit.default_timer()
     print("\n", 'indicator_param1D_range 耗时为：', t1 - t0)
 

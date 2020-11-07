@@ -126,7 +126,7 @@ if __name__ == '__main__':
         import timeit
         # ---开始多核执行
         t0 = timeit.default_timer()
-        myBTV.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
+        myBTV.muiltcore.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
         t1 = timeit.default_timer()
         print("\n", 'para_muilt_%s 耗时为：' % order, t1 - t0)
 

@@ -139,7 +139,7 @@ def run_auto_filter_stratgy_test(para):
             indi_suffix = myBTV.string_strat_para(indi_para_name, indi_para)
             savefig = out_folder + "\\{}.{}.png".format(indi_name,indi_suffix)
             # 过滤及测试后，输出图片
-            myBTV.plot_signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
+            myBTV.rfilter.plot_signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator=indicator, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), savefig=savefig, batch=True)
             del data_total, data_train, data_test, indicator, signaldata_train, signaldata_all, signal_train, signal_all
     # 打印下进度
     print(symbol, timeframe, "过滤策略回测完成！")
@@ -164,7 +164,7 @@ if __name__ == '__main__':
         multi_params = [(symbol,timeframe) for symbol in symbol_list]
         import timeit
         t0 = timeit.default_timer()
-        myBTV.multi_processing(run_auto_filter_stratgy_test, multi_params, core_num=core_num)
+        myBTV.muiltcore.multi_processing(run_auto_filter_stratgy_test, multi_params, core_num=core_num)
         t1 = timeit.default_timer()
         print("\n", '{} 耗时为：'.format(timeframe), t1 - t0)
         # ---记录指标完成

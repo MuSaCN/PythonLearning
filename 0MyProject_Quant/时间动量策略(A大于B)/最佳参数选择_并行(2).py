@@ -135,17 +135,17 @@ if __name__ == '__main__':
     import timeit
     # ---开始多核执行参数选择1D
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_choose_opt_1d, para_muilt, core_num=cpu_core)
+    myBTV.muiltcore.multi_processing(run_choose_opt_1d, para_muilt, core_num=cpu_core)
     t1 = timeit.default_timer()
     print("\n", 'run_choose_opt_1d() 耗时为：', t1 - t0)
     # ---开始多核执行参数选择2D
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_choose_opt_2d, para_muilt, core_num=cpu_core)
+    myBTV.muiltcore.multi_processing(run_choose_opt_2d, para_muilt, core_num=cpu_core)
     t1 = timeit.default_timer()
     print("\n", 'run_choose_opt_2d() 耗时为：', t1 - t0)
     # ---开始多核执行参数选择3D
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_choose_opt_3d, para_muilt, core_num=cpu_core)
+    myBTV.muiltcore.multi_processing(run_choose_opt_3d, para_muilt, core_num=cpu_core)
     t1 = timeit.default_timer()
     print("\n", 'run_choose_opt_3d() 耗时为：', t1 - t0)
 

@@ -103,13 +103,13 @@ def run_auto_indi_range_opt(para):
             # 加载指标固定浮动参数
             indi_para_fixed = indi_para_fixed_list[indi_name_list.index(indi_name)]
             # 过滤0，输出图片
-            out_df0 = myBTV.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder="default", batch=True)
+            out_df0 = myBTV.rfilter.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder="default", batch=True)
             total_df0 = pd.concat([total_df0, out_df0], axis=0, ignore_index=True)
             # 过滤1，不输出图片
-            out_df1 = myBTV.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False, savefolder="default", batch=True)
+            out_df1 = myBTV.rfilter.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=1, plot=False, savefolder="default", batch=True)
             total_df1 = pd.concat([total_df1, out_df1], axis=0, ignore_index=True)
             # 过滤2，不输出图片
-            out_df2 = myBTV.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name,indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False, savefolder="default", batch=True)
+            out_df2 = myBTV.rfilter.auto_indi_para_range_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name,indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False, savefolder="default", batch=True)
             total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
 
         # ---输出表格文档文件0、1、2，存放 所有指标 的过滤结果
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     import timeit
     # ---开始多核执行，内容较少，不用分组。
     t0 = timeit.default_timer()
-    myBTV.multi_processing(run_auto_indi_range_opt, para_muilt, core_num=cpu_core)
+    myBTV.muiltcore.multi_processing(run_auto_indi_range_opt, para_muilt, core_num=cpu_core)
     t1 = timeit.default_timer()
     print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
 

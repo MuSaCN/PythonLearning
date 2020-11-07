@@ -88,7 +88,7 @@ def run_direct_filter_result(para):
     indicator = myBTV.indi.get_trend_indicator(data_total, indi_name, indi_para)
 
     # ---信号方向过滤及测试
-    result = myBTV.signal_direct_filter_and_quality(signal=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
+    result = myBTV.dfilter.signal_direct_filter_and_quality(signal=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
     return result
 
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
             rsi_params = [("Close", i) + ("sma", strat_para, direct, timeframe, symbol) for i in range(5, 500 + 1)]
             multi_params = rsi_params
             # ---开始多核执行
-            myBTV.run_concat_dataframe(run_direct_filter_result, multi_params, filepath=out_file, core_num=core_num)
+            myBTV.muiltcore.run_concat_dataframe(run_direct_filter_result, multi_params, filepath=out_file, core_num=core_num)
             print("para finished:", symbol, timeframe, direct, suffix)
         # ---记录对应时间框下完成的品种
         finish_symbol.append(symbol)

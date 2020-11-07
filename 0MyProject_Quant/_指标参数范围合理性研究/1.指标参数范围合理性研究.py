@@ -104,7 +104,7 @@ t0 = timeit.default_timer()
 
 prob_list = []
 for i_para in indi_params:
-    prob = myBTV.indicator_param1D_prob(volatility,noise_df,indi_name,total_data[i_para[0]],i_para[1])
+    prob = myDA.indi.indicator_param1D_prob(volatility,noise_df,indi_name,total_data[i_para[0]],i_para[1])
     prob_list.append(prob)
     print("\r", "{}/{} finished !".format(i_para[1]-indi_params[0][1], len(indi_params)), end="", flush=True)
 

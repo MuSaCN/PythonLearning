@@ -175,9 +175,9 @@ if __name__ == '__main__':
                 para_muilt = [(k, holding, lag_trade, direct, symbol, timeframe) for k in range(1, k_end + 1) for holding in range(1, holding_end + 1) for lag_trade in range(1, lag_trade_end + 1)]
                 filepath = folder + "\\动量_{}.xlsx".format(direct)
                 # 分析训练集(并行)，会把参数优化结果生成文档。
-                myBTV.run_concat_dataframe(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)
+                myBTV.muiltcore.run_concat_dataframe(signalfunc_NoRepeatHold_train, para_muilt, filepath, cpu_core)
                 # 分析测试集(并行)，会内部解析训练集文档中的参数。
-                # myBTV.run_parse_xlsx(signalfunc_NoRepeatHold_test, filepath, strategy_para_names, [direct,symbol,timeframe],cpu_core)
+                # myBTV.muiltcore.run_parse_xlsx(signalfunc_NoRepeatHold_test, filepath, strategy_para_names, [direct,symbol,timeframe],cpu_core)
             finish_symbol.append(symbol)
             mylogging.warning("finished: {} {}".format(timeframe, finish_symbol))
 

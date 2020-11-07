@@ -115,7 +115,7 @@ if __name__ == '__main__':
     print("第一次并行！！！！！！！！！！！！！！") # 主程序执行，只执行1次。
     print("计算次数为 = ",k_end * holding_end) # 主程序执行，只执行1次。结果为1000
     # 必须要写在里面
-    out = myBTV.multi_processing(func , para) # 并行执行，所以总次数为1000
+    out = myBTV.muiltcore.multi_processing(func , para) # 并行执行，所以总次数为1000
     # 由于out结果为list，需要分开添加
     result = []
     for i in out:
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     t0 = timeit.default_timer()  # 主程序执行，只执行1次。
     k_end = 10                   # 主程序执行，并行不执行
     holding_end = 10             # 主程序执行，并行不执行
-    out = myBTV.multi_processing(func, para)  # 并行执行，由于先运行main外部代码，然后直接跳到这句。所以总次数依然为1000，而不是100。
+    out = myBTV.muiltcore.multi_processing(func, para)  # 并行执行，由于先运行main外部代码，然后直接跳到这句。所以总次数依然为1000，而不是100。
     print("计算次数为 = ",k_end * holding_end) # 主程序执行，所以结果为100
     # 由于out结果为list，需要分开添加
     result = []
