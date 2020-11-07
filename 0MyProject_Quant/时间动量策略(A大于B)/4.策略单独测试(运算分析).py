@@ -49,6 +49,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 说明：
 # 单独测试时，在所有的数据集上，不需要专门的设定训练集、测试集，只需要指定画图时训练集的区间即可。
 # 显然，测试集可以在训练集之前，也可以在训练集之后。通过图示能更好的观察收益情况。
+# 对于特定的策略参数，通过分析不同的持有期 holding，我们可以分析其“订单可管理性”。我们认为在持有的前3-5期，夏普比要上升，胜率上升或变动不大才行。
 '''
 
 #%%
@@ -58,7 +59,7 @@ warnings.filterwarnings('ignore')
 
 # ---获取数据
 symbol = "AUDUSD"
-timeframe = "TIMEFRAME_D1"
+timeframe = "TIMEFRAME_H8"
 
 date_from, date_to = myPjMT5.get_date_range(timeframe)
 data_total = myPjMT5.getsymboldata(symbol,timeframe,date_from,date_to,index_time=True, col_capitalize=True)
@@ -72,12 +73,16 @@ train_x1 = data_train.index[-1]
 #%%
 # ---仅做多分析
 direct = "BuyOnly"
-k_range = [k for k in range(112, 112+1)]
-holding_range = [holding for holding in range(1, 10+1)]
+k_range = [k for k in range(127, 127+1)]
+holding_range = [holding for holding in range(1, 20+1)]
 lag_trade_range = [lag_trade for lag_trade in range(1, 1+1)]
 
 # ---策略结果分析
-out_list = []
+out_list1 = []
+out_list2 = []
+# 选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
+label1 = "sharpe"
+label2 = "winRate"
 for k in k_range:
     for holding in holding_range:
         for lag_trade in lag_trade_range:
@@ -85,10 +90,10 @@ for k in k_range:
             signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
             # 信号分析: signal_quality_NoRepeatHold / signal_quality
             outStrat, outSignal = myBTV.signal_quality_NoRepeatHold(signal=signaldata_buy[direct], price_DataFrame=data_total, holding=holding, lag_trade=lag_trade, plotStrat=False, train_x0=train_x0, train_x1=train_x1, savefig=None)
-            out_list.append(outStrat[direct]["sortino_ratio"])
+            out_list1.append(outStrat[direct][label1])
+            out_list2.append(outStrat[direct][label2])
 # ---
-pd.Series(out_list).plot()
-plt.show()
+myplt.plot_twoline_twinx(out_list1, out_list2, label1, label2)
 myBTV.signal_quality_explain()
 
 
