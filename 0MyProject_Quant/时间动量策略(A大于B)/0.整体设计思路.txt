@@ -137,5 +137,33 @@
 ...
 
 
+7.策略池整合
+    我们的思想是，不同组的策略参数可以看成不同的策略进行叠加。但是过滤的指标参数只能选择一个。
+    前面已经对一个品种、一个时间框、一个方向、一组参数进行了指标范围过滤和指标方向过滤。
+    某个品种某个时间框某个参数组有许多个过滤情况，我们可以通过“策略参数自动选择”输出的极值图片来排除哪些策略参数组不好。
+    过滤后的结果选择 filter1 中的 sharpe_filter 最大值，即选择思想为过滤后的最大值。
+    另外我们会输出过滤后最大值所对应的过滤图片。
+    # 目录安排：总目录\策略池整合\symbol\
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURSGD\" --- 保存对应品种
+...
+    # 文档安排：总目录\策略池整合\symbol\symbol_strategy_pool.xlsx
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURSGD\EURSGD_strategy_pool.xlsx" ---保存该品种所有时间框、所有方向、所有参数组的 原始策略情况、范围过滤情况、方向过滤情况。
+...
+    # 图片安排：总目录\策略池整合\symbol\timeframe.direct.参数组\ ...原始、范围、反向...
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURSGD\TIMEFRAME_D1.BuyOnly.(k=279;holding=1;lag_trade=1;)\rsi.(indi_para0=Close;indi_para1=125;).png"
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURSGD\TIMEFRAME_D1.BuyOnly.(k=279;holding=1;lag_trade=1;)\sma.(indi_para0=Close;indi_para1=211;).png"
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURSGD\TIMEFRAME_D1.BuyOnly.(k=279;holding=1;lag_trade=1;)\TIMEFRAME_D1.BuyOnly.(k=279;holding=1;lag_trade=1;).png"
+...
+
+
+8.订单可管理性分析
+    订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
+    对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
+    采用无重复持仓模式和重复持仓模式。
+    # 图片安排：
+"C:\Users\i2011\Desktop\_动量研究\策略池整合\EURUSD\TIMEFRAME_D1.BuyOnly.(k=101;holding=1;lag_trade=1;)\订单可管理性.png"
+
+
+
 
 
