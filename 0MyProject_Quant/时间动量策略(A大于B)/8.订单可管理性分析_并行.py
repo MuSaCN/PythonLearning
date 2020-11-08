@@ -121,7 +121,7 @@ def run_holding_extend(para):
         del data_total, data_train, data_test, out_list1_NoRe, out_list2_NoRe, out_list1_Re, out_list2_Re
         # 打印进度
         print("finished:",symbol,timeframe,direct,suffix)
-    print("finished:",symbol)
+    print(symbol, "finished!!!")
 
 
 #%%
