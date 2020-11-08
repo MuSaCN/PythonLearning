@@ -13,7 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\订单可管理性分析.log") # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -62,10 +62,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 strategy_para_name = ["k", "holding", "lag_trade"]
 
 #%%
-# ---并行执行策略池生成
+# ---并行执行订单可管理性分析
 def run_holding_extend(para):
     symbol = para[0]  # symbol = "EURUSD"
-    print("%s 开始生成策略池..." % symbol)
+    print("%s 开始订单可管理性分析..." % symbol)
     # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
     total_folder = __mypath__.get_desktop_path() + "\\_反转研究"
     pool_file = total_folder + "\\策略池整合\\{}\\{}_strategy_pool.xlsx".format(symbol, symbol)  # 固定只分析 filter1
@@ -122,12 +122,13 @@ def run_holding_extend(para):
         # 打印进度
         print("finished:",symbol,timeframe,direct,suffix)
     print(symbol, "finished!!!")
-
+    mylogging.warning("symbol finished: {}".format(symbol))
 
 #%%
 core_num = -1
 if __name__ == '__main__':
     symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    mylogging.warning("symbol_list: {}".format(symbol_list))
     # finished_symbol = []
     # for symbol in symbol_list:
     #     run_strategy_pool((symbol,))
