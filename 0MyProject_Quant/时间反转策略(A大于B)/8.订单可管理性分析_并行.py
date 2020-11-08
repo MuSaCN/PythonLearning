@@ -70,7 +70,7 @@ def run_holding_extend(para):
     total_folder = __mypath__.get_desktop_path() + "\\_反转研究"
     pool_file = total_folder + "\\策略池整合\\{}\\{}_strategy_pool.xlsx".format(symbol, symbol)  # 固定只分析 filter1
     pool_filecontent = pd.read_excel(pool_file, header=[0,1]) # 多层表头
-    pool_filecontent = pool_filecontent["original"] # 定位到无过滤内容
+    pool_filecontent = pool_filecontent["original"] if len(pool_filecontent) > 0 else pool_filecontent # 定位到无过滤内容
     for i in range(len(pool_filecontent)):  # i=0
         # ---解析文档
         # 获取各参数
