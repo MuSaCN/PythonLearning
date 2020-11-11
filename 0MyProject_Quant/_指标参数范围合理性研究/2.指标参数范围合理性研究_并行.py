@@ -41,7 +41,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -64,7 +64,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ---获取数据
-eurusd = myPjMT5.getsymboldata("EURUSD","TIMEFRAME_D1",[2015,1,1,0,0,0],[2020,1,1,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2015,1,1,0,0,0],[2020,1,1,0,0,0],index_time=True, col_capitalize=True)
 # 研究指标与价格波动的关系，不需要区分训练集和测试集
 # 并行运算不需要先大致判断下 收益率与指标 相关性范围。
 # 向后移动，我们希望今天的特征能与明天的波动匹配，所以shift(-1)，不能是shift(1)

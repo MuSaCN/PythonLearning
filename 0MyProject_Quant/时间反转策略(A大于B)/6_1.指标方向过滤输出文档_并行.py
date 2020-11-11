@@ -46,7 +46,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -74,10 +74,10 @@ def run_direct_filter_result(para):
     indi_para = para[0:-5]
 
     # ---获取数据
-    date_from, date_to = myPjMT5.get_date_range(timeframe, to_Timestamp=True)
-    data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+    date_from, date_to = myMT5Pro.get_date_range(timeframe, to_Timestamp=True)
+    data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
     # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
-    data_train, data_test = myPjMT5.get_train_test(data=data_total, train_scale=0.8)
+    data_train, data_test = myMT5Pro.get_train_test(data=data_total, train_scale=0.8)
 
     # ---获取训练集和整个样本的信号
     # 获取训练集的信号 ******(修改这里)******
@@ -97,7 +97,7 @@ core_num = -1
 if __name__ == '__main__':
     # 策略参数名称，用于文档中解析参数 ***修改这里***
     strategy_para_name = ["k", "holding", "lag_trade"]
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
             # ******修改这里******
             # 过滤规则为：只有主力品种才全部检测，其他品种只检测大的时间框。
-            if symbol not in myPjMT5.get_main_symbol_name_list():
+            if symbol not in myMT5Pro.get_main_symbol_name_list():
                 if timeframe not in ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6", "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1"]:
                     continue
 

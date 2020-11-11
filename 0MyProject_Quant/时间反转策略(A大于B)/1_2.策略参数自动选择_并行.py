@@ -44,7 +44,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -117,7 +117,7 @@ def run_auto_strat_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     order_list = [30, 40, 50]  # [30,40,50]
     # ---多步并行，以更好的控制进度
     for order in order_list:

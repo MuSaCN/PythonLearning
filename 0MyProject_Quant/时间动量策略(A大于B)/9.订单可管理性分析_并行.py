@@ -45,7 +45,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -87,9 +87,9 @@ def run_holding_extend(para):
         __mypath__.makedirs(out_folder, exist_ok=True)
 
         # ---准备数据
-        date_from, date_to = myPjMT5.get_date_range(timeframe)
-        data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-        data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
+        date_from, date_to = myMT5Pro.get_date_range(timeframe)
+        data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+        data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
         # 展开holding参数
         holding_range = [holding for holding in range(1, 20 + 1)]
 
@@ -128,7 +128,7 @@ def run_holding_extend(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     mylogging.warning("symbol_list: {}".format(symbol_list))
     # run_holding_extend(("FCHI40",))
     # finished_symbol = []

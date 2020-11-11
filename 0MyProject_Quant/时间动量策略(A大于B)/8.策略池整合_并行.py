@@ -45,7 +45,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -190,7 +190,7 @@ def run_strategy_pool(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     # finished_symbol = []
     # for symbol in symbol_list:
     #     run_strategy_pool((symbol,))

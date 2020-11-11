@@ -41,12 +41,12 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False) # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning() # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 #------------------------------------------------------------
 
 #%% ###################################
 # ---获取数据
-eurusd = myPjMT5.getsymboldata("EURUSD","TIMEFRAME_H4",[2014,1,1,0,0,0],[2017,1,1,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_H4",[2014,1,1,0,0,0],[2017,1,1,0,0,0],index_time=True, col_capitalize=True)
 open = eurusd["Open"]
 high = eurusd["High"]
 low = eurusd["Low"]
@@ -71,7 +71,7 @@ prices[4] - prices[8]
 
 #%% ##############################################
 # 输入时间向量(时间序列)，获取其时间之前(包括指定时间)的，对应symbol和timeframe的n个收盘价收益率(波动率)(运算方式，效率高)：
-beforevola = myPjMT5.getvolatility_beforetime(eurusd["time"],"EURUSD","TIMEFRAME_H1",count=5, updatetimeindex=False)
+beforevola = myMT5Pro.getvolatility_beforetime(eurusd["time"],"EURUSD","TIMEFRAME_H1",count=5, updatetimeindex=False)
 
 data = pd.concat([eurusd, beforevola], axis=1, join="outer")
 (data == np.NaN).sum()

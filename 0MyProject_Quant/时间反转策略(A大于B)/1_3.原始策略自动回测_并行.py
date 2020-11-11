@@ -44,7 +44,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -90,13 +90,13 @@ def run_auto_stratgy_test(para):
         para_str = myBTV.string_strat_para(para_name, [k,holding,lag_trade])
 
         # ---加载测试数据，由于不需要训练集、测试集数据，只需要对应时间即可。
-        date_from, date_to = myPjMT5.get_date_range(timeframe,to_Timestamp=True)
+        date_from, date_to = myMT5Pro.get_date_range(timeframe,to_Timestamp=True)
         train_x0 = date_from
-        train_x1 = myPjMT5.get_train_test(data=None,t0=date_from,t1=date_to,train_scale=0.8)
+        train_x1 = myMT5Pro.get_train_test(data=None,t0=date_from,t1=date_to,train_scale=0.8)
         # 把训练集的时间进行左右扩展
-        bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
+        bound_left, bound_right = myMT5Pro.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
         # 再次重新加载下全部的数据
-        data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
+        data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
         # ---获取信号数据 ******修改这里******
         signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
@@ -117,7 +117,7 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     order_list = [30, 40, 50]  # [30,40,50]
     filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
     # ---设置多步，以更好的控制进度，更好的释放内存。

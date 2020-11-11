@@ -47,7 +47,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -97,9 +97,9 @@ def signalfunc_NoRepeatHold_train(para):
     symbol = para[-2]
     timeframe = para[-1]
     # 获取数据
-    date_from, date_to = myPjMT5.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
-    data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-    data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
+    date_from, date_to = myMT5Pro.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
+    data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+    data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
     # 退出条件
     if holding > k: return None
     # 获取反转策略信号数据 ******(修改这句)******
@@ -125,9 +125,9 @@ def signalfunc_NoRepeatHold_test(para):
     symbol = para[-2]
     timeframe = para[-1]
     # 获取数据
-    date_from, date_to = myPjMT5.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
-    data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-    data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
+    date_from, date_to = myMT5Pro.get_date_range(timeframe) # 不同时间框架加载的时间范围不同
+    data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+    data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
     # 退出条件
     if holding > k: return None
     # 获取反转策略信号数据 ******(修改这句)******
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     # 方向参数："BuyOnly" "SellOnly" "All"，保存在 para 的 -3 位置
     direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
     # symbol、timeframe 参数设置在 -2、-1 的位置
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                       "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                       "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",

@@ -46,7 +46,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -107,17 +107,17 @@ def run_auto_direct_filter_stratgy_test(para):
             #     continue
 
             # ---获取数据
-            date_from, date_to = myPjMT5.get_date_range(timeframe)
-            data_total = myPjMT5.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+            date_from, date_to = myMT5Pro.get_date_range(timeframe)
+            data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
             # 由于画图要用到训练集，所以要区分
-            data_train, data_test = myPjMT5.get_train_test(data_total, train_scale=0.8)
+            data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
             # 测试不需要把数据集区分训练集、测试集，仅画区间就可以了
             train_x0 = data_train.index[0]
             train_x1 = data_train.index[-1]
             # 把训练集的时间进行左右扩展
-            bound_left, bound_right = myPjMT5.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
+            bound_left, bound_right = myMT5Pro.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
             # 再次重新加载下全部的数据
-            data_total = myPjMT5.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
+            data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
             # ---获取训练集和整个样本的信号
             # 获取训练集的信号 ******(修改这里)******
@@ -151,7 +151,7 @@ def run_auto_direct_filter_stratgy_test(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myPjMT5.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     # symbol_list = myPjMT5.get_main_symbol_name_list()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
                       "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",

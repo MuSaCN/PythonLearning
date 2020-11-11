@@ -41,7 +41,7 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myPjMT5 = MyProject.MT5_MLLearning()  # MT5机器学习项目类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     # 本地数据，笔者用Wind获取的东风汽车数据以csv形式存储在本地。
     # parase_dates = True是为了读取csv为dataframe的时候能够自动识别datetime格式的字符串，big作为index
     # 注意，这里最后的pandas要符合backtrader的要求的格式
-    eurusd = myPjMT5.getsymboldata("EURUSD", "TIMEFRAME_D1", [2000, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=False)
+    eurusd = myMT5Pro.getsymboldata("EURUSD", "TIMEFRAME_D1", [2000, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=False)
     eurusd['openinterest'] = 0
     eurusd["volume"] = 0
     dataframe = eurusd
