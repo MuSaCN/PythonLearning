@@ -32,9 +32,9 @@ myBTV = MyBackTest.MyClass_BackTestVector()  # 向量型回测类
 #%%
 mySMT5 = MyMql.MyClass_SocketMT5(address='127.0.0.1', port=9090)
 
-# while True:
-msg = mySMT5.receive(bufsize = 30000000000)
-print("接收到的信息为：",msg)
-mySMT5.send(input("input your message to send: "))
+while True:
+    msg = mySMT5.receive(bufsize = 30000000000)
+    print("接收到的信息为：",msg)
+    mySMT5.send(input("input your message to send: "))
 
 
