@@ -46,13 +46,130 @@ myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级�
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-
+#%%
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
+
+#%%
+# adx 与 MT5 不同
+real =  myBTV.indi.get_oscillator_indicator(eurusd, "adx",["high","low","close"],timeperiod=14)
+real.plot();plt.show()
+
+# adxr
+real =  myBTV.indi.get_oscillator_indicator(eurusd, "adxr",["high","low","close"],timeperiod=14)
+real.plot();plt.show()
+
+# apo
+real = myBTV.indi.get_oscillator_indicator(eurusd,"apo",["close"],fastperiod=12, slowperiod=26, matype=0)
+real.plot();plt.show()
+
+# aroon
+aroondown, aroonup = myBTV.indi.get_oscillator_indicator(eurusd,"aroon",["high","low"],timeperiod=14)
+aroondown.plot();plt.show()
+aroonup.plot();plt.show()
+
+# aroonosc
+real = myBTV.indi.get_oscillator_indicator(eurusd,"aroonosc",["high","low"],timeperiod=14)
+real.plot();plt.show()
+
+# bop
+real = myBTV.indi.get_oscillator_indicator(eurusd,"bop",["open", "high", "low", "close"])
+real.plot();plt.show()
+
+# cci
+real = myBTV.indi.get_oscillator_indicator(eurusd,"cci",["high", "low", "close"],timeperiod=14)
+real.plot();plt.show()
+
+# cmo
+real = myBTV.indi.get_oscillator_indicator(eurusd,"cmo",["close"],timeperiod=14)
+real.plot();plt.show()
+
+# dx
+real = myBTV.indi.get_oscillator_indicator(eurusd,"dx",["high", "low", "close"],timeperiod=14)
+real.plot();plt.show()
+
+# macd
+macd, macdsignal, macdhist = myBTV.indi.get_oscillator_indicator(eurusd,"macd",["close"],fastperiod=12, slowperiod=26, signalperiod=9)
+macd.plot();macdsignal.plot();macdhist.plot();plt.show()
+
+# macdext
+macd, macdsignal, macdhist = myBTV.indi.get_oscillator_indicator(eurusd,"macdext",["close"],fastperiod=12, fastmatype=0, slowperiod=26, slowmatype=0, signalperiod=9, signalmatype=0)
+macd.plot();macdsignal.plot();macdhist.plot();plt.show()
+
+# macdfix
+macd, macdsignal, macdhist = myBTV.indi.get_oscillator_indicator(eurusd,"macdfix",["close"], signalperiod=9)
+macd.plot();macdsignal.plot();macdhist.plot();plt.show()
+
+# mfi
+real = myBTV.indi.get_oscillator_indicator(eurusd,"mfi",["high", "low", "close", "volume"],timeperiod=14)
+real.plot();plt.show()
+
+# minus_di
+real = myBTV.indi.get_oscillator_indicator(eurusd,"minus_di",["high", "low", "close"],timeperiod=14)
+real.plot();plt.show()
+
+# minus_dm
+real = myBTV.indi.get_oscillator_indicator(eurusd,"minus_dm",["high", "low"],timeperiod=14)
+real.plot();plt.show()
+
+# mom
+real = myBTV.indi.get_oscillator_indicator(eurusd,"mom",["close"],timeperiod=10)
+real.plot();plt.show()
+
+# plus_di
+real = myBTV.indi.get_oscillator_indicator(eurusd,"plus_di",["high", "low", "close"],timeperiod=14)
+real.plot();plt.show()
+
+# plus_dm
+real = myBTV.indi.get_oscillator_indicator(eurusd,"plus_dm",["high", "low"],timeperiod=14)
+real.plot();plt.show()
+
+# ppo
+real = myBTV.indi.get_oscillator_indicator(eurusd,"ppo",["close"],fastperiod=12, slowperiod=26, matype=0)
+real.plot();plt.show()
 
 # roc 与 MT5 不同
-indicator = myBTV.indi.get_oscillator_indicator(eurusd, "roc", ("Close", 12))
+real = myBTV.indi.get_oscillator_indicator(eurusd, "roc", ["close"], timeperiod=10)
+real.plot();plt.show()
 
+# rocp
+real = myBTV.indi.get_oscillator_indicator(eurusd, "rocp", ["close"], timeperiod=10)
+real.plot();plt.show()
 
+# rocr
+real = myBTV.indi.get_oscillator_indicator(eurusd, "rocr", ["close"], timeperiod=10)
+real.plot();plt.show()
+
+# rocr100
+real = myBTV.indi.get_oscillator_indicator(eurusd, "rocr100", ["close"], timeperiod=10)
+real.plot();plt.show()
+
+# rsi
+real = myBTV.indi.get_oscillator_indicator(eurusd, "rsi", ["close"], timeperiod=10)
+real.plot();plt.show()
+
+# stoch
+slowk, slowd = myBTV.indi.get_oscillator_indicator(eurusd, "stoch", ["high", "low", "close"], fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
+slowk.plot();slowd.plot();plt.show()
+
+# stochf
+fastk, fastd = myBTV.indi.get_oscillator_indicator(eurusd, "stochf", ["high", "low", "close"], fastk_period=5, fastd_period=3, fastd_matype=0)
+fastk.plot();fastd.plot();plt.show()
+
+# stochrsi
+fastk, fastd = myBTV.indi.get_oscillator_indicator(eurusd, "stochrsi", ["close"], timeperiod=14, fastk_period=5, fastd_period=3, fastd_matype=0)
+fastk.plot();fastd.plot();plt.show()
+
+# trix
+real = myBTV.indi.get_oscillator_indicator(eurusd, "trix", ["close"], timeperiod=30)
+real.plot();plt.show()
+
+# ultosc
+real = myBTV.indi.get_oscillator_indicator(eurusd, "ultosc", ["high", "low", "close"],  timeperiod1=7, timeperiod2=14, timeperiod3=28)
+real.plot();plt.show()
+
+# willr
+real = myBTV.indi.get_oscillator_indicator(eurusd, "willr", ["high", "low", "close"], timeperiod=14)
+real.plot();plt.show()
 
 

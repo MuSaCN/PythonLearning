@@ -84,7 +84,7 @@ for k in k_range:
             signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
 
             # ---(核心，在库中添加)获取指标
-            indicator = myBTV.indi.get_trend_indicator(data_total, "sma", ('Close', 485))
+            indicator = myBTV.indi.get_trend_indicator(data_total, "sma", ['Close', 485])
 
             result = myBTV.dfilter.signal_direct_filter_and_quality(signal=signaldata_buy[direct], indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name="sma", indi_para=('Close', 485))
 
