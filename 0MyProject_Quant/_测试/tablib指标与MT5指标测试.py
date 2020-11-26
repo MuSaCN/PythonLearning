@@ -51,6 +51,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
+### Momentum Indicators
 # adx 与 MT5 不同
 real =  myBTV.indi.get_oscillator_indicator(eurusd, "adx",["high","low","close"],timeperiod=14)
 real.plot();plt.show()
@@ -171,5 +172,76 @@ real.plot();plt.show()
 # willr
 real = myBTV.indi.get_oscillator_indicator(eurusd, "willr", ["high", "low", "close"], timeperiod=14)
 real.plot();plt.show()
+
+#%%
+### Overlap Studies
+# bbands
+upperband, middleband, lowerband = myBTV.indi.get_trend_indicator(eurusd,"bbands",["close"],timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)
+upperband.plot(); middleband.plot(); lowerband.plot(); plt.show()
+
+# dema
+real = myBTV.indi.get_trend_indicator(eurusd,"dema",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# ema
+real = myBTV.indi.get_trend_indicator(eurusd,"ema",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# ht_trendline
+real = myBTV.indi.get_trend_indicator(eurusd,"ht_trendline",["close"])
+real.plot(); plt.show()
+
+# kama
+real = myBTV.indi.get_trend_indicator(eurusd,"kama",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# ma
+real = myBTV.indi.get_trend_indicator(eurusd,"ma",["close"],timeperiod=30, matype=0)
+real.plot(); plt.show()
+
+# mama ****************
+mama, fama = myBTV.indi.get_trend_indicator(eurusd,"mama",["close"],fastlimit=0, slowlimit=0)
+mama.plot(); fama.plot(); plt.show()
+
+# mavp
+real = myBTV.indi.get_trend_indicator(eurusd,"mavp",["close","periods"],minperiod=2, maxperiod=30, matype=0)
+real.plot(); plt.show()
+
+# midpoint
+real = myBTV.indi.get_trend_indicator(eurusd,"midpoint",["close"],timeperiod=14)
+real.plot(); plt.show()
+
+# midprice
+real = myBTV.indi.get_trend_indicator(eurusd,"midprice",["high", "low"],timeperiod=14)
+real.plot(); plt.show()
+
+# sar
+real = myBTV.indi.get_trend_indicator(eurusd,"sar",["high", "low"],acceleration=0, maximum=0)
+real.plot(); plt.show()
+
+# sarext
+real = myBTV.indi.get_trend_indicator(eurusd,"sarext",["high", "low"],startvalue=0, offsetonreverse=0, accelerationinitlong=0, accelerationlong=0, accelerationmaxlong=0, accelerationinitshort=0, accelerationshort=0, accelerationmaxshort=0)
+real.plot(); plt.show()
+
+# sma
+real = myBTV.indi.get_trend_indicator(eurusd,"sma",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# t3
+real = myBTV.indi.get_trend_indicator(eurusd,"t3",["close"],timeperiod=5, vfactor=0)
+real.plot(); plt.show()
+
+# tema
+real = myBTV.indi.get_trend_indicator(eurusd,"tema",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# trima
+real = myBTV.indi.get_trend_indicator(eurusd,"trima",["close"],timeperiod=30)
+real.plot(); plt.show()
+
+# wma
+real = myBTV.indi.get_trend_indicator(eurusd,"wma",["close"],timeperiod=30)
+real.plot(); plt.show()
+
 
 
