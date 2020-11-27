@@ -59,12 +59,12 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 
 
-
-
-
-
-
 #%%
+# Alligator 鳄鱼指标(Bill Williams类-主图)，返回df：Jaws(13) Teeth(8) Lips(5)
+price_arug = ["open","high","low","close"]
+df = myMT5Indi.Alligator(eurusd,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
+df1 = myMT5Indi.Alligator(eurusd1,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
+
 # ADXW 韦尔达平均定向移动指数(trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须用数据较长后才相同)
 price_arug = ["high","low","close"] # 顺序不能搞错
 timeperiod=14
