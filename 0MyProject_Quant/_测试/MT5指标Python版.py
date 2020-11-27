@@ -43,10 +43,9 @@ myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
-myMT5Indi = MyMql.MyClass_MT5Indicator() # MT5指标Python版
+myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
-
 
 #%%
 import warnings
@@ -55,52 +54,9 @@ warnings.filterwarnings('ignore')
 eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-### Volatility Indicator Functions
-# atr
-real = myBTV.indi.get_volatility_indicator(eurusd,"atr",["high", "low", "close"],timeperiod=14)
-real.plot(); plt.show()
-
-# natr
-real = myBTV.indi.get_volatility_indicator(eurusd,"natr",["high", "low", "close"],timeperiod=14)
-real.plot(); plt.show()
-
-# trange
-real = myBTV.indi.get_volatility_indicator(eurusd,"trange",["high", "low", "close"])
-real.plot(); plt.show()
 
 
-#%%
-### Volume Indicator Functions
-# ad
-real = myBTV.indi.get_volume_indicato(eurusd,"ad",["high", "low", "close", "volume"])
-real.plot(); plt.show()
 
-# adosc
-real = myBTV.indi.get_volume_indicato(eurusd,"adosc",["high", "low", "close", "volume"],fastperiod=3, slowperiod=10)
-real.plot(); plt.show()
-
-# obv
-real = myBTV.indi.get_volume_indicato(eurusd,"obv",["close", "volume"])
-real.plot(); plt.show()
-
-
-#%%
-### Price Transform Functions
-# avgprice
-real = myBTV.indi.get_price_trans_indicator(eurusd,"avgprice",["open", "high", "low", "close"])
-real.plot(); plt.show()
-
-# medprice
-real = myBTV.indi.get_price_trans_indicator(eurusd,"medprice",["high", "low"])
-real.plot(); plt.show()
-
-# typprice
-real = myBTV.indi.get_price_trans_indicator(eurusd,"typprice",["high", "low", "close"])
-real.plot(); plt.show()
-
-# wclprice
-real = myBTV.indi.get_price_trans_indicator(eurusd,"wclprice",["high", "low", "close"])
-real.plot(); plt.show()
 
 
 
