@@ -51,17 +51,45 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2015,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
+eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# ADX 与 MT5 结果一样
+
+
+
+
+
+
+
+
+
+#%%
+# ADXW 韦尔达平均定向移动指数(trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须用数据较长后才相同)
 price_arug = ["high","low","close"] # 顺序不能搞错
 timeperiod=14
-df = myMT5Indi.ADX(eurusd, price_arug=["high","low","close"], timeperiod=timeperiod)
+df = myMT5Indi.ADXW(eurusd,price_arug=price_arug,timeperiod=timeperiod)
+df1 = myMT5Indi.ADXW(eurusd1,price_arug=price_arug,timeperiod=timeperiod)
 
-# Accelerator
+# ADX 平均趋向指数(trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须用数据较长后才相同)
+price_arug = ["high","low","close"] # 顺序不能搞错
+timeperiod=14
+df = myMT5Indi.ADX(eurusd, price_arug=price_arug, timeperiod=timeperiod)
+df1 = myMT5Indi.ADX(eurusd1, price_arug=price_arug, timeperiod=timeperiod)
+
+# Accelerator 加速振荡指标(Bill Williams类-幅图)，Accelerator Oscillator，返回series.
 price_arug = ["high","low"]
-ac = myMT5Indi.Accelerator(eurusd, price_arug=["high","low"])
+ac = myMT5Indi.Accelerator(eurusd, price_arug=price_arug)
+ac1 = myMT5Indi.Accelerator(eurusd1, price_arug=price_arug)
+
+# AD 累积/分配指标(Volumes类-幅图)，Accumulation/Distribution，返回series.(！算法有累加，必须用全数据段才相同)
+price_arug = ["high","low","close","tick_volume"] # 顺序不能搞错
+ad = myMT5Indi.AD(eurusd, price_arug=price_arug)
+ad1 = myMT5Indi.AD(eurusd1, price_arug=price_arug)
+
+
+
+
 
 
 

@@ -52,7 +52,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
 ### Volatility Indicator Functions
@@ -71,16 +71,16 @@ real.plot(); plt.show()
 
 #%%
 ### Volume Indicator Functions
-# ad
-real = myBTV.indi.get_volume_indicato(eurusd,"ad",["high", "low", "close", "volume"])
+# ad 与 MT5 一样(！算法有累加，必须用全数据段才相同)
+real = myBTV.indi.get_volume_indicato(eurusd,"ad",["high", "low", "close", "tick_volume"])
 real.plot(); plt.show()
 
 # adosc
-real = myBTV.indi.get_volume_indicato(eurusd,"adosc",["high", "low", "close", "volume"],fastperiod=3, slowperiod=10)
+real = myBTV.indi.get_volume_indicato(eurusd,"adosc",["high", "low", "close", "tick_volume"],fastperiod=3, slowperiod=10)
 real.plot(); plt.show()
 
 # obv
-real = myBTV.indi.get_volume_indicato(eurusd,"obv",["close", "volume"])
+real = myBTV.indi.get_volume_indicato(eurusd,"obv",["close", "tick_volume"])
 real.plot(); plt.show()
 
 
