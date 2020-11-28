@@ -62,7 +62,16 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 
 #%%
-# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。
+# BB 布林带指标(Trend类-主图) Bollinger Bands，返回df：Middle, Upper, Lower
+price_arug = ["open","high","low","close"]
+df = myMT5Indi.BB(eurusd, price_arug, 20, 2, "PRICE_CLOSE")
+
+# AO 动量震荡指标(Bill Williams类-幅图) Awesome Oscillator，返回Series。
+price_arug=["high","low"]
+ao = myMT5Indi.Awesome_Oscillator(eurusd,price_arug)
+ao1 = myMT5Indi.Awesome_Oscillator(eurusd1,price_arug)
+
+# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["high", "low", "close"]
 atr = myMT5Indi.ATR(eurusd,price_arug,14)
 atr1 = myMT5Indi.ATR(eurusd1,price_arug,14)

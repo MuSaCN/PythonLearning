@@ -56,8 +56,8 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 
 #%%
 ### Overlap Studies
-# bbands
-upperband, middleband, lowerband = myBTV.indi.get_trend_indicator(eurusd,"bbands",["close"],timeperiod=5, nbdevup=2, nbdevdn=2, matype=0)
+# bbands 与 MT5 结果相同
+upperband, middleband, lowerband = myBTV.indi.get_trend_indicator(eurusd,"bbands",["close"],timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
 upperband.plot(); middleband.plot(); lowerband.plot(); plt.show()
 
 # dema
