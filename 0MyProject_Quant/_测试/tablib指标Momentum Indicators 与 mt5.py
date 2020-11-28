@@ -51,7 +51,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,25,0,0,0],index_time=True, col_capitalize=False)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
 ### Momentum Indicators
@@ -80,7 +80,7 @@ real.plot();plt.show()
 real = myBTV.indi.get_oscillator_indicator(eurusd,"bop",["open", "high", "low", "close"])
 real.plot();plt.show()
 
-# cci
+# cci 与 MT5中 typical price 相同
 real = myBTV.indi.get_oscillator_indicator(eurusd,"cci",["high", "low", "close"],timeperiod=14)
 real.plot();plt.show()
 

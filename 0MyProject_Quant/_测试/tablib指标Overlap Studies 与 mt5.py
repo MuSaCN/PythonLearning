@@ -60,7 +60,7 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 upperband, middleband, lowerband = myBTV.indi.get_trend_indicator(eurusd,"bbands",["close"],timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
 upperband.plot(); middleband.plot(); lowerband.plot(); plt.show()
 
-# dema
+# dema 与 MT5 结果相同
 real = myBTV.indi.get_trend_indicator(eurusd,"dema",["close"],timeperiod=30)
 real.plot(); plt.show()
 

@@ -55,13 +55,43 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-
+# DeMarker DeMarker指标(Oscillators类-幅图)，DeMarker，返回Series。
 
 
 
 
 
 #%%
+# DEMA 双指数移动平均线指标(Trend类-主图)，Double Exponential Moving Average，返回Series。
+price_arug = ["open", "high", "low", "close"]
+dema = myMT5Indi.DEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+dema1 = myMT5Indi.DEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
+
+# MA 移动平均数指标(Trend类-主图)，Moving Average，返回Series。
+price_arug = ["open","high","low","close"]
+ma = myMT5Indi.MA(eurusd,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
+ma1 = myMT5Indi.MA(eurusd1,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
+
+# CHO 蔡金摆动指标(Oscillators类-幅图)，Chaikin Oscillator，返回Series。(！算法有迭代，必须一定数据后才相同)
+price_arug=["high","low","close","tick_volume"]
+cho = myMT5Indi.CHO(eurusd,price_arug,3,10,"MODE_EMA")
+cho1 = myMT5Indi.CHO(eurusd1,price_arug,3,10,"MODE_EMA")
+
+# CCI 顺势指标(Oscillators类-幅图)，Commodity Channel Index，返回Series。
+price_arug = ["open","high","low","close"]
+cci = myMT5Indi.CCI(eurusd,price_arug,14,"PRICE_TYPICAL")
+cci1 = myMT5Indi.CCI(eurusd1,price_arug,14,"PRICE_TYPICAL")
+
+# Bulls 牛市指标(Oscillators类-幅图) Bulls Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
+price_arug = ["close", "high"]
+bulls = myMT5Indi.Bulls(eurusd,price_arug,13)
+bulls1 = myMT5Indi.Bulls(eurusd1,price_arug,13)
+
+# Bears 熊市指标(Oscillators类-幅图) Bears Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
+price_arug = ["close","low"]
+bears = myMT5Indi.Bears(eurusd,price_arug,13)
+bears1 = myMT5Indi.Bears(eurusd1,price_arug,13)
+
 # BB 布林带指标(Trend类-主图) Bollinger Bands，返回df：Middle, Upper, Lower
 price_arug = ["open","high","low","close"]
 df = myMT5Indi.BB(eurusd, price_arug, 20, 2, "PRICE_CLOSE")
@@ -76,7 +106,7 @@ price_arug = ["high", "low", "close"]
 atr = myMT5Indi.ATR(eurusd,price_arug,14)
 atr1 = myMT5Indi.ATR(eurusd1,price_arug,14)
 
-# AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
+# AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["open","high","low","close"]
 ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN")
 ama1 = myMT5Indi.AMA(eurusd1,price_arug,10,2,30,0,"PRICE_OPEN")
