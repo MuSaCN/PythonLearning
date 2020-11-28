@@ -56,7 +56,7 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 
 #%%
 ### Volatility Indicator Functions
-# atr
+# atr 与 MT5 不一样
 real = myBTV.indi.get_volatility_indicator(eurusd,"atr",["high", "low", "close"],timeperiod=14)
 real.plot(); plt.show()
 
