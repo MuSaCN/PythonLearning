@@ -56,18 +56,15 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 #%%
 
-
-
-
-
-
-
-
-
-
-
-
-
+# AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series。
+price_arug = ["open","high","low","close"]
+InpPeriodAMA = 10     # AMA period
+InpFastPeriodEMA = 2  # Fast EMA period
+InpSlowPeriodEMA = 30 # Slow EMA period
+InpShiftAMA = 0       # AMA shift
+# ---
+data = eurusd[price_arug]
+price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode="PRICE_OPEN")
 
 
 
@@ -81,13 +78,13 @@ price_arug = ["open","high","low","close"]
 df = myMT5Indi.Alligator(eurusd,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
 df1 = myMT5Indi.Alligator(eurusd1,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
 
-# ADXW 韦尔达平均定向移动指数(trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须用数据较长后才相同)
+# ADXW 韦尔达平均定向移动指数(Trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须用数据较长后才相同)
 price_arug = ["high","low","close"] # 顺序不能搞错
 timeperiod=14
 df = myMT5Indi.ADXW(eurusd,price_arug=price_arug,timeperiod=timeperiod)
 df1 = myMT5Indi.ADXW(eurusd1,price_arug=price_arug,timeperiod=timeperiod)
 
-# ADX 平均趋向指数(trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须用数据较长后才相同)
+# ADX 平均趋向指数(Trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须用数据较长后才相同)
 price_arug = ["high","low","close"] # 顺序不能搞错
 timeperiod=14
 df = myMT5Indi.ADX(eurusd, price_arug=price_arug, timeperiod=timeperiod)
