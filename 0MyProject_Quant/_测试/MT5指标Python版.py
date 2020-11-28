@@ -59,6 +59,22 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #%%
 # Alligator 鳄鱼指标(Bill Williams类-主图)，返回df：Jaws(13) Teeth(8) Lips(5)
 price_arug = ["open","high","low","close"]
