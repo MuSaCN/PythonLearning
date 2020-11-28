@@ -55,13 +55,18 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。
+
 
 
 
 
 
 #%%
+# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。
+price_arug = ["high", "low", "close"]
+atr = myMT5Indi.ATR(eurusd,price_arug,14)
+atr1 = myMT5Indi.ATR(eurusd1,price_arug,14)
+
 # AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["open","high","low","close"]
 ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN")
