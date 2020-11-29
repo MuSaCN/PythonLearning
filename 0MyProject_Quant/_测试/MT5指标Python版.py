@@ -55,13 +55,23 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# DeMarker DeMarker指标(Oscillators类-幅图)，DeMarker，返回Series。
+
 
 
 
 
 
 #%%
+# Envelopes 轨道线指标(Trend类-主图)，Envelopes，返回df：Upper, Lower。
+price_arug = ["open", "high", "low", "close"]
+df = myMT5Indi.Envelopes(eurusd,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
+df1 = myMT5Indi.Envelopes(eurusd1,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
+
+# DeMarker DeMarker指标(Oscillators类-幅图)，DeMarker，返回Series。
+price_arug = ["high", "low"]
+demarker = myMT5Indi.DeMarker(eurusd,price_arug,14)
+demarker1 = myMT5Indi.DeMarker(eurusd1,price_arug,14)
+
 # DEMA 双指数移动平均线指标(Trend类-主图)，Double Exponential Moving Average，返回Series。
 price_arug = ["open", "high", "low", "close"]
 dema = myMT5Indi.DEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
