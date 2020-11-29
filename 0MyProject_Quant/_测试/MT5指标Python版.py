@@ -55,7 +55,7 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-
+# Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
 
 
 
