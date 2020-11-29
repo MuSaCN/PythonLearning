@@ -51,18 +51,35 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
-eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,24,0,0,0],index_time=True, col_capitalize=False)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
+eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
+
+
+
+
+#%%
+# price_arug = ["open", "high", "low", "close", "tick_volume"]
+# price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
+# func = myMT5Indi.ma_method_func(mode=InpMAMethod)
+
+
+# FrAMA 分形学适应移动平均指标(Trend类-主图)(效率不高)，Fractal Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
+price_arug = ["open", "high", "low", "close"]
+frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+frama1 = myMT5Indi.FrAMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
+
+# Fractals 比尔威廉姆分形指标(Bill Williams类-主图)，Fractals，返回df：Up, Down。
+price_arug = ["high", "low"]
+df = myMT5Indi.Fractals(eurusd,price_arug)
+df1 = myMT5Indi.Fractals(eurusd1,price_arug)
+
 # Force_Index 强力指数指标(Oscillators类-幅图)，Force Index，返回Series。
+price_arug = ["open", "high", "low", "close", "tick_volume"]
+force = myMT5Indi.Force_Index(eurusd,price_arug,13,"MODE_SMA","PRICE_CLOSE")
+force1 = myMT5Indi.Force_Index(eurusd1,price_arug,13,"MODE_SMA","PRICE_CLOSE")
 
-
-
-
-
-
-#%%
 # Envelopes 轨道线指标(Trend类-主图)，Envelopes，返回df：Upper, Lower。
 price_arug = ["open", "high", "low", "close"]
 df = myMT5Indi.Envelopes(eurusd,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
