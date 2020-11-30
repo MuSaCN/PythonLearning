@@ -79,7 +79,7 @@ real.plot(); plt.show()
 real = myBTV.indi.get_volume_indicato(eurusd,"adosc",["high", "low", "close", "tick_volume"],fastperiod=3, slowperiod=10)
 real.plot(); plt.show()
 
-# obv
+# obv 与 MT5 相同
 real = myBTV.indi.get_volume_indicato(eurusd,"obv",["close", "tick_volume"])
 real.plot(); plt.show()
 

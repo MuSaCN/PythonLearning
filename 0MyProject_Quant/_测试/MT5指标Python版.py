@@ -55,8 +55,7 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-
-
+# ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
 
 
 
@@ -69,10 +68,22 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
 
+# OsMA 移动平均震荡指标(Oscillators类-幅图)，Moving Average of Oscillator，返回Series.
+price_arug = ["open", "high", "low", "close"]
+osma = myMT5Indi.OsMA(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
+osma1 = myMT5Indi.OsMA(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
 
+# OBV 平衡交易量指标(Volumes类-幅图)，On Balance Volume，返回Series。(！必须用全数据段才相同)
+price_arug = ["close", "tick_volume"]
+obv = myMT5Indi.OBV(eurusd,price_arug)
+obv1 = myMT5Indi.OBV(eurusd1,price_arug)
+
+# Momentum 动量指标(Oscillators类-幅图)，Momentum，返回Series。
+price_arug = ["open", "high", "low", "close"]
+momentum = myMT5Indi.Momentum(eurusd,price_arug,14,"PRICE_CLOSE")
 
 # MFI 资金流向指标(Volumes类-幅图)，Money Flow Index，返回Series。
-price_arug = ["open","high", "low", "close", "tick_volume"]
+price_arug = ["high", "low", "close", "tick_volume"]
 mfi = myMT5Indi.MFI(eurusd,price_arug,14)
 mfi1 = myMT5Indi.MFI(eurusd1,price_arug,14)
 
