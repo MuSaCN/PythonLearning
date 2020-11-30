@@ -152,7 +152,7 @@ real.plot();plt.show()
 real = myBTV.indi.get_oscillator_indicator(eurusd, "rsi", ["close"], timeperiod=10)
 real.plot();plt.show()
 
-# stoch
+# stoch 与 MT5 不相同
 slowk, slowd = myBTV.indi.get_oscillator_indicator(eurusd, "stoch", ["high", "low", "close"], fastk_period=5, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
 slowk.plot();slowd.plot();plt.show()
 

@@ -55,7 +55,7 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-
+# Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
 
 
 
@@ -69,6 +69,10 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
 
+# StdDev 标准偏差指标(Trend类-幅图)(效率不高)，Standard Deviation，返回Series。
+price_arug = ["open", "high", "low", "close"]
+stdde = myMT5Indi.StdDev(eurusd,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
+stdde1 = myMT5Indi.StdDev(eurusd1,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
 
 # RVI 相对活力指数(Oscillators类-幅图)，Relative Vigor Index，返回df：RVI, Signal.
 price_arug = ["open", "high", "low", "close"]
