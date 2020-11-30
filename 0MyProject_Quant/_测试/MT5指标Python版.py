@@ -55,15 +55,24 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
+# Ichimoku 一目均衡图指标(Trend类-主图)，Ichimoku Kinko Hyo，返回df：TenKan-Sen, Kijun-sen, Senkou Span A, Senkou Span B, Chikou Span
+
+
+
 
 
 
 #%%
 # price_arug = ["open", "high", "low", "close", "tick_volume"]
+# data = eurusd[price_arug]
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+
+# Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
+price_arug = ["open", "high", "low", "close"]
+df = myMT5Indi.Gator(eurusd,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
+df1 = myMT5Indi.Gator(eurusd1,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
 
 # FrAMA 分形学适应移动平均指标(Trend类-主图)(效率不高)，Fractal Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["open", "high", "low", "close"]
