@@ -92,7 +92,7 @@ real.plot();plt.show()
 real = myBTV.indi.get_oscillator_indicator(eurusd,"dx",["high", "low", "close"],timeperiod=14)
 real.plot();plt.show()
 
-# macd
+# macd 中 macd 与 MT5相同，macdsignal与MT5不同
 macd, macdsignal, macdhist = myBTV.indi.get_oscillator_indicator(eurusd,"macd",["close"],fastperiod=12, slowperiod=26, signalperiod=9)
 macd.plot();macdsignal.plot();macdhist.plot();plt.show()
 

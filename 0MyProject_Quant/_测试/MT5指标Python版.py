@@ -55,7 +55,6 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# Ichimoku 一目均衡图指标(Trend类-主图)，Ichimoku Kinko Hyo，返回df：TenKan-Sen, Kijun-sen, Senkou Span A, Senkou Span B, Chikou Span
 
 
 
@@ -64,10 +63,33 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 #%%
 # price_arug = ["open", "high", "low", "close", "tick_volume"]
+# price_arug = ["open", "high", "low", "close"]
 # data = eurusd[price_arug]
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+
+
+
+# MFI 资金流向指标(Volumes类-幅图)，Money Flow Index，返回Series。
+price_arug = ["open","high", "low", "close", "tick_volume"]
+mfi = myMT5Indi.MFI(eurusd,price_arug,14)
+mfi1 = myMT5Indi.MFI(eurusd1,price_arug,14)
+
+# MarketFacilitationIndex 市场便利指标(Bill Williams类-幅图)，Market Facilitation Index，返回Series.
+price_arug = ["high", "low", "tick_volume"]
+market_facilitation_index = myMT5Indi.MarketFacilitationIndex(eurusd,price_arug,0.00001)
+market_facilitation_index1 = myMT5Indi.MarketFacilitationIndex(eurusd1,price_arug,0.00001)
+
+# MACD 移动平均数聚/散指标(Oscillators类-幅图)，MACD，返回df：MACD, Signal.
+price_arug = ["open", "high", "low", "close"]
+df = myMT5Indi.MACD(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
+df1 = myMT5Indi.MACD(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
+
+# Ichimoku 一目均衡图指标(Trend类-主图)，Ichimoku Kinko Hyo，返回df：TenKan-Sen(9), Kijun-sen(26), Senkou Span A, Senkou Span B(52), Chikou Span
+price_arug = ["high", "low", "close"]
+df = myMT5Indi.Ichimoku(eurusd,price_arug,9,26,53)
+df1 = myMT5Indi.Ichimoku(eurusd1,price_arug,9,26,53)
 
 # Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
 price_arug = ["open", "high", "low", "close"]
