@@ -55,8 +55,9 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
-real = myBTV.indi.get_trend_indicator(eurusd,"sar",["high", "low"],acceleration=0.02, maximum=0.2)
+
+
+
 
 
 
@@ -67,6 +68,22 @@ real = myBTV.indi.get_trend_indicator(eurusd,"sar",["high", "low"],acceleration=
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+
+
+# RVI 相对活力指数(Oscillators类-幅图)，Relative Vigor Index，返回df：RVI, Signal.
+price_arug = ["open", "high", "low", "close"]
+rvi=myMT5Indi.RVI(eurusd,price_arug,10)
+rvi1=myMT5Indi.RVI(eurusd1,price_arug,10)
+
+# RSI 相对强弱指数(Oscillators类-幅图)，Relative Strength Index，返回Series。
+price_arug = ["open", "high", "low", "close"]
+rsi = myMT5Indi.RSI(eurusd,price_arug,14,"PRICE_CLOSE")
+rsi1 = myMT5Indi.RSI(eurusd1,price_arug,14,"PRICE_CLOSE")
+
+# ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
+price_arug = ["high", "low"]
+sar = myMT5Indi.ParabolicSAR(eurusd,price_arug,0.02,0.2)
+sar1 = myMT5Indi.ParabolicSAR(eurusd1,price_arug,0.02,0.2)
 
 # OsMA 移动平均震荡指标(Oscillators类-幅图)，Moving Average of Oscillator，返回Series.
 price_arug = ["open", "high", "low", "close"]

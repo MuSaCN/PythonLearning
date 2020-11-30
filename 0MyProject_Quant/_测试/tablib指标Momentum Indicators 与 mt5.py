@@ -148,7 +148,7 @@ real.plot();plt.show()
 real = myBTV.indi.get_oscillator_indicator(eurusd, "rocr100", ["close"], timeperiod=10)
 real.plot();plt.show()
 
-# rsi
+# rsi 与 MT5 相同
 real = myBTV.indi.get_oscillator_indicator(eurusd, "rsi", ["close"], timeperiod=10)
 real.plot();plt.show()
 
