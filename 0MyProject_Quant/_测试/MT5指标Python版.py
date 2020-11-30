@@ -56,7 +56,7 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 #%%
 # ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
-
+real = myBTV.indi.get_trend_indicator(eurusd,"sar",["high", "low"],acceleration=0.02, maximum=0.2)
 
 
 

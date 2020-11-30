@@ -96,7 +96,7 @@ real.plot(); plt.show()
 real = myBTV.indi.get_trend_indicator(eurusd,"midprice",["high", "low"],timeperiod=14)
 real.plot(); plt.show()
 
-# sar
+# sar 与 MT5 相同
 real = myBTV.indi.get_trend_indicator(eurusd,"sar",["high", "low"],acceleration=0, maximum=0)
 real.plot(); plt.show()
 
