@@ -55,7 +55,11 @@ eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,1
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
 
 #%%
-# Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
+
+# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
+real = myBTV.indi.get_trend_indicator(eurusd,"tema",["close"],timeperiod=14)
+
+
 
 
 
@@ -68,6 +72,13 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+
+
+
+# Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
+price_arug = ["high", "low", "close"]
+stochastic = myMT5Indi.Stochastic(eurusd,price_arug,5,3,3)
+stochastic1 = myMT5Indi.Stochastic(eurusd1,price_arug,5,3,3)
 
 # StdDev 标准偏差指标(Trend类-幅图)(效率不高)，Standard Deviation，返回Series。
 price_arug = ["open", "high", "low", "close"]
