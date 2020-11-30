@@ -56,13 +56,6 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 
 #%%
 
-# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
-real = myBTV.indi.get_trend_indicator(eurusd,"tema",["close"],timeperiod=14)
-
-
-
-
-
 
 
 #%%
@@ -72,8 +65,25 @@ real = myBTV.indi.get_trend_indicator(eurusd,"tema",["close"],timeperiod=14)
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+# WPR 威廉指数指标(Oscillators类-幅图)，William's Percent Range，返回Series。
+price_arug = ["high", "low", "close"]
+wpr = myMT5Indi.WPR(eurusd,price_arug,14)
+wpr1 = myMT5Indi.WPR(eurusd1,price_arug,14)
 
+# VIDYA 变量指数动态平均数指标(Trend类-主图)，Variable Index Dynamic Average，返回Series。
+price_arug = ["open", "high", "low", "close"]
+vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
+vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
 
+# TRIX 三倍指数移动平均数振荡指标(Oscillators类-幅图)，Triple Exponential Average，返回Series。
+price_arug = ["open", "high", "low", "close"]
+trix = myMT5Indi.TRIX(eurusd,price_arug,14,"PRICE_CLOSE")
+trix1 = myMT5Indi.TRIX(eurusd1,price_arug,14,"PRICE_CLOSE")
+
+# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
+price_arug = ["open", "high", "low", "close"]
+tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
 
 # Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
 price_arug = ["high", "low", "close"]

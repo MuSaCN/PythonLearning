@@ -172,7 +172,7 @@ real.plot();plt.show()
 real = myBTV.indi.get_oscillator_indicator(eurusd, "ultosc", ["high", "low", "close"],  timeperiod1=7, timeperiod2=14, timeperiod3=28)
 real.plot();plt.show()
 
-# willr
+# willr 与 MT5 相同
 real = myBTV.indi.get_oscillator_indicator(eurusd, "willr", ["high", "low", "close"], timeperiod=14)
 real.plot();plt.show()
 

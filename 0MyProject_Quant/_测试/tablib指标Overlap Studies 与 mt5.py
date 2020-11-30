@@ -112,7 +112,7 @@ real.plot(); plt.show()
 real = myBTV.indi.get_trend_indicator(eurusd,"t3",["close"],timeperiod=5, vfactor=0)
 real.plot(); plt.show()
 
-# tema
+# tema 与 MT5 结果相同
 real = myBTV.indi.get_trend_indicator(eurusd,"tema",["close"],timeperiod=30)
 real.plot(); plt.show()
 
