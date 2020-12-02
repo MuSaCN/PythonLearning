@@ -51,211 +51,249 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
-eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=False)
-
-#%%
-
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[1990,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=True)
+eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=True)
 
 
 #%%
-# price_arug = ["open", "high", "low", "close", "tick_volume"]
-# price_arug = ["open", "high", "low", "close"]
+# 测试：有价格参数版本/无价格参数版本
+# price_arug = ["Open", "High", "Low", "Close", "Tick_volume"]
+# price_arug = ["Open", "High", "Low", "Close"]
 # data = eurusd[price_arug]
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
-# WPR 威廉指数指标(Oscillators类-幅图)，William's Percent Range，返回Series。
-price_arug = ["high", "low", "close"]
-wpr = myMT5Indi.WPR(eurusd,price_arug,14)
-wpr1 = myMT5Indi.WPR(eurusd1,price_arug,14)
 
-# VIDYA 变量指数动态平均数指标(Trend类-主图)，Variable Index Dynamic Average，返回Series。
-price_arug = ["open", "high", "low", "close"]
-vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
-vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
-
-# TRIX 三倍指数移动平均数振荡指标(Oscillators类-幅图)，Triple Exponential Average，返回Series。
-price_arug = ["open", "high", "low", "close"]
-trix = myMT5Indi.TRIX(eurusd,price_arug,14,"PRICE_CLOSE")
-trix1 = myMT5Indi.TRIX(eurusd1,price_arug,14,"PRICE_CLOSE")
-
-# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
-price_arug = ["open", "high", "low", "close"]
-tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
-tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
-
-# Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
-price_arug = ["high", "low", "close"]
-stochastic = myMT5Indi.Stochastic(eurusd,price_arug,5,3,3)
-stochastic1 = myMT5Indi.Stochastic(eurusd1,price_arug,5,3,3)
-
-# StdDev 标准偏差指标(Trend类-幅图)(效率不高)，Standard Deviation，返回Series。
-price_arug = ["open", "high", "low", "close"]
-stdde = myMT5Indi.StdDev(eurusd,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
-stdde1 = myMT5Indi.StdDev(eurusd1,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
-
-# RVI 相对活力指数(Oscillators类-幅图)，Relative Vigor Index，返回df：RVI, Signal.
-price_arug = ["open", "high", "low", "close"]
-rvi=myMT5Indi.RVI(eurusd,price_arug,10)
-rvi1=myMT5Indi.RVI(eurusd1,price_arug,10)
-
-# RSI 相对强弱指数(Oscillators类-幅图)，Relative Strength Index，返回Series。
-price_arug = ["open", "high", "low", "close"]
-rsi = myMT5Indi.RSI(eurusd,price_arug,14,"PRICE_CLOSE")
-rsi1 = myMT5Indi.RSI(eurusd1,price_arug,14,"PRICE_CLOSE")
-
-# ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
-price_arug = ["high", "low"]
-sar = myMT5Indi.ParabolicSAR(eurusd,price_arug,0.02,0.2)
-sar1 = myMT5Indi.ParabolicSAR(eurusd1,price_arug,0.02,0.2)
-
-# OsMA 移动平均震荡指标(Oscillators类-幅图)，Moving Average of Oscillator，返回Series.
-price_arug = ["open", "high", "low", "close"]
-osma = myMT5Indi.OsMA(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
-osma1 = myMT5Indi.OsMA(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
-
-# OBV 平衡交易量指标(Volumes类-幅图)，On Balance Volume，返回Series。(！必须用全数据段才相同)
-price_arug = ["close", "tick_volume"]
-obv = myMT5Indi.OBV(eurusd,price_arug)
-obv1 = myMT5Indi.OBV(eurusd1,price_arug)
-
-# Momentum 动量指标(Oscillators类-幅图)，Momentum，返回Series。
-price_arug = ["open", "high", "low", "close"]
-momentum = myMT5Indi.Momentum(eurusd,price_arug,14,"PRICE_CLOSE")
-
-# MFI 资金流向指标(Volumes类-幅图)，Money Flow Index，返回Series。
-price_arug = ["high", "low", "close", "tick_volume"]
-mfi = myMT5Indi.MFI(eurusd,price_arug,14)
-mfi1 = myMT5Indi.MFI(eurusd1,price_arug,14)
-
-# MarketFacilitationIndex 市场便利指标(Bill Williams类-幅图)，Market Facilitation Index，返回Series.
-price_arug = ["high", "low", "tick_volume"]
-market_facilitation_index = myMT5Indi.MarketFacilitationIndex(eurusd,price_arug,0.00001)
-market_facilitation_index1 = myMT5Indi.MarketFacilitationIndex(eurusd1,price_arug,0.00001)
-
-# MACD 移动平均数聚/散指标(Oscillators类-幅图)，MACD，返回df：MACD, Signal.
-price_arug = ["open", "high", "low", "close"]
-df = myMT5Indi.MACD(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
-df1 = myMT5Indi.MACD(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
-
-# Ichimoku 一目均衡图指标(Trend类-主图)，Ichimoku Kinko Hyo，返回df：TenKan-Sen(9), Kijun-sen(26), Senkou Span A, Senkou Span B(52), Chikou Span
-price_arug = ["high", "low", "close"]
-df = myMT5Indi.Ichimoku(eurusd,price_arug,9,26,53)
-df1 = myMT5Indi.Ichimoku(eurusd1,price_arug,9,26,53)
-
-# Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
-price_arug = ["open", "high", "low", "close"]
-df = myMT5Indi.Gator(eurusd,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
-df1 = myMT5Indi.Gator(eurusd1,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
-
-# FrAMA 分形学适应移动平均指标(Trend类-主图)(效率不高)，Fractal Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
-price_arug = ["open", "high", "low", "close"]
-frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
-frama1 = myMT5Indi.FrAMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
-
-# Fractals 比尔威廉姆分形指标(Bill Williams类-主图)，Fractals，返回df：Up, Down。
-price_arug = ["high", "low"]
-df = myMT5Indi.Fractals(eurusd,price_arug)
-df1 = myMT5Indi.Fractals(eurusd1,price_arug)
-
-# Force_Index 强力指数指标(Oscillators类-幅图)，Force Index，返回Series。
-price_arug = ["open", "high", "low", "close", "tick_volume"]
-force = myMT5Indi.Force_Index(eurusd,price_arug,13,"MODE_SMA","PRICE_CLOSE")
-force1 = myMT5Indi.Force_Index(eurusd1,price_arug,13,"MODE_SMA","PRICE_CLOSE")
-
-# Envelopes 轨道线指标(Trend类-主图)，Envelopes，返回df：Upper, Lower。
-price_arug = ["open", "high", "low", "close"]
-df = myMT5Indi.Envelopes(eurusd,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
-df1 = myMT5Indi.Envelopes(eurusd1,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
-
-# DeMarker DeMarker指标(Oscillators类-幅图)，DeMarker，返回Series。
-price_arug = ["high", "low"]
-demarker = myMT5Indi.DeMarker(eurusd,price_arug,14)
-demarker1 = myMT5Indi.DeMarker(eurusd1,price_arug,14)
-
-# DEMA 双指数移动平均线指标(Trend类-主图)，Double Exponential Moving Average，返回Series。
-price_arug = ["open", "high", "low", "close"]
-dema = myMT5Indi.DEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
-dema1 = myMT5Indi.DEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
-
-# MA 移动平均数指标(Trend类-主图)，Moving Average，返回Series。
-price_arug = ["open","high","low","close"]
-ma = myMT5Indi.MA(eurusd,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
-ma1 = myMT5Indi.MA(eurusd1,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
-
-# CHO 蔡金摆动指标(Oscillators类-幅图)，Chaikin Oscillator，返回Series。(！算法有迭代，必须一定数据后才相同)
-price_arug=["high","low","close","tick_volume"]
-cho = myMT5Indi.CHO(eurusd,price_arug,3,10,"MODE_EMA")
-cho1 = myMT5Indi.CHO(eurusd1,price_arug,3,10,"MODE_EMA")
-
-# CCI 顺势指标(Oscillators类-幅图)，Commodity Channel Index，返回Series。
-price_arug = ["open","high","low","close"]
-cci = myMT5Indi.CCI(eurusd,price_arug,14,"PRICE_TYPICAL")
-cci1 = myMT5Indi.CCI(eurusd1,price_arug,14,"PRICE_TYPICAL")
-
-# Bulls 牛市指标(Oscillators类-幅图) Bulls Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
-price_arug = ["close", "high"]
-bulls = myMT5Indi.Bulls(eurusd,price_arug,13)
-bulls1 = myMT5Indi.Bulls(eurusd1,price_arug,13)
-
-# Bears 熊市指标(Oscillators类-幅图) Bears Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
-price_arug = ["close","low"]
-bears = myMT5Indi.Bears(eurusd,price_arug,13)
-bears1 = myMT5Indi.Bears(eurusd1,price_arug,13)
-
-# BB 布林带指标(Trend类-主图) Bollinger Bands，返回df：Middle, Upper, Lower
-price_arug = ["open","high","low","close"]
-df = myMT5Indi.BB(eurusd, price_arug, 20, 2, "PRICE_CLOSE")
-
-# AO 动量震荡指标(Bill Williams类-幅图) Awesome Oscillator，返回Series。
-price_arug=["high","low"]
-ao = myMT5Indi.Awesome_Oscillator(eurusd,price_arug)
-ao1 = myMT5Indi.Awesome_Oscillator(eurusd1,price_arug)
-
-# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。(！算法有迭代，必须一定数据后才相同)
-price_arug = ["high", "low", "close"]
-atr = myMT5Indi.ATR(eurusd,price_arug,14)
-atr1 = myMT5Indi.ATR(eurusd1,price_arug,14)
-
-# AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
-price_arug = ["open","high","low","close"]
-ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN")
-ama1 = myMT5Indi.AMA(eurusd1,price_arug,10,2,30,0,"PRICE_OPEN")
-
-# Alligator 鳄鱼指标(Bill Williams类-主图)，返回df：Jaws(13) Teeth(8) Lips(5)
-price_arug = ["open","high","low","close"]
-df = myMT5Indi.Alligator(eurusd,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
-df1 = myMT5Indi.Alligator(eurusd1,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
-
-# ADXW 韦尔达平均定向移动指数(Trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须一定数据后才相同)
-price_arug = ["high","low","close"] # 顺序不能搞错
-timeperiod=14
-df = myMT5Indi.ADXW(eurusd,price_arug=price_arug,timeperiod=timeperiod)
-df1 = myMT5Indi.ADXW(eurusd1,price_arug=price_arug,timeperiod=timeperiod)
-
-# ADX 平均趋向指数(Trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须一定数据后才相同)
-price_arug = ["high","low","close"] # 顺序不能搞错
-timeperiod=14
-df = myMT5Indi.ADX(eurusd, price_arug=price_arug, timeperiod=timeperiod)
-df1 = myMT5Indi.ADX(eurusd1, price_arug=price_arug, timeperiod=timeperiod)
-
+# Bill Williams类
 # Accelerator 加速振荡指标(Bill Williams类-幅图)，Accelerator Oscillator，返回series.
-price_arug = ["high","low"]
+price_arug = ["High","Low"]
 ac = myMT5Indi.Accelerator(eurusd, price_arug=price_arug)
 ac1 = myMT5Indi.Accelerator(eurusd1, price_arug=price_arug)
+myMT5Indi.get_bill_williams(eurusd,"Accelerator")
 
+# AO 动量震荡指标(Bill Williams类-幅图) Awesome Oscillator，返回Series。
+price_arug=["High","Low"]
+ao = myMT5Indi.Awesome_Oscillator(eurusd,price_arug)
+ao1 = myMT5Indi.Awesome_Oscillator(eurusd1,price_arug)
+myMT5Indi.get_bill_williams(eurusd,"Awesome_Oscillator")
+
+# Alligator 鳄鱼指标(Bill Williams类-主图)，返回df：Jaws(13) Teeth(8) Lips(5)
+price_arug = ["Open","High","Low","Close"]
+df = myMT5Indi.Alligator(eurusd,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
+df1 = myMT5Indi.Alligator(eurusd1,price_arug,13,8,8,5,5,3,InpMAMethod = "MODE_SMMA",InpAppliedPrice = "PRICE_MEDIAN")
+myMT5Indi.get_bill_williams(eurusd,"Alligator",13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
+
+# Fractals 比尔威廉姆分形指标(Bill Williams类-主图)，Fractals，返回df：Up, Down。
+price_arug = ["High", "Low"]
+df = myMT5Indi.Fractals(eurusd,price_arug)
+df1 = myMT5Indi.Fractals(eurusd1,price_arug)
+myMT5Indi.get_bill_williams(eurusd,"Fractals")
+
+# Gator 鳄鱼振荡器指标(Bill Williams类-幅图)，Gator Oscillator，返回df：Up, Down
+price_arug = ["Open", "High", "Low", "Close"]
+df = myMT5Indi.Gator(eurusd,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
+df1 = myMT5Indi.Gator(eurusd1,price_arug,13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
+myMT5Indi.get_bill_williams(eurusd,"Gator",13,8,8,5,5,3,"MODE_SMMA","PRICE_MEDIAN")
+
+# MarketFacilitationIndex 市场便利指标(Bill Williams类-幅图)，Market Facilitation Index，返回Series.
+price_arug = ["High", "Low", "Tick_volume"]
+market_facilitation_index = myMT5Indi.MarketFacilitationIndex(eurusd,price_arug,0.00001)
+market_facilitation_index1 = myMT5Indi.MarketFacilitationIndex(eurusd1,price_arug,0.00001)
+myMT5Indi.get_bill_williams(eurusd,"MarketFacilitationIndex",0.00001)
+
+
+#%%
+# Oscillators类
+# ATR 平均真实波动指标(Oscillators类-幅图) Average True Range，返回Series。(！算法有迭代，必须一定数据后才相同)
+price_arug = ["High", "Low", "Close"]
+atr = myMT5Indi.ATR(eurusd,price_arug,14)
+atr1 = myMT5Indi.ATR(eurusd1,price_arug,14)
+myMT5Indi.get_oscillators(eurusd,"ATR",14)
+
+# Bears 熊市指标(Oscillators类-幅图) Bears Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
+price_arug = ["Low", "Close"]
+bears = myMT5Indi.Bears(eurusd,price_arug,13)
+bears1 = myMT5Indi.Bears(eurusd1,price_arug,13)
+myMT5Indi.get_oscillators(eurusd,"Bears",13)
+
+# Bulls 牛市指标(Oscillators类-幅图) Bulls Power，返回Series.(！算法有 ExponentialMA，必须一定数据后才相同)
+price_arug = ["High", "Close"]
+bulls = myMT5Indi.Bulls(eurusd,price_arug,13)
+bulls1 = myMT5Indi.Bulls(eurusd1,price_arug,13)
+myMT5Indi.get_oscillators(eurusd,"Bulls",13)
+
+# CCI 顺势指标(Oscillators类-幅图)，Commodity Channel Index，返回Series。
+price_arug = ["Open","High","Low","Close"]
+cci = myMT5Indi.CCI(eurusd,price_arug,14,"PRICE_TYPICAL")
+cci1 = myMT5Indi.CCI(eurusd1,price_arug,14,"PRICE_TYPICAL")
+myMT5Indi.get_oscillators(eurusd,"CCI",14,"PRICE_TYPICAL")
+
+# CHO 蔡金摆动指标(Oscillators类-幅图)，Chaikin Oscillator，返回Series。(！算法有迭代，必须一定数据后才相同)
+price_arug=["High","Low","Close","Tick_volume"]
+cho = myMT5Indi.CHO(eurusd,price_arug,3,10,"MODE_EMA")
+cho1 = myMT5Indi.CHO(eurusd1,price_arug,3,10,"MODE_EMA")
+myMT5Indi.get_oscillators(eurusd,"CHO",3,10,"MODE_EMA")
+
+# DeMarker DeMarker指标(Oscillators类-幅图)，DeMarker，返回Series。
+price_arug = ["High", "Low"]
+demarker = myMT5Indi.DeMarker(eurusd,price_arug,14)
+demarker1 = myMT5Indi.DeMarker(eurusd1,price_arug,14)
+myMT5Indi.get_oscillators(eurusd,"DeMarker",14)
+
+# Force_Index 强力指数指标(Oscillators类-幅图)，Force Index，返回Series。
+price_arug = ["Open", "High", "Low", "Close", "Tick_volume"]
+force = myMT5Indi.Force_Index(eurusd,price_arug,13,"MODE_SMA","PRICE_CLOSE")
+force1 = myMT5Indi.Force_Index(eurusd1,price_arug,13,"MODE_SMA","PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"Force_Index",13,"MODE_SMA","PRICE_CLOSE")
+
+# MACD 移动平均数聚/散指标(Oscillators类-幅图)，MACD，返回df：MACD, Signal.
+price_arug = ["Open", "High", "Low", "Close"]
+df = myMT5Indi.MACD(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
+df1 = myMT5Indi.MACD(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"MACD",12,26,9,"PRICE_CLOSE")
+
+# Momentum 动量指标(Oscillators类-幅图)，Momentum，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+momentum = myMT5Indi.Momentum(eurusd,price_arug,14,"PRICE_CLOSE")
+momentum1 = myMT5Indi.Momentum(eurusd1,price_arug,14,"PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"Momentum",14,"PRICE_CLOSE")
+
+# OsMA 移动平均震荡指标(Oscillators类-幅图)，Moving Average of Oscillator，返回Series.
+price_arug = ["Open", "High", "Low", "Close"]
+osma = myMT5Indi.OsMA(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
+osma1 = myMT5Indi.OsMA(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"OsMA",12,26,9,"PRICE_CLOSE")
+
+# RSI 相对强弱指数(Oscillators类-幅图)，Relative Strength Index，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+rsi = myMT5Indi.RSI(eurusd,price_arug,14,"PRICE_CLOSE")
+rsi1 = myMT5Indi.RSI(eurusd1,price_arug,14,"PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"RSI",14,"PRICE_CLOSE")
+
+# RVI 相对活力指数(Oscillators类-幅图)，Relative Vigor Index，返回df：RVI, Signal.
+price_arug = ["Open", "High", "Low", "Close"]
+rvi=myMT5Indi.RVI(eurusd,price_arug,10)
+rvi1=myMT5Indi.RVI(eurusd1,price_arug,10)
+myMT5Indi.get_oscillators(eurusd,"RVI",10)
+
+# Stochastic 随机摆动指标(Oscillators类-幅图)，Stochastic Oscillator，返回df：Main, Signal.
+price_arug = ["High", "Low", "Close"]
+stochastic = myMT5Indi.Stochastic(eurusd,price_arug,5,3,3)
+stochastic1 = myMT5Indi.Stochastic(eurusd1,price_arug,5,3,3)
+myMT5Indi.get_oscillators(eurusd,"Stochastic",5,3,3)
+
+# TRIX 三倍指数移动平均数振荡指标(Oscillators类-幅图)，Triple Exponential Average，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+trix = myMT5Indi.TRIX(eurusd,price_arug,14,"PRICE_CLOSE")
+trix1 = myMT5Indi.TRIX(eurusd1,price_arug,14,"PRICE_CLOSE")
+myMT5Indi.get_oscillators(eurusd,"TRIX",14,"PRICE_CLOSE")
+
+# WPR 威廉指数指标(Oscillators类-幅图)，William's Percent Range，返回Series。
+price_arug = ["High", "Low", "Close"]
+wpr = myMT5Indi.WPR(eurusd,price_arug,14)
+wpr1 = myMT5Indi.WPR(eurusd1,price_arug,14)
+myMT5Indi.get_oscillators(eurusd,"WPR",14)
+
+#%%
+# Trend
+# ADX 平均趋向指数(Trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须一定数据后才相同)
+price_arug = ["High","Low","Close"] # 顺序不能搞错
+df = myMT5Indi.ADX(eurusd, price_arug=price_arug, timeperiod=14)
+df1 = myMT5Indi.ADX(eurusd1, price_arug=price_arug, timeperiod=14)
+myMT5Indi.get_trend(eurusd,"ADX",14)
+
+# AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
+price_arug = ["Open","High","Low","Close"]
+ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN")
+ama1 = myMT5Indi.AMA(eurusd1,price_arug,10,2,30,0,"PRICE_OPEN")
+myMT5Indi.get_trend(eurusd,"AMA",10,2,30,0,"PRICE_OPEN")
+
+# ADXW 韦尔达平均定向移动指数(Trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须一定数据后才相同)
+price_arug = ["High","Low","Close"] # 顺序不能搞错
+df = myMT5Indi.ADXW(eurusd,price_arug=price_arug,timeperiod=14)
+df1 = myMT5Indi.ADXW(eurusd1,price_arug=price_arug,timeperiod=14)
+myMT5Indi.get_trend(eurusd,"ADXW",14)
+
+# BB 布林带指标(Trend类-主图) Bollinger Bands，返回df：Middle, Upper, Lower
+price_arug = ["Open","High","Low","Close"]
+df = myMT5Indi.BB(eurusd, price_arug, 20, 2, "PRICE_CLOSE")
+df1 = myMT5Indi.BB(eurusd1, price_arug, 20, 2, "PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"BB",20,2,"PRICE_CLOSE")
+
+# MA 移动平均数指标(Trend类-主图)，Moving Average，返回Series。
+price_arug = ["Open","High","Low","Close"]
+ma = myMT5Indi.MA(eurusd,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
+ma1 = myMT5Indi.MA(eurusd1,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
+myMT5Indi.get_trend(eurusd,"MA",13,"PRICE_CLOSE","MODE_SMMA")
+
+# DEMA 双指数移动平均线指标(Trend类-主图)，Double Exponential Moving Average，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+dema = myMT5Indi.DEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+dema1 = myMT5Indi.DEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"DEMA",14,0,"PRICE_CLOSE")
+
+# Envelopes 轨道线指标(Trend类-主图)，Envelopes，返回df：Upper, Lower。
+price_arug = ["Open", "High", "Low", "Close"]
+df = myMT5Indi.Envelopes(eurusd,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
+df1 = myMT5Indi.Envelopes(eurusd1,price_arug,14,0,0.1,"PRICE_CLOSE","MODE_SMA")
+myMT5Indi.get_trend(eurusd,"Envelopes",14,0,0.1,"PRICE_CLOSE","MODE_SMA")
+
+# FrAMA 分形学适应移动平均指标(Trend类-主图)(效率不高)，Fractal Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
+price_arug = ["Open", "High", "Low", "Close"]
+frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+frama1 = myMT5Indi.FrAMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"FrAMA",14,0,"PRICE_CLOSE")
+
+# Ichimoku 一目均衡图指标(Trend类-主图)，Ichimoku Kinko Hyo，返回df：TenKan-Sen(9), Kijun-sen(26), Senkou Span A, Senkou Span B(52), Chikou Span
+price_arug = ["High", "Low", "Close"]
+df = myMT5Indi.Ichimoku(eurusd,price_arug,9,26,53)
+df1 = myMT5Indi.Ichimoku(eurusd1,price_arug,9,26,53)
+myMT5Indi.get_trend(eurusd,"Ichimoku",9,26,52)
+
+# ParabolicSAR 抛物转向系统指标(Trend类-主图)，Parabolic SAR，返回Series。
+price_arug = ["High", "Low"]
+sar = myMT5Indi.ParabolicSAR(eurusd,price_arug,0.02,0.2)
+sar1 = myMT5Indi.ParabolicSAR(eurusd1,price_arug,0.02,0.2)
+myMT5Indi.get_trend(eurusd,"ParabolicSAR",0.02,0.2)
+
+# StdDev 标准偏差指标(Trend类-幅图)(效率不高)，Standard Deviation，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+stdde = myMT5Indi.StdDev(eurusd,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
+stdde1 = myMT5Indi.StdDev(eurusd1,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"StdDev",20,0,"MODE_SMA","PRICE_CLOSE")
+
+# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"TEMA",14,0,"PRICE_CLOSE")
+
+# VIDYA 变量指数动态平均数指标(Trend类-主图)，Variable Index Dynamic Average，返回Series。
+price_arug = ["Open", "High", "Low", "Close"]
+vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
+vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
+myMT5Indi.get_trend(eurusd,"VIDYA",9,12,0,"PRICE_CLOSE")
+
+
+#%%
+# Volumes
 # AD 累积/分配指标(Volumes类-幅图)，Accumulation/Distribution，返回series.(！算法有累加，必须用全数据段才相同)
-price_arug = ["high","low","close","tick_volume"] # 顺序不能搞错
+price_arug = ["High","Low","Close","Tick_volume"] # 顺序不能搞错
 ad = myMT5Indi.AD(eurusd, price_arug=price_arug)
 ad1 = myMT5Indi.AD(eurusd1, price_arug=price_arug)
+myMT5Indi.get_volumes(eurusd,"AD")
 
+# MFI 资金流向指标(Volumes类-幅图)，Money Flow Index，返回Series。
+price_arug = ["High", "Low", "Close", "Tick_volume"]
+mfi = myMT5Indi.MFI(eurusd,price_arug,14)
+mfi1 = myMT5Indi.MFI(eurusd1,price_arug,14)
+myMT5Indi.get_volumes(eurusd,"MFI",14)
 
-
-
-
-
-
+# OBV 平衡交易量指标(Volumes类-幅图)，On Balance Volume，返回Series。(！必须用全数据段才相同)
+price_arug = ["Close", "Tick_volume"]
+obv = myMT5Indi.OBV(eurusd,price_arug)
+obv1 = myMT5Indi.OBV(eurusd1,price_arug)
+myMT5Indi.get_volumes(eurusd,"OBV")
 
 
 
