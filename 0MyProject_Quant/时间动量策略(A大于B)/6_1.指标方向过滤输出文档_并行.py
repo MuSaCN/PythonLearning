@@ -106,7 +106,8 @@ if __name__ == '__main__':
         #     continue
 
         # ---定位文档 ******修改这里******
-        in_file = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
+        in_file = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
+        out_folder = __mypath__.dirname(in_file,2)
         filecontent = pd.read_excel(in_file)
         # ---解析，显然没有内容则直接跳过
         for i in range(len(filecontent)):  # i=0
@@ -122,7 +123,7 @@ if __name__ == '__main__':
             # 输出的文档路径
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
             # ******修改这里******
-            out_file = __mypath__.get_desktop_path() + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
+            out_file = out_folder + "\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
             # ---设定并行参数，分别设定再合并
             rsi_params = [("Close", i) + ("sma", strat_para, direct, timeframe, symbol) for i in range(5, 500 + 1)]
             multi_params = rsi_params

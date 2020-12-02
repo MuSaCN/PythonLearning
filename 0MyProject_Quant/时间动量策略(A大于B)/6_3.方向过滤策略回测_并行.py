@@ -74,7 +74,7 @@ def run_auto_direct_filter_stratgy_test(para):
     symbol = para[0]
     timeframe = para[1]
     # 目录定位 ******修改这里******
-    in_folder0 = __mypath__.get_desktop_path() + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
+    in_folder0 = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder0) == False:
         return

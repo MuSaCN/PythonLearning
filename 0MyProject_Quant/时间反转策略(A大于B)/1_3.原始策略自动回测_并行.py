@@ -70,7 +70,7 @@ def run_auto_stratgy_test(para):
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
 
     # ---文档定位 ******修改这里******
-    folder_para1D = __mypath__.get_desktop_path() + "\\_反转研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
+    folder_para1D = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
     filepath_para1D = folder_para1D + "\\%s.%s.xlsx" % (symbol, filter_level)
     filecontent = pd.read_excel(filepath_para1D)
 

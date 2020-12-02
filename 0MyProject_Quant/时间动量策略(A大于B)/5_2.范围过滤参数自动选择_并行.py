@@ -77,7 +77,7 @@ def run_auto_indi_range_opt(para):
 
     order = 30 # 由于指标参数结果较为稳定，选择30就可以了。
     # 目录定位 ******修改这里******
-    in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\范围指标参数自动选择\\{}.{}".format(symbol,timeframe)
+    in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\范围指标参数自动选择\\{}.{}".format(symbol,timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder) == False:
         return

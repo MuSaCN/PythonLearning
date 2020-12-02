@@ -46,6 +46,11 @@ myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级�
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+'''
+# 根据前面的范围过滤，我们筛选出了固定的指标和其固定的参数。那么，我们固定范围指标，调整策略参数，看看不同策略参数下，相同的范围过滤，会得出什么情况。
+'''
+
+
 #%%
 ########## 单次测试部分 #################
 import warnings

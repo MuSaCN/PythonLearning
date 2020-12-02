@@ -69,7 +69,7 @@ def run_flevel_concat(para):
     for flevel in flevel_list:
         total_df = pd.DataFrame()
         # ---目录定位 ******修改这里******
-        total_folder = __mypath__.get_desktop_path() + "\\_动量研究\\策略参数自动选择\\%s" % symbol
+        total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\策略参数自动选择\\%s" % symbol
         for order in order_list:
             in_folder = total_folder + "\\auto_para_1D_{}".format(order)
             in_file = in_folder + "\\" + "{}.{}.xlsx".format(symbol,flevel)

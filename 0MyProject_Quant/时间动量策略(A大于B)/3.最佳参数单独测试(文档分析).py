@@ -75,7 +75,7 @@ direct = "BuyOnly"  # 0-"BuyOnly", 1-"SellOnly", 2-"All"
 # para_fixed = {"k":[0,400], "holding":1, "lag_trade":1}
 para_fixed = {"k":112, "holding":[1,10], "lag_trade":1}
 
-folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
 filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 
@@ -100,7 +100,7 @@ para_fixed = {"k":[50,150], "holding":None, "lag_trade":1}
 para_fixed = {"k":[50,150], "holding":[1,5], "lag_trade":1}
 para_fixed = {"k":[18,50], "holding":1, "lag_trade":None}
 
-folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
 filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 
@@ -121,7 +121,7 @@ para_fixed = {"k":[50,150], "holding":None, "lag_trade":1}
 para_fixed = {"k":[50,150], "holding":[1,5], "lag_trade":1}
 para_fixed = {"k":None, "holding":1, "lag_trade":None}
 
-folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
 filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
 filecontent = pd.read_excel(filepath)
 

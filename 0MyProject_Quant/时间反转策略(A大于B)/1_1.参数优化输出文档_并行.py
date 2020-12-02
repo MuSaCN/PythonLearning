@@ -164,7 +164,7 @@ if __name__ == '__main__':
             #     finish_symbol.append(symbol)
             #     continue
             # 设置输出目录 ***(修改这句)***：one symbol + one timeframe + three direct --> one folder
-            folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
+            folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究\\{}.{}".format(symbol, timeframe)
             # 仅做多、仅做空、多空都做，保存在一个目录下
             for direct in direct_para:
                 # 设定并行参数，只需要指定策略参数的范围即可

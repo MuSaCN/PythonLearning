@@ -67,7 +67,7 @@ def run_holding_extend(para):
     symbol = para[0]  # symbol = "AUDCAD"
     print("%s 开始订单可管理性分析..." % symbol)
     # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
-    total_folder = __mypath__.get_desktop_path() + "\\_动量研究"
+    total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究"
     pool_file = total_folder + "\\策略池整合\\{}\\{}_strategy_pool.xlsx".format(symbol, symbol)  # 固定只分析 filter1
     pool_filecontent = pd.read_excel(pool_file, header=[0,1]) # 多层表头
     pool_filecontent = pool_filecontent["original"] if len(pool_filecontent) > 0 else pool_filecontent # 定位到无过滤内容

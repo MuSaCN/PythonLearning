@@ -86,7 +86,7 @@ def run_auto_strat_opt(para):
     # 把所有的timeframe和direct都整理到一个文档中
     for timeframe in timeframe_list:
         # ---输入目录和输出目录 ******修改这里******
-        in_folder = __mypath__.get_desktop_path() + "\\_反转研究\\{}.{}".format(symbol, timeframe)
+        in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究\\{}.{}".format(symbol, timeframe)
         out_folder = __mypath__.dirname(in_folder,uplevel=0) + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
         # ---
         for direct in direct_para:

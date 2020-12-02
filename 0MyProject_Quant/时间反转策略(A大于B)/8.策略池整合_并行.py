@@ -70,7 +70,7 @@ def run_strategy_pool(para):
     symbol = para[0] # symbol = "EURUSD"
     print("%s 开始生成策略池..." %symbol)
     # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
-    total_folder = __mypath__.get_desktop_path() + "\\_反转研究"
+    total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究"
     strat_file = total_folder + "\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
     strat_filecontent = pd.read_excel(strat_file)
     # ---所有文件输出目录

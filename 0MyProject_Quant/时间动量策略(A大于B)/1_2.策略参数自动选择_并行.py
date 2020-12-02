@@ -77,6 +77,7 @@ y_name = ["sharpe"] # 过滤的y轴，不能太多
 #%%
 # ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
 def run_auto_strat_opt(para):
+    # para = ("EURUSD", 30)
     symbol = para[0]
     order = para[1]
     # 批量运算，最后合并且输出表格
@@ -84,12 +85,12 @@ def run_auto_strat_opt(para):
     total_df1 = pd.DataFrame([])
     total_df2 = pd.DataFrame([])
     # 把所有的timeframe和direct都整理到一个文档中
-    for timeframe in timeframe_list:
+    for timeframe in timeframe_list: # timeframe = "TIMEFRAME_D1"
         # ---输入目录和输出目录 ***修改这里***
-        in_folder = __mypath__.get_desktop_path() + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+        in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
         out_folder = __mypath__.dirname(in_folder,uplevel=0) + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
         # ---
-        for direct in direct_para:
+        for direct in direct_para: # direct="BuyOnly"
             # ---路径 ***修改这里***
             filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
