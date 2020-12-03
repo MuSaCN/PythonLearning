@@ -57,28 +57,31 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 4.由于不是大型计算，并行是一次性所有并行。
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
-
 myDefault.set_backend_default("agg")
 
-#%% 根据 非策略参数 定位文件 ###########################
+
+#%% ************ 需要修改的部分 ************
+# ******修改这里******
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+
+#%% 无需修改
 y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 # 指标名称
 indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
 # 指标参数固定和1D浮动设定，返回字典。
 indi_para_fixed_list = myBTV.indiMT5.indi_params_setting1D(indi_name_list)
 
-#%%
-# 指标参数自动判定
+# ---多核函数，指标参数自动判定
 def run_auto_indi_range_opt(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # para = ("EURUSD", "TIMEFRAME_D1")
-    # para = ('NatGas', 'TIMEFRAME_M1')
     symbol = para[0]
     timeframe = para[1]
 
     order = 30 # 由于指标参数结果较为稳定，选择30就可以了。
-    # 目录定位 ******修改这里******
-    in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\范围指标参数自动选择\\{}.{}".format(symbol,timeframe)
+    # 目录定位
+    in_folder = total_folder + "\\范围指标参数自动选择\\{}.{}".format(symbol,timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder) == False:
         return
@@ -124,27 +127,27 @@ def run_auto_indi_range_opt(para):
     # 总进度
     print("指标参数自动选择 finished:", symbol, timeframe,)
 
-
 #%%
 ################# 多进程执行函数 ########################################
-cpu_core = 1 # -1表示留1个进程不执行运算。
+core_num = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_main_symbol_name_list()
-    timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
-                      "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
-                      "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
-                      "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
-                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
-    para_muilt = [(symbol,timeframe) for symbol in symbol_list for timeframe in timeframe_list]
-    import timeit
-    # ---开始多核执行，内容较少，不用分组。
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_auto_indi_range_opt, para_muilt, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
-
-
+    # ---
+    def main_func(core_num):
+        timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
+                          "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
+                          "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
+                          "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
+                          "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+        para_muilt = [(symbol,timeframe) for symbol in symbol_list for timeframe in timeframe_list]
+        import timeit
+        # ---开始多核执行，内容较少，不用分组。
+        t0 = timeit.default_timer()
+        myBTV.muiltcore.multi_processing(run_auto_indi_range_opt, para_muilt, core_num=core_num)
+        t1 = timeit.default_timer()
+        print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
+    # ---
+    main_func(core_num)
 
 
 

@@ -56,11 +56,14 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 
-#%%
+#%% ************ 需要修改的部分 ************
 strat_para_name = ["k", "holding", "lag_trade"]
+all_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+
+#%%
 order_list = [30,40,50]
 flevel_list = ["filter0","filter1","filter2"]
-
 
 #%%
 def run_flevel_concat(para):
@@ -68,8 +71,8 @@ def run_flevel_concat(para):
     # 各过滤等级分别输出文档
     for flevel in flevel_list:
         total_df = pd.DataFrame()
-        # ---目录定位 ******修改这里******
-        total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\策略参数自动选择\\%s" % symbol
+        # ---目录定位
+        total_folder = all_folder + "\\策略参数自动选择\\%s" % symbol
         for order in order_list:
             in_folder = total_folder + "\\auto_para_1D_{}".format(order)
             in_file = in_folder + "\\" + "{}.{}.xlsx".format(symbol,flevel)
@@ -84,12 +87,14 @@ def run_flevel_concat(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
-    para_muilt = [(symbol,) for symbol in symbol_list]
-    import timeit
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
-    t1 = timeit.default_timer()
-    print("\n", 'run_level_concat 耗时为：', t1 - t0)
-
+    # ---
+    def main_func():
+        para_muilt = [(symbol,) for symbol in symbol_list]
+        import timeit
+        # ---开始多核执行
+        t0 = timeit.default_timer()
+        myBTV.muiltcore.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
+        t1 = timeit.default_timer()
+        print("\n", 'run_level_concat 耗时为：', t1 - t0)
+    # ---
+    main_func()

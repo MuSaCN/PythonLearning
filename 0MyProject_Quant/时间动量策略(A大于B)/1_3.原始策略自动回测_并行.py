@@ -57,22 +57,27 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
-#%% 根据 非策略参数 定位文件 ###########################
-# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
+#%% ************ 需要修改的部分 ************
+# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
 para_name = ["k", "holding", "lag_trade"]
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+filename_prefix = "动量"
+# ******修改这个函数****** sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
+def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
+    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
 
 #%%
-# 自动策略测试 symbol = para[0]； order = para[1]； filter_level = para[2]；
+# 自动策略测试
 def run_auto_stratgy_test(para):
     # para = ("EURUSD", 30, "filter1")
     symbol = para[0]
     order = para[1]
     filter_level = para[2]  # 选择哪个过滤表格"filter0, filter1, filter2".
 
-    # ---文档定位 ******修改这里******
-    folder_para1D = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
+    # ---文档定位
+    folder_para1D = total_folder + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
     filepath_para1D = folder_para1D + "\\%s.%s.xlsx" % (symbol, filter_level)
-
     filecontent = pd.read_excel(filepath_para1D)
 
     # ---解析，显然没有内容则直接跳过
@@ -83,12 +88,13 @@ def run_auto_stratgy_test(para):
         direct = filecontent.iloc[i]["direct"]
 
         # 策略参数 ******修改这里******
-        k = filecontent.iloc[i][para_name[0]]
-        holding = filecontent.iloc[i][para_name[1]]
-        lag_trade = filecontent.iloc[i][para_name[2]]
+        strat_para = [filecontent.iloc[i][para_name[j]] for j in range(len(para_name))]
+        # k = filecontent.iloc[i][para_name[0]]
+        # holding = filecontent.iloc[i][para_name[1]]
+        # lag_trade = filecontent.iloc[i][para_name[2]]
 
         # 解析参数生成字符串变量，用于 添加策略图的标注 和 输出图片命名。
-        para_str = myBTV.string_strat_para(para_name, [k, holding, lag_trade])
+        para_str = myBTV.string_strat_para(para_name, strat_para)
 
         # ---加载测试数据，由于不需要训练集、测试集数据，只需要对应时间即可。
         date_from, date_to = myMT5Pro.get_date_range(timeframe, to_Timestamp=True)
@@ -99,13 +105,13 @@ def run_auto_stratgy_test(para):
         # 再次重新加载下全部的数据
         data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
-        # ---获取信号数据 ******修改这里******
-        signaldata = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+        # ---获取信号数据
+        signaldata = stratgy_signal(data_total.Close,sig_mode=direct,para_list=strat_para)
         signaldata_input = signaldata[direct]
 
         # ---保存输出图片
         savefig = folder_para1D + "\\原始策略回测_{}\\{}.{}.{}.png".format(filter_level, timeframe, direct, para_str)
-        myBTV.plot_signal_no_filter_and_quality(signaldata_input, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, para_str=para_str, train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
+        myBTV.plot_signal_no_filter_and_quality(signaldata_input, train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=strat_para[-2], lag_trade=strat_para[-1], noRepeatHold=True, para_str=para_str, train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
         # 手动释放内存 与 下一次循环被覆盖 在内存中是不一样的。
         del data_total, signaldata, signaldata_input
 
@@ -118,19 +124,21 @@ def run_auto_stratgy_test(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
-    order_list = [30, 40, 50]  # [30,40,50]
-    filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
-    # ---设置多步，以更好的控制进度，更好的释放内存。
-    for order in order_list:
-        para_muilt = [(symbol, order, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
-        import timeit
-        # ---开始多核执行
-        t0 = timeit.default_timer()
-        myBTV.muiltcore.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
-        t1 = timeit.default_timer()
-        print("\n", 'para_muilt_%s 耗时为：' % order, t1 - t0)
-
+    # ---
+    def main_func():
+        order_list = [30, 40, 50]  # [30,40,50]
+        filter_level_list = ["filter1"] # 仅回测过滤1次的数据就可以了
+        # ---设置多步，以更好的控制进度，更好的释放内存。
+        for order in order_list:
+            para_muilt = [(symbol, order, filter_level) for symbol in symbol_list for filter_level in filter_level_list]
+            import timeit
+            # ---开始多核执行
+            t0 = timeit.default_timer()
+            myBTV.muiltcore.multi_processing(run_auto_stratgy_test, para_muilt, core_num=cpu_core)
+            t1 = timeit.default_timer()
+            print("\n", 'para_muilt_%s 耗时为：' % order, t1 - t0)
+    # ---
+    main_func()
 
 
 

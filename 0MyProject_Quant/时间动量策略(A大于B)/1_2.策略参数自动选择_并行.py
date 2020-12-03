@@ -56,23 +56,23 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 5.为下一步批量自动回测做准备。
 '''
 
+myDefault.set_backend_default("agg")
 
-#%% 根据 非策略参数 定位文件 ###########################
+#%% ************ 需要修改的部分 ************
+total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+filename_prefix = "动量"
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}] # 仅检测 holding=1 就可以了
+
+
+#%%
 direct_para = ["BuyOnly", "SellOnly"]  # direct_para = ["BuyOnly", "SellOnly", "All"]
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
-
-
-#%%
-myDefault.set_backend_default("agg")
-# 仅检测 holding=1 就可以了
-para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}]
-# 仅根据夏普选择就可以了.
-y_name = ["sharpe"] # 过滤的y轴，不能太多
-
+y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 
 #%%
 # ---并行算法参数：0---order极值每一边用有多少点进行比较 ；1---symbol品种；
@@ -87,12 +87,12 @@ def run_auto_strat_opt(para):
     # 把所有的timeframe和direct都整理到一个文档中
     for timeframe in timeframe_list: # timeframe = "TIMEFRAME_D1"
         # ---输入目录和输出目录 ***修改这里***
-        in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
+        in_folder = total_folder + "\\{}.{}".format(symbol, timeframe)
         out_folder = __mypath__.dirname(in_folder,uplevel=0) + "\\策略参数自动选择\\{}\\auto_para_1D_{}".format(symbol, order)
         # ---
         for direct in direct_para: # direct="BuyOnly"
-            # ---路径 ***修改这里***
-            filepath = in_folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
+            # ---路径
+            filepath = in_folder + "\\{}_{}.xlsx".format(filename_prefix, direct)  # 选择训练集文件
             filecontent = pd.read_excel(filepath)
             for para_fixed in para_fixed_list:
                 # 过滤0，输出图片
@@ -118,18 +118,20 @@ def run_auto_strat_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
-    order_list = [30, 40, 50]  # [30,40,50]
-    # ---多步并行，以更好的控制进度
-    for order in order_list:
-        para_muilt = [(symbol, order) for symbol in symbol_list]
-        import timeit
-        # ---开始多核执行
-        t0 = timeit.default_timer()
-        myBTV.muiltcore.multi_processing(run_auto_strat_opt, para_muilt, core_num=cpu_core)
-        t1 = timeit.default_timer()
-        print("\n", 'para_muilt_%s 耗时为：'%order, t1 - t0)
-
+    # ---
+    def main_func():
+        order_list = [30, 40, 50]  # 固定为 [30,40,50]
+        # ---多步并行，以更好的控制进度
+        for order in order_list:
+            para_muilt = [(symbol, order) for symbol in symbol_list]
+            import timeit
+            # ---开始多核执行
+            t0 = timeit.default_timer()
+            myBTV.muiltcore.multi_processing(run_auto_strat_opt, para_muilt, core_num=cpu_core)
+            t1 = timeit.default_timer()
+            print("\n", 'para_muilt_%s 耗时为：'%order, t1 - t0)
+    # ---
+    main_func()
 
 
 
