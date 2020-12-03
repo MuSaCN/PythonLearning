@@ -65,13 +65,14 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 def run_range_filter_result(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
-    # para = ('Close', 135, 'roc', [314, 1, 1], 'SellOnly', 'TIMEFRAME_H1', 'AUDNZD')
+    # para = ['MACD', 191, 26, 9, 'PRICE_OPEN', [101, 1, 1], 'BuyOnly', 'TIMEFRAME_D1', 'EURUSD']
+    # para = ['ADX', 28, [101, 1, 1], 'BuyOnly', 'TIMEFRAME_D1', 'EURUSD']
     symbol = para[-1]
     timeframe = para[-2]
     direct = para[-3]
     [k, holding, lag_trade] = para[-4]
-    indi_name = para[-5]
-    indi_para = para[0:-5]  # ("Close", 30)
+    indi_name = para[0]
+    indi_para = para[1:-4]  # [5, 26, 9, 'PRICE_OPEN']
 
     # ---获取数据
     date_from, date_to = myMT5Pro.get_date_range(timeframe, to_Timestamp=True)
@@ -85,7 +86,9 @@ def run_range_filter_result(para):
     signal_train = signaldata_train[direct]
 
     # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indi.get_oscillator_indicator(data_total, indi_name, indi_para)
+    indicator = myBTV.indiMT5.get_trend(data_total, indi_name, *indi_para)
+    indicator = myBTV.indiMT5.get_oscillators(data_total, indi_name, *indi_para)
+    indicator = indicator.iloc[:,0] if type(indicator) == pd.DataFrame else indicator
 
     # ---信号利润范围过滤及测试
     result = myBTV.rfilter.signal_range_filter_and_quality(signal_train=signal_train, signal_all=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
@@ -93,11 +96,14 @@ def run_range_filter_result(para):
 
 
 #%%
-core_num = -1
+core_num = 1
 if __name__ == '__main__':
     # 策略参数名称，用于文档中解析参数 ******修改这里******
     strategy_para_name = ["k", "holding", "lag_trade"]
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
+    # 并行参数
+    indiname_list = myBTV.indiMT5.indi_name_rangefilter()
+    params_dict = myBTV.indiMT5.indi_params_scale1D(indiname_list)
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
@@ -124,10 +130,15 @@ if __name__ == '__main__':
             suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
             # ******修改这里******
             out_file = out_folder + "\\范围指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
-            # ---设定并行参数，分别设定再合并
-            rsi_params = [("Close", i) + ("rsi", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
-            roc_params = [("Close", i) + ("roc", strat_para, direct, timeframe, symbol) for i in range(5, 144 + 1)]
-            multi_params = rsi_params + roc_params
+            # ---设定并行参数，再转成list合并
+            multi_params = []
+            for indiname in indiname_list:# indiname = indiname_list[0]
+                params = params_dict[indiname]
+                params["strat_para"] = [strat_para] * len(params)
+                params["direct"] = direct
+                params["timeframe"] = timeframe
+                params["symbol"] = symbol
+                multi_params = multi_params + params.values.tolist()
             # ---开始多核执行
             myBTV.muiltcore.run_concat_dataframe(run_range_filter_result, multi_params, filepath=out_file, core_num=core_num)
             print("para finished:", symbol, timeframe, direct, suffix)
