@@ -127,8 +127,7 @@ def run_auto_filter_stratgy_test(para):
             signal_all = signaldata_all[direct]
 
             # ---(核心，在库中添加)获取指标
-            indicator = myBTV.indiMT5.get_indicator(data_total, indi_name, *indi_para)
-            indicator = indicator.iloc[:, 0] if type(indicator) == pd.DataFrame else indicator
+            indicator = myBTV.indiMT5.get_indicator_firstbuffer(data_total, indi_name, *indi_para)
 
             # ---信号利润过滤及测试
             # 输出图片的目录
@@ -149,7 +148,7 @@ def run_auto_filter_stratgy_test(para):
 #%%
 core_num = -1 # 注意，M1时间框数据量较大时，并行太多会爆内存。
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
                       "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
                       "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",

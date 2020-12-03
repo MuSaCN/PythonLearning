@@ -63,13 +63,14 @@ myDefault.set_backend_default("agg")
 #%% 根据 非策略参数 定位文件 ###########################
 y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 # 指标名称
-indi_name_list = ["sma"]
-# 指标参数固定和浮动设定，位置对应 indi_name_list
-indi_para_fixed_list = [{"indi_para0":"Close", "indi_para1":None}]
+indi_name_list = myBTV.indiMT5.indi_name_directfilter()
+# 指标参数固定和1D浮动设定，返回字典。
+indi_para_fixed_list = myBTV.indiMT5.indi_params_setting1D(indi_name_list)
 
 #%%
 # 指标参数自动判定
 def run_auto_indi_direct_opt(para):
+    print("\r", "当前执行参数为：", para, end="", flush=True)
     # para = ("EURUSD", "TIMEFRAME_D1")
     symbol = para[0]
     timeframe = para[1]
@@ -100,7 +101,7 @@ def run_auto_indi_direct_opt(para):
         # ---分别处理不同指标
         for indi_name in indi_name_list: # indi_name = indi_name_list[0]
             # 加载指标固定浮动参数
-            indi_para_fixed = indi_para_fixed_list[indi_name_list.index(indi_name)]
+            indi_para_fixed = indi_para_fixed_list[indi_name]
             # 过滤0，输出图片
             out_df0 = myBTV.dfilter.auto_indi_para_direct_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name, indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=0, plot=True, savefolder="default", batch=True)
             total_df0 = pd.concat([total_df0, out_df0], axis=0, ignore_index=True)
@@ -128,7 +129,7 @@ def run_auto_indi_direct_opt(para):
 cpu_core = -1 # -1表示留1个进程不执行运算。
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
     timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
                       "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
                       "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",

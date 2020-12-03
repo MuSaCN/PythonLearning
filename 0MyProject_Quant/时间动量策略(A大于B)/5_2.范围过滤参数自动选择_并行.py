@@ -64,7 +64,7 @@ myDefault.set_backend_default("agg")
 y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 # 指标名称
 indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
-# 指标参数固定和浮动设定，位置对应 indi_name_list
+# 指标参数固定和1D浮动设定，返回字典。
 indi_para_fixed_list = myBTV.indiMT5.indi_params_setting1D(indi_name_list)
 
 #%%
