@@ -86,8 +86,7 @@ def run_range_filter_result(para):
     signal_train = signaldata_train[direct]
 
     # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indiMT5.get_trend(data_total, indi_name, *indi_para)
-    indicator = myBTV.indiMT5.get_oscillators(data_total, indi_name, *indi_para)
+    indicator = myBTV.indiMT5.get_indicator(data_total, indi_name, *indi_para)
     indicator = indicator.iloc[:,0] if type(indicator) == pd.DataFrame else indicator
 
     # ---信号利润范围过滤及测试
@@ -96,14 +95,14 @@ def run_range_filter_result(para):
 
 
 #%%
-core_num = 1
+core_num = -1
 if __name__ == '__main__':
     # 策略参数名称，用于文档中解析参数 ******修改这里******
     strategy_para_name = ["k", "holding", "lag_trade"]
     symbol_list = myMT5Pro.get_main_symbol_name_list()
     # 并行参数
-    indiname_list = myBTV.indiMT5.indi_name_rangefilter()
-    params_dict = myBTV.indiMT5.indi_params_scale1D(indiname_list)
+    indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
+    params_dict = myBTV.indiMT5.indi_params_scale1D(indi_name_list)
     # ---
     finish_symbol = []
     for symbol in symbol_list: # symbol = "EURUSD"
@@ -132,8 +131,8 @@ if __name__ == '__main__':
             out_file = out_folder + "\\范围指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
             # ---设定并行参数，再转成list合并
             multi_params = []
-            for indiname in indiname_list:# indiname = indiname_list[0]
-                params = params_dict[indiname]
+            for indi_name in indi_name_list:# indiname = indiname_list[0]
+                params = params_dict[indi_name]
                 params["strat_para"] = [strat_para] * len(params)
                 params["direct"] = direct
                 params["timeframe"] = timeframe

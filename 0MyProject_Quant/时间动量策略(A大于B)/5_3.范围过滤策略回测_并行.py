@@ -67,8 +67,8 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 # 自动过滤策略回测，结果输出图片。
 def run_auto_filter_stratgy_test(para):
     # 显示进度
-    # para = ("AUDJPY","TIMEFRAME_D1")
-    # print("\r", "当前执行参数为：", para, end="", flush=True)
+    # para = ("EURUSD","TIMEFRAME_D1")
+    print("\r", "当前执行参数为：", para, end="", flush=True)
     # 定位目录
     symbol = para[0]
     timeframe = para[1]
@@ -92,14 +92,14 @@ def run_auto_filter_stratgy_test(para):
         filecontent = pd.read_excel(in_file)
 
         # ---解析，显然没有内容则直接跳过
-        for i in range(len(filecontent)):  # i=0
+        for i in range(len(filecontent)):  # i=1
             # ---获取各参数
             # 解析策略参数 ***修改这里***
             [k, holding, lag_trade] = myBTV.string_strat_para(strat_para=suffix)
             # 解析下指标信息
             indi_name = filecontent.iloc[i]["indi_name"]
             indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
-            indi_para = [value for value in indi_message]
+            indi_para = [value for value in indi_message.dropna()] # 必须要丢弃nan
 
             # ---前面自动选择的指标参数排除在指定范围内，不一定要排除。******修改这里******
             # if indi_para[1] in [5,6,7]:
@@ -127,7 +127,8 @@ def run_auto_filter_stratgy_test(para):
             signal_all = signaldata_all[direct]
 
             # ---(核心，在库中添加)获取指标
-            indicator = myBTV.indi.get_oscillator_indicator(data_total, indi_name, indi_para)
+            indicator = myBTV.indiMT5.get_indicator(data_total, indi_name, *indi_para)
+            indicator = indicator.iloc[:, 0] if type(indicator) == pd.DataFrame else indicator
 
             # ---信号利润过滤及测试
             # 输出图片的目录
