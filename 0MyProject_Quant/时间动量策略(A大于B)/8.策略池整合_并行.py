@@ -57,6 +57,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 某个品种某个时间框某个参数组有许多个过滤情况，我们可以通过“策略参数自动选择”输出的极值图片来排除哪些策略参数组不好。
 # 过滤后的结果选择 filter1 中的 sharpe_filter 最大值，即选择思想为过滤后的最大值。
 # 由于前面对某些品种可能设置了条件，整合时注意要先判断对应的参数目录是否存在。
+# 复制图片，必须夏普比率有所提高才复制。
 # 并行运算以品种为并行参数。
 '''
 
@@ -119,7 +120,7 @@ def run_strategy_pool(para):
             sharpe_range = out_range.sharpe
             # 解析指标参数字符串
             indi_name = out_range["indi_name"]
-            indi_para = out_range["direct":"indi_name"][1:-1]
+            indi_para = out_range["direct":"indi_name"][1:-1].dropna() # 必须要丢弃nan
             indi_para_suffix = ""
             for i in range(len(indi_para)):
                 indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i],indi_para[i])
@@ -151,7 +152,7 @@ def run_strategy_pool(para):
             sharpe_direct = out_direct.sharpe
             # 解析指标参数字符串
             indi_name = out_direct["indi_name"]
-            indi_para = out_direct["direct":"indi_name"][1:-1]
+            indi_para = out_direct["direct":"indi_name"][1:-1].dropna() # 必须丢弃nan
             indi_para_suffix = ""
             for i in range(len(indi_para)):
                 indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i], indi_para[i])
@@ -190,7 +191,7 @@ def run_strategy_pool(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
     # finished_symbol = []
     # for symbol in symbol_list:
     #     run_strategy_pool((symbol,))

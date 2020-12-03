@@ -128,7 +128,7 @@ def run_holding_extend(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
     mylogging.warning("symbol_list: {}".format(symbol_list))
     # run_holding_extend(("FCHI40",))
     # finished_symbol = []

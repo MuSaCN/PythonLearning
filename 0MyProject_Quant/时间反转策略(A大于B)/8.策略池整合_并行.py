@@ -119,7 +119,7 @@ def run_strategy_pool(para):
             sharpe_range = out_range.sharpe
             # 解析指标参数字符串
             indi_name = out_range["indi_name"]
-            indi_para = out_range["direct":"indi_name"][1:-1]
+            indi_para = out_range["direct":"indi_name"][1:-1].dropna() # 必须要丢弃nan
             indi_para_suffix = ""
             for i in range(len(indi_para)):
                 indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i],indi_para[i])
@@ -151,7 +151,7 @@ def run_strategy_pool(para):
             sharpe_direct = out_direct.sharpe
             # 解析指标参数字符串
             indi_name = out_direct["indi_name"]
-            indi_para = out_direct["direct":"indi_name"][1:-1]
+            indi_para = out_direct["direct":"indi_name"][1:-1].dropna() # 必须要丢弃nan
             indi_para_suffix = ""
             for i in range(len(indi_para)):
                 indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i], indi_para[i])
@@ -190,7 +190,7 @@ def run_strategy_pool(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
+    symbol_list = myMT5Pro.get_main_symbol_name_list()
     # finished_symbol = []
     # for symbol in symbol_list:
     #     run_strategy_pool((symbol,))

@@ -63,8 +63,8 @@ symbol = "EURUSD"
 timeframe = "TIMEFRAME_D1"
 direct = "BuyOnly"
 [k, holding, lag_trade] = [101, 1, 1]
-indi_name = "sma"
-indi_para = ('Close', 485)
+indi_name = "DEMA"
+indi_para = [14,0,"PRICE_CLOSE"]
 para_str = myBTV.string_strat_para(para_name, [k, holding, lag_trade])
 
 # ---获取数据
@@ -89,7 +89,7 @@ signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig
 signal_all = signaldata_all[direct]
 
 # ---(核心，在库中添加)获取指标 ******(修改这里)******
-indicator = myBTV.indi.get_trend_indicator(data_total, indi_name, indi_para)
+indicator = myBTV.indiMT5.get_indicator_firstbuffer(data_total, indi_name, *indi_para)
 
 # ---信号分类(分组)
 df = pd.concat((signal_train, signal_all, indicator, data_total.Close), axis=1)
