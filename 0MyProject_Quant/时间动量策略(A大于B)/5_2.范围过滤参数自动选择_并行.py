@@ -59,8 +59,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Range_Filter import Auto_Choose_Filter_Param
-choo_para = Auto_Choose_Filter_Param()
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Auto_Choose_RFilter_Param
+choo_para = Auto_Choose_RFilter_Param()
 myDefault.set_backend_default("agg")
 
 #%% ************ 需要修改的部分 ************

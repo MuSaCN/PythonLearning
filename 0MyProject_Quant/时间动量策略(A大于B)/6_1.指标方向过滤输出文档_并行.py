@@ -79,8 +79,9 @@ def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tupl
     return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
 df_out.stratgy_signal = stratgy_signal
 
+
 #%%
-df_out.core_num = 1
+df_out.core_num = -1
 if __name__ == '__main__':
     # ---
     df_out.main_func()
