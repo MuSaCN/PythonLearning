@@ -62,146 +62,19 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-# 策略参数名称，用于文档中解析参数 ******修改这里******
-strategy_para_name = ["k", "holding", "lag_trade"]
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_Pool_Integration
+strat_pool = Strat_Pool_Integration()
 
-#%%
-# ---并行执行策略池生成
-def run_strategy_pool(para):
-    symbol = para[0] # symbol = "EURUSD"
-    print("%s 开始生成策略池..." %symbol)
-    # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
-    total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究"
-    strat_file = total_folder + "\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
-    strat_filecontent = pd.read_excel(strat_file)
-    # ---所有文件输出目录
-    out_folder = total_folder + "\\策略池整合\\%s" % symbol
-    __mypath__.makedirs(out_folder, exist_ok=True)
-    # ---解析，显然没有内容则直接跳过
-    out_total = pd.DataFrame()
-    for i in range(len(strat_filecontent)):  # i=0
-        # ---解析文档
-        # 获取各参数
-        timeframe = strat_filecontent.iloc[i]["timeframe"]
-        direct = strat_filecontent.iloc[i]["direct"]
-        # 策略参数 ******修改这里******
-        k = strat_filecontent.iloc[i][strategy_para_name[0]]
-        holding = strat_filecontent.iloc[i][strategy_para_name[1]]
-        lag_trade = strat_filecontent.iloc[i][strategy_para_name[2]]
-        strat_para = [k, holding, lag_trade]
-        # 输出的图片路径
-        suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
-        pic_to_folder = out_folder + "\\{}.{}.{}".format(timeframe, direct, suffix)
 
-        # ---解析原策略内容，生成指定格式
-        out_strat = strat_filecontent.iloc[i]["symbol":"winRate"]
-        sharpe_original = out_strat.sharpe
-        out_strat.name = 0 # 必须设置Series的名称为0，后面才能合并到一行
-        out_strat = pd.DataFrame(out_strat).unstack().unstack()
-        out_strat.columns = [["original"] * len(out_strat.columns), out_strat.columns]
-        # 复制图片
-        pic_folder = total_folder + "\\策略参数自动选择\\{}\\auto_para_1D_30\\原始策略回测_filter1".format(symbol)   # 从30里面选择就可以了
-        pic_name = "{}.{}.{}.png".format(timeframe,direct,suffix)
-        pic_file = pic_folder + "\\" + pic_name
-        if __mypath__.path_exists(pic_file):
-            # 在策略参数目录里放图片
-            pic_to = pic_to_folder + "\\{}".format(pic_name)
-            myfile.copy_dir_or_file(source=pic_file,destination=pic_to,DirRemove=False)
-
-        # ---定位范围指标参数自动选择文档
-        range_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
-        range_file = range_folder + "\\{}.filter1.xlsx".format(suffix) # 固定只分析 filter1
-        # 检测文件是否存在，不存在则不记录
-        if __mypath__.path_exists(range_file) == True:
-            # 读取范围文档，生成指定格式
-            range_filecontent = pd.read_excel(range_file)
-            range_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
-            out_range = range_filecontent.iloc[0]["symbol":"winRate"]
-            sharpe_range = out_range.sharpe
-            # 解析指标参数字符串
-            indi_name = out_range["indi_name"]
-            indi_para = out_range["direct":"indi_name"][1:-1].dropna() # 必须要丢弃nan
-            indi_para_suffix = ""
-            for i in range(len(indi_para)):
-                indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i],indi_para[i])
-            indi_para_suffix = "(" + indi_para_suffix + ")"
-            # 生成指定格式
-            out_range = pd.DataFrame(out_range).unstack().unstack()
-            out_range.columns = [["range_filter_only"] * len(out_range.columns), out_range.columns]
-            # 复制图片，策略有提高才复制图片
-            if sharpe_range > sharpe_original:
-                pic_folder = total_folder + "\\范围指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol,timeframe,direct,suffix)
-                pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
-                pic_file = pic_folder + "\\" + pic_name
-                if __mypath__.path_exists(pic_file):
-                    # 在策略参数目录里放图片
-                    pic_to = pic_to_folder + "\\{}".format(pic_name)
-                    myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
-        else:
-            out_range = pd.DataFrame()
-
-        # ---定位方向指标参数自动选择文档
-        direct_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}".format(symbol,timeframe,direct,suffix)
-        direct_file = direct_folder + "\\{}.filter1.xlsx".format(suffix)  # 固定只分析 filter1
-        # 检测文件是否存在，不存在则不记录
-        if __mypath__.path_exists(direct_file) == True:
-            # 读取范围文档
-            direct_filecontent = pd.read_excel(direct_file)
-            direct_filecontent.sort_values(by="sharpe_filter", ascending=False, inplace=True, ignore_index=True) # 选择 sharpe_filter 最大的那个
-            out_direct = direct_filecontent.iloc[0]["symbol":"winRate"]
-            sharpe_direct = out_direct.sharpe
-            # 解析指标参数字符串
-            indi_name = out_direct["indi_name"]
-            indi_para = out_direct["direct":"indi_name"][1:-1].dropna() # 必须丢弃nan
-            indi_para_suffix = ""
-            for i in range(len(indi_para)):
-                indi_para_suffix = indi_para_suffix + "{}={};".format(indi_para.index[i], indi_para[i])
-            indi_para_suffix = "(" + indi_para_suffix + ")"
-            # 生成指定格式
-            out_direct = pd.DataFrame(out_direct).unstack().unstack()
-            out_direct.columns = [["direct_filter_only"] * len(out_direct.columns), out_direct.columns]
-            # 复制图片，策略提高才复制
-            if sharpe_direct > sharpe_original:
-                pic_folder = total_folder + "\\方向指标参数自动选择\\{}.{}\\{}.{}\\指标过滤策略回测_filter1".format(symbol, timeframe, direct, suffix)
-                pic_name = "{}.{}.png".format(indi_name, indi_para_suffix)
-                pic_file = pic_folder + "\\" + pic_name
-                if __mypath__.path_exists(pic_file):
-                    # 在策略参数目录里放图片
-                    pic_to = pic_to_folder + "\\{}".format(pic_name)
-                    myfile.copy_dir_or_file(source=pic_file, destination=pic_to, DirRemove=False)
-        else:
-            out_direct = pd.DataFrame()
-        # ---合并
-        out = pd.concat((out_strat, out_range, out_direct), axis=1)
-        out_total = pd.concat((out_total,out), axis=0, ignore_index=True)
-
-    # ---必须要有内容才行。(必须放到外面写，不然表格顺序会乱)
-    if len(out_total) > 0:
-        # 表格中要有过滤的列才行
-        if "range_filter_only" in out_total.columns:
-            # 过滤后策略的sharpe如果减少则赋值nan。
-            out_total["range_filter_only"] = out_total["range_filter_only"][out_total[("range_filter_only", "sharpe")] > out_total[("original", "sharpe")]]
-        if "direct_filter_only" in out_total.columns:
-            out_total["direct_filter_only"] = out_total["direct_filter_only"][out_total[("direct_filter_only", "sharpe")] > out_total[("original", "sharpe")]]
-
-    # ---输出文档
-    out_total.to_excel(out_folder + "\\{}_strategy_pool.xlsx".format(symbol))
+#%% ******修改这里******
+strat_pool.strategy_para_name = ["k", "holding", "lag_trade"]
+strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
+strat_pool.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
 
 
 #%%
-core_num = -1
+strat_pool.core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_main_symbol_name_list()
-    # finished_symbol = []
-    # for symbol in symbol_list:
-    #     run_strategy_pool((symbol,))
-    #     finished_symbol.append(symbol)
-    #     print(finished_symbol)
-    para_muilt = [(symbol,) for symbol in symbol_list]
-    import timeit
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_strategy_pool, para_muilt, core_num=core_num)
-    t1 = timeit.default_timer()
-    print("\n", ' 耗时为：', t1 - t0)
+    # ---
+    strat_pool.main_func()
 
