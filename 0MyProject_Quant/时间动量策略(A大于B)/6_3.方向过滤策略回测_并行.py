@@ -66,6 +66,14 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 
 #%%
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+
+# sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
+def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
+    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+
+#%%
 # 自动过滤策略回测，结果输出图片。
 def run_auto_direct_filter_stratgy_test(para):
     # 显示进度
@@ -73,12 +81,11 @@ def run_auto_direct_filter_stratgy_test(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
     symbol = para[0]
     timeframe = para[1]
-    # 目录定位 ******修改这里******
-    in_folder0 = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
+    # 目录定位
+    in_folder0 = total_folder + "\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder0) == False:
         return
-
     # ---以 特定参数的策略 作为研究对象
     folder_dir = __mypath__.listdir(in_folder0)
     for foldname in folder_dir:  # foldname = folder_dir[0]
@@ -91,12 +98,11 @@ def run_auto_direct_filter_stratgy_test(para):
         in_folder1 = in_folder0 + "\\" + foldname
         in_file = in_folder1 + "\\{}.{}.xlsx".format(suffix,"filter1") # 只分析 filter1
         filecontent = pd.read_excel(in_file)
-
         # ---解析，显然没有内容则直接跳过
         for i in range(len(filecontent)):  # i=3
             # ---获取各参数
-            # 解析策略参数 ***修改这里***
-            [k, holding, lag_trade] = myBTV.string_strat_para(strat_para=suffix)
+            # 解析策略参数
+            strat_para_list = myBTV.string_strat_para(strat_para=suffix)
             # 解析下指标信息
             indi_name = filecontent.iloc[i]["indi_name"]
             indi_message=filecontent.iloc[i]["direct":"indi_name"][1:-1] # 要斩头去尾
@@ -118,19 +124,16 @@ def run_auto_direct_filter_stratgy_test(para):
             bound_left, bound_right = myMT5Pro.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
             # 再次重新加载下全部的数据
             data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
-
             # ---获取训练集和整个样本的信号
-            # 获取训练集的信号 ******(修改这里)******
-            signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            # 获取训练集的信号
+            signaldata_train = stratgy_signal(data_train.Close, sig_mode=direct, para_list=strat_para_list)
             signal_train = signaldata_train[direct]
-            # 计算整个样本的信号 ******(修改这里)******
-            signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            # 计算整个样本的信号
+            signaldata_all = stratgy_signal(data_total.Close, sig_mode=direct, para_list=strat_para_list)
             signal_all = signaldata_all[direct]
-
             # ---(核心，在库中添加)获取指标的第一个buffer
             indicator_train = myBTV.indiMT5.get_indicator_firstbuffer(data_train, indi_name, *indi_para)
             indicator_all = myBTV.indiMT5.get_indicator_firstbuffer(data_total, indi_name, *indi_para)
-
             # ---测试
             # 输出图片的目录
             out_folder = in_folder1 + "\\指标过滤策略回测_filter1"
@@ -141,7 +144,7 @@ def run_auto_direct_filter_stratgy_test(para):
             indi_suffix = myBTV.string_strat_para(indi_para_name, indi_para)
             savefig = out_folder + "\\{}.{}.png".format(indi_name,indi_suffix)
             # 过滤及测试后，输出图片
-            myBTV.dfilter.plot_signal_direct_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator_train=indicator_train, indicator_all=indicator_all,train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=holding, lag_trade=lag_trade, noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
+            myBTV.dfilter.plot_signal_direct_filter_and_quality(signal_train=signal_train, signal_all=signal_all, indicator_train=indicator_train, indicator_all=indicator_all,train_x0=train_x0, train_x1=train_x1, price_DataFrame=data_total, price_Series=data_total.Close, holding=strat_para_list[-2], lag_trade=strat_para_list[-1], noRepeatHold=True, indi_name="%s%s" % (indi_name,indi_suffix), train_evalute=filecontent.iloc[i], savefig=savefig, batch=True)
             # 过滤及测试后，输出图片
             del data_total, data_train, data_test, indicator_train, indicator_all, signaldata_train, signaldata_all, signal_train, signal_all
     # 打印下进度
@@ -151,29 +154,31 @@ def run_auto_direct_filter_stratgy_test(para):
 #%%
 core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_main_symbol_name_list()
-    # symbol_list = myPjMT5.get_main_symbol_name_list()
-    timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
-                      "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
-                      "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
-                      "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
-                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
-    # 以时间框来分组
-    finish_timeframe = []
-    for timeframe in timeframe_list:
-        # --- 1分钟时间框内存容易爆
-        if timeframe == "TIMEFRAME_M1":
-            core_num = 4
-        # ---
-        multi_params = [(symbol,timeframe) for symbol in symbol_list]
-        import timeit
-        t0 = timeit.default_timer()
-        myBTV.muiltcore.multi_processing(run_auto_direct_filter_stratgy_test, multi_params, core_num=core_num)
-        t1 = timeit.default_timer()
-        print("\n", '{} 耗时为：'.format(timeframe), t1 - t0)
-        # ---记录指标完成
-        finish_timeframe.append(timeframe)
-        mylogging.warning("symbol finished: {}".format(finish_timeframe))
+
+    def main_func(core_num):
+        timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
+                          "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
+                          "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
+                          "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
+                          "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+        # 以时间框来分组
+        finish_timeframe = []
+        for timeframe in timeframe_list:
+            # --- 1分钟时间框内存容易爆
+            if timeframe == "TIMEFRAME_M1":
+                core_num = 4
+            # ---
+            multi_params = [(symbol,timeframe) for symbol in symbol_list]
+            import timeit
+            t0 = timeit.default_timer()
+            myBTV.muiltcore.multi_processing(run_auto_direct_filter_stratgy_test, multi_params, core_num=core_num)
+            t1 = timeit.default_timer()
+            print("\n", '{} 耗时为：'.format(timeframe), t1 - t0)
+            # ---记录指标完成
+            finish_timeframe.append(timeframe)
+            mylogging.warning("symbol finished: {}".format(finish_timeframe))
+    # ---
+    main_func(core_num)
 
 
 

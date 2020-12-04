@@ -57,32 +57,33 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 4.由于不是大型计算，并行是一次性所有并行。
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
-
 myDefault.set_backend_default("agg")
 
 #%% 根据 非策略参数 定位文件 ###########################
+symbol_list = myMT5Pro.get_main_symbol_name_list()
 y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 # 指标名称
 indi_name_list = myBTV.indiMT5.indi_name_directfilter()
 # 指标参数固定和1D浮动设定，返回字典。
 indi_para_fixed_list = myBTV.indiMT5.indi_params_setting1D(indi_name_list)
+total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+
 
 #%%
+
 # 指标参数自动判定
 def run_auto_indi_direct_opt(para):
     print("\r", "当前执行参数为：", para, end="", flush=True)
     # para = ("EURUSD", "TIMEFRAME_D1")
     symbol = para[0]
     timeframe = para[1]
-
     order = 30 # 由于指标参数结果较为稳定，选择30就可以了。
-    # 目录定位 ******修改这里******
-    in_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\方向指标参数自动选择\\{}.{}".format(symbol,timeframe)
+    # 目录定位
+    in_folder = total_folder + "\\方向指标参数自动选择\\{}.{}".format(symbol,timeframe)
     # 判断是否存在，不存在则返回
     if __mypath__.path_exists(in_folder) == False:
         return
-
-    # ---以 特定参数的策略 作为研究对象
+    # ---以特定参数的策略 作为研究对象
     file_dir = __mypath__.listdir(in_folder)
     for filename in file_dir: # filename = file_dir[0]
         # 如果不是 xlsx格式文件则跳过
@@ -97,7 +98,6 @@ def run_auto_indi_direct_opt(para):
         total_df0 = pd.DataFrame([])
         total_df1 = pd.DataFrame([])
         total_df2 = pd.DataFrame([])
-
         # ---分别处理不同指标
         for indi_name in indi_name_list: # indi_name = indi_name_list[0]
             # 加载指标固定浮动参数
@@ -111,7 +111,6 @@ def run_auto_indi_direct_opt(para):
             # 过滤2，不输出图片
             out_df2 = myBTV.dfilter.auto_indi_para_direct_filter_1D(filepath=in_file, filecontent=filecontent, indi_name=indi_name,indi_para_fixed=indi_para_fixed, y_name=y_name, order=order, filterlevel=2, plot=False, savefolder="default", batch=True)
             total_df2 = pd.concat([total_df2, out_df2], axis=0, ignore_index=True)
-
         # ---输出表格文档文件0、1、2，存放 所有指标 的过滤结果
         # 输出文件夹
         out_folder = in_folder + "\\{}.{}".format(direct, suffix)
@@ -125,23 +124,25 @@ def run_auto_indi_direct_opt(para):
 
 
 #%%
-################# 多进程执行函数 ########################################
-cpu_core = -1 # -1表示留1个进程不执行运算。
+core_num = -1
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_main_symbol_name_list()
-    timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
-                      "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
-                      "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
-                      "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
-                      "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
-    para_muilt = [(symbol,timeframe) for symbol in symbol_list for timeframe in timeframe_list]
-    import timeit
-    # ---开始多核执行，内容较少，不用分组。
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_auto_indi_direct_opt, para_muilt, core_num=cpu_core)
-    t1 = timeit.default_timer()
-    print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
+
+    def main_func():
+        timeframe_list = ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6",
+                          "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1",
+                          "TIMEFRAME_M30", "TIMEFRAME_M20", "TIMEFRAME_M15", "TIMEFRAME_M12",
+                          "TIMEFRAME_M10", "TIMEFRAME_M6", "TIMEFRAME_M5", "TIMEFRAME_M4",
+                          "TIMEFRAME_M3", "TIMEFRAME_M2", "TIMEFRAME_M1"]
+        para_muilt = [(symbol,timeframe) for symbol in symbol_list for timeframe in timeframe_list]
+        import timeit
+        # ---开始多核执行，内容较少，不用分组。
+        t0 = timeit.default_timer()
+        myBTV.muiltcore.multi_processing(run_auto_indi_direct_opt, para_muilt, core_num=core_num)
+        t1 = timeit.default_timer()
+        print("\n", 'run_auto_indi_opt 耗时为：', t1 - t0)
+    # ---
+    main_func()
 
 
 
