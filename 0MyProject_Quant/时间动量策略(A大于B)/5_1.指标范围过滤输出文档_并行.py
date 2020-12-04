@@ -69,7 +69,7 @@ rf_out = Range_Filter_Output()
 #%% ************ 需要修改的部分 ************
 rf_out.strategy_para_name = ["k", "holding", "lag_trade"]
 rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_out.in_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
+rf_out.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
 
 #%% ******修改这个函数******
 #  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
