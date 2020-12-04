@@ -55,41 +55,19 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 汇总目的在于为后续分析提供便利。
 '''
 
-# %%
-strat_para_name = ["k", "holding", "lag_trade"]
-order_list = [30, 40, 50]
-flevel_list = ["filter0", "filter1", "filter2"]
+#%%
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
+sum_choo = Sum_Auto_Choose()
 
+#%% ************ 需要修改的部分 ************
+sum_choo.strat_para_name = ["k", "holding", "lag_trade"]
+sum_choo.all_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
 
-# %%
-def run_flevel_concat(para):
-    symbol = para[0]
-    # 各过滤等级分别输出文档
-    for flevel in flevel_list:
-        total_df = pd.DataFrame()
-        # ---目录定位 ******修改这里******
-        total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究\\策略参数自动选择\\%s" % symbol
-        for order in order_list:
-            in_folder = total_folder + "\\auto_para_1D_{}".format(order)
-            in_file = in_folder + "\\" + "{}.{}.xlsx".format(symbol, flevel)
-            filecontent = pd.read_excel(in_file, index_col="Unnamed: 0")
-            total_df = pd.concat((total_df, filecontent), ignore_index=True)
-        # ---
-        total_df = total_df.sort_values(by=["symbol", "timeframe", "direct"] + strat_para_name, ignore_index=True)
-        total_df = total_df.drop_duplicates(ignore_index=True)
-        total_df.to_excel(total_folder + "\\{}.total.{}.xlsx".format(symbol, flevel))
-    print(symbol, "文档合并完成！")
-
-
-# %%
-core_num = -1
+#%%
+sum_choo.core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
-    para_muilt = [(symbol,) for symbol in symbol_list]
-    import timeit
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_flevel_concat, para_muilt, core_num=core_num)
-    t1 = timeit.default_timer()
-    print("\n", 'run_level_concat 耗时为：', t1 - t0)
+    # ---
+    sum_choo.main_func()
+
 

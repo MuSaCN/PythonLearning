@@ -63,83 +63,27 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-def run_direct_filter_result(para):
-    print("\r", "当前执行参数为：", para, end="", flush=True)
-    # para = ('Close', 200, 'sma', [101, 1, 1], 'BuyOnly', 'TIMEFRAME_D1', 'EURUSD')
-    symbol = para[-1]
-    timeframe = para[-2]
-    direct = para[-3]
-    [k, holding, lag_trade] = para[-4]
-    indi_name = para[-5]
-    indi_para = para[0:-5]
+from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_Output
+df_out = Direct_Filter_Output()
 
-    # ---获取数据
-    date_from, date_to = myMT5Pro.get_date_range(timeframe, to_Timestamp=True)
-    data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-    # 由于信号利润过滤是利用训练集的，所以要区分训练集和测试集
-    data_train, data_test = myMT5Pro.get_train_test(data=data_total, train_scale=0.8)
+#%% ******修改这里******
+# 策略参数名称，用于文档中解析参数 ***修改这里***
+df_out.strategy_para_name = ["k", "holding", "lag_trade"]
+df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+df_out.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
 
-    # ---获取训练集和整个样本的信号
-    # 获取训练集的信号 ******(修改这里)******
-    signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct,stra_mode="Reverse")
-    signal_train = signaldata_train[direct]
 
-    # ---(核心，在库中添加)获取指标
-    indicator = myBTV.indi.get_trend_indicator(data_total, indi_name, indi_para)
-
-    # ---信号方向过滤及测试
-    result = myBTV.dfilter.signal_direct_filter_and_quality(signal=signal_train, indicator=indicator, price_DataFrame=data_total, price_Series=data_total.Close, holding=1, lag_trade=1, noRepeatHold=True, indi_name=indi_name, indi_para=indi_para)
-    return result
+#%% ******修改这个函数******
+#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
+def stratgy_signal(price, sig_mode, stra_mode="Reverse", para_list=list or tuple):
+    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+df_out.stratgy_signal = stratgy_signal
 
 
 #%%
-core_num = -1
+df_out.core_num = -1
 if __name__ == '__main__':
-    # 策略参数名称，用于文档中解析参数 ***修改这里***
-    strategy_para_name = ["k", "holding", "lag_trade"]
-    symbol_list = myMT5Pro.get_all_symbol_name().tolist()
     # ---
-    finish_symbol = []
-    for symbol in symbol_list: # symbol = "EURUSD"
-        # if symbol in ['AUDCAD']:
-        #     finish_symbol.append(symbol)
-        #     continue
-
-        # ---定位文档 ******修改这里******
-        in_file = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究\\策略参数自动选择\\{}\\{}.total.{}.xlsx".format(symbol, symbol, "filter1")   # 固定只分析 filter1
-        out_folder = __mypath__.dirname(in_file, 2)
-        filecontent = pd.read_excel(in_file)
-        # ---解析，显然没有内容则直接跳过
-        for i in range(len(filecontent)):  # i=0
-            # ---解析文档
-            # 获取各参数
-            timeframe = filecontent.iloc[i]["timeframe"]
-            direct = filecontent.iloc[i]["direct"]
-            # 策略参数 ******修改这里******
-            k = filecontent.iloc[i][strategy_para_name[0]]
-            holding = filecontent.iloc[i][strategy_para_name[1]]
-            lag_trade = filecontent.iloc[i][strategy_para_name[2]]
-            strat_para = [k, holding, lag_trade]
-
-            # ******修改这里******
-            # 过滤规则为：只有主力品种才全部检测，其他品种只检测大的时间框。
-            if symbol not in myMT5Pro.get_main_symbol_name_list():
-                if timeframe not in ["TIMEFRAME_D1", "TIMEFRAME_H12", "TIMEFRAME_H8", "TIMEFRAME_H6", "TIMEFRAME_H4", "TIMEFRAME_H3", "TIMEFRAME_H2", "TIMEFRAME_H1"]:
-                    continue
-
-            # 输出的文档路径
-            suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
-            # ******修改这里******
-            out_file = out_folder + "\\方向指标参数自动选择\\{}.{}".format(symbol, timeframe) + "\\{}.{}.xlsx".format( direct, suffix)
-            # ---设定并行参数，分别设定再合并
-            rsi_params = [("Close", i) + ("sma", strat_para, direct, timeframe, symbol) for i in range(5, 500 + 1)]
-            multi_params = rsi_params
-            # ---开始多核执行
-            myBTV.muiltcore.run_concat_dataframe(run_direct_filter_result, multi_params, filepath=out_file, core_num=core_num)
-            print("para finished:", symbol, timeframe, direct, suffix)
-        # ---记录对应时间框下完成的品种
-        finish_symbol.append(symbol)
-        mylogging.warning("symbol finished: {}".format(finish_symbol))
-
+    df_out.main_func()
 
 

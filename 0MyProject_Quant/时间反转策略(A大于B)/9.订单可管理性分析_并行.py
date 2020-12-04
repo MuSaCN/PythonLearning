@@ -49,7 +49,6 @@ myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级�
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-
 '''
 # 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
 # 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
@@ -58,88 +57,25 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-# 策略参数名称，用于文档中解析参数 ******修改这里******
-strategy_para_name = ["k", "holding", "lag_trade"]
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_More_Holding
+more_h = Strat_More_Holding()
+
+#%% ******修改这里******
+more_h.strategy_para_name = ["k", "holding", "lag_trade"]
+more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
+more_h.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+
+
+#%% ******修改函数******
+#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
+def stratgy_signal(price, sig_mode, stra_mode="Reverse", para_list=list or tuple):
+    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+more_h.stratgy_signal = stratgy_signal
+
 
 #%%
-# ---并行执行订单可管理性分析
-def run_holding_extend(para):
-    symbol = para[0]  # symbol = "EURUSD"
-    print("%s 开始订单可管理性分析..." % symbol)
-    # ---定位策略参数自动选择文档，获取各组参数 ******修改这里******
-    total_folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_反转研究"
-    pool_file = total_folder + "\\策略池整合\\{}\\{}_strategy_pool.xlsx".format(symbol, symbol)  # 固定只分析 filter1
-    pool_filecontent = pd.read_excel(pool_file, header=[0,1]) # 多层表头
-    pool_filecontent = pool_filecontent["original"] if len(pool_filecontent) > 0 else pool_filecontent # 定位到无过滤内容
-    for i in range(len(pool_filecontent)):  # i=0
-        # ---解析文档
-        # 获取各参数
-        timeframe = pool_filecontent.iloc[i]["timeframe"]
-        direct = pool_filecontent.iloc[i]["direct"]
-        # 策略参数 ******修改这里******
-        k = pool_filecontent.iloc[i][strategy_para_name[0]]
-        holding = pool_filecontent.iloc[i][strategy_para_name[1]]
-        lag_trade = pool_filecontent.iloc[i][strategy_para_name[2]]
-        strat_para = [k, holding, lag_trade]
-        # 输出的路径
-        suffix = myBTV.string_strat_para(strategy_para_name, strat_para)
-        out_folder = __mypath__.dirname(pool_file) + "\\{}.{}.{}".format(timeframe, direct, suffix)
-        __mypath__.makedirs(out_folder, exist_ok=True)
-
-        # ---准备数据
-        date_from, date_to = myMT5Pro.get_date_range(timeframe)
-        data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-        data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
-        # 展开holding参数
-        holding_range = [holding for holding in range(1, 20 + 1)]
-
-        # ---策略训练集多holding回测，选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
-        label1, label2 = "sharpe", "winRate" # 让sharpe为红色，更明显
-        out_list1_NoRe, out_list2_NoRe, out_list1_Re, out_list2_Re = [] ,[] ,[], []
-        # ---
-        for holding in holding_range:
-            # 获取信号数据 ******修改这里******
-            signal = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Reverse")
-            # 信号分析，无重复持仓模式: signal_quality_NoRepeatHold / signal_quality
-            outStrat_NoRe, outSignal_NoRe = myBTV.signal_quality_NoRepeatHold(signal=signal[direct],price_DataFrame=data_train, holding=holding,lag_trade=lag_trade, plotStrat=False,)
-            out_list1_NoRe.append(outStrat_NoRe[direct][label1])
-            out_list2_NoRe.append(outStrat_NoRe[direct][label2])
-            # 信号分析，可重复持仓模式：
-            outStrat_Re, outSignal_Re = myBTV.signal_quality(signal=signal[direct],price_DataFrame=data_train,holding=holding, lag_trade=lag_trade,plotStrat=False, )
-            out_list1_Re.append(outStrat_Re[direct][label1])
-            out_list2_Re.append(outStrat_Re[direct][label2])
-        # ---
-        myfig.__init__(nrows=1,ncols=11,figsize=[1300,600],GridSpec=["[0:4]","[6:-1]"],AddFigure=True)
-        myplt.plot_twoline_twinx(out_list1_NoRe, out_list2_NoRe, label1, label2, color1= "r", color2="b", ax=myfig.axeslist[0],title="NoRepeatHold", show=False)
-        myplt.plot_twoline_twinx(out_list1_Re, out_list2_Re, label1, label2, color1= "r", color2="b", ax=myfig.axeslist[1],title="RepeatHold", show=False)
-        pic_path = out_folder + "\\订单可管理性.png"
-        myfig.savefig(pic_path)
-        # 并行运算释放内存
-        myfig.close(check=False)
-        plt.close()
-        plt.show()
-        del data_total, data_train, data_test, out_list1_NoRe, out_list2_NoRe, out_list1_Re, out_list2_Re
-        # 打印进度
-        print("finished:",symbol,timeframe,direct,suffix)
-    print(symbol, "finished!!!")
-    mylogging.warning("symbol finished: {}".format(symbol))
-
-#%%
-core_num = -1
+more_h.core_num = -1
 if __name__ == '__main__':
-    symbol_list = myMT5Pro.get_main_symbol_name_list()
-    mylogging.warning("symbol_list: {}".format(symbol_list))
-    # finished_symbol = []
-    # for symbol in symbol_list:
-    #     run_strategy_pool((symbol,))
-    #     finished_symbol.append(symbol)
-    #     print(finished_symbol)
-    para_muilt = [(symbol,) for symbol in symbol_list]
-    import timeit
-    # ---开始多核执行
-    t0 = timeit.default_timer()
-    myBTV.muiltcore.multi_processing(run_holding_extend, para_muilt, core_num=core_num)
-    t1 = timeit.default_timer()
-    print("\n", ' 耗时为：', t1 - t0)
-
+    # ---
+    more_h.main_func()
 

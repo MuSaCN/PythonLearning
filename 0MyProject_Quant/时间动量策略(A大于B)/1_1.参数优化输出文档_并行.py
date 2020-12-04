@@ -88,6 +88,11 @@ opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研
 opt.filename_prefix = "动量"
 
 #%% ******修改函数******
+#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
+def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
+    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+opt.stratgy_signal = stratgy_signal
+
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
     return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.k_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
@@ -98,11 +103,6 @@ def strat_break(strat_para):
     if strat_para[1] > strat_para[0]:
         return True
 opt.strat_break = strat_break
-
-#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
-def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
-    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
-opt.stratgy_signal = stratgy_signal
 
 
 #%%
