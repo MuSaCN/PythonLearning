@@ -198,9 +198,9 @@ myMT5Indi.get_oscillators(eurusd,"WPR",14)
 # Trend
 # ADX 平均趋向指数(Trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须一定数据后才相同)(注意，ADX，ADXW 在参数大时，与MT5结果不一样，因为无理数ema精度不一样)
 price_arug = ["High","Low","Close"] # 顺序不能搞错
-df = myMT5Indi.ADX(dataframe=eurusd, price_arug=price_arug, timeperiod=99)
+df = myMT5Indi.ADX(dataframe=eurusd, price_arug=price_arug, timeperiod=14)
 df1 = myMT5Indi.ADX(eurusd1, price_arug=price_arug, timeperiod=14)
-myMT5Indi.get_trend(eurusd,"ADX",14)
+myMT5Indi.get_trend(eurusd,"ADX",99)
 
 # AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["Open","High","Low","Close"]
