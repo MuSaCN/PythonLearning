@@ -51,7 +51,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_M1",[2020,12,4,0,0,0],[2020,12,5,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,12,4,0,0,0],[2020,12,5,0,0,0],index_time=True, col_capitalize=True)
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=True)
 
 
