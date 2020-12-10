@@ -256,7 +256,7 @@ sar = myMT5Indi.ParabolicSAR(eurusd,price_arug,0.02,0.2)
 sar1 = myMT5Indi.ParabolicSAR(eurusd1,price_arug,0.02,0.2)
 myMT5Indi.get_trend(eurusd,"ParabolicSAR",0.02,0.2)
 
-# StdDev 标准偏差指标(Trend类-幅图)(效率不高)，Standard Deviation，返回Series。
+# StdDev 标准偏差指标(Trend类-幅图)(除"MODE_SMA"外，其他效率不高)，Standard Deviation，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 stdde = myMT5Indi.StdDev(eurusd,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
 stdde1 = myMT5Indi.StdDev(eurusd1,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
