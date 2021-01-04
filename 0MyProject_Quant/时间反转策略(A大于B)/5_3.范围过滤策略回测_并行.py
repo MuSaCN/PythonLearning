@@ -76,7 +76,7 @@ def stratgy_signal(price, sig_mode, stra_mode="Reverse", para_list=list or tuple
 rf_bt.stratgy_signal = stratgy_signal
 
 #%%
-rf_bt.core_num = -1 # 注意，M1时间框数据量较大时，并行太多会爆内存。
+rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
 if __name__ == '__main__':
     # ---
     rf_bt.main_func()
