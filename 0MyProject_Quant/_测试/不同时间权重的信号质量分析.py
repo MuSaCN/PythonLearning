@@ -65,7 +65,7 @@ holding = 1
 k = 100
 lag_trade = 1
 
-# ---仅做多分析，获取训练集的信号数据
+# ---获取训练集的信号数据
 signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Continue")
 signal=signaldata["BuyOnly"]
 
