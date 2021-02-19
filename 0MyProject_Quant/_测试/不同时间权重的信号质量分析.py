@@ -49,8 +49,26 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 ###
 '''
-不同时间权重的信号质量分析 是不同于 简单的信号质量分析，后者每个信号的持有时间是相同的，所以是相同的时间权重。前者是每个信号的持有时间可能是不同的，所以既有入场信号、也有出场信号。根据交易哲学，我认为市场在多空方向上机制不同，所以这里的分析是把做多做空分开来看的。即如果在持有多仓未平仓的情况下，也可以持有空仓。
+# "不同时间权重的信号质量分析" 是不同于 "相同时间权重的信号质量分析"，后者每个信号的持有时间是相同的，所以是相同的时间权重。前者是每个信号的持有时间可能是不同的，所以既有入场信号、也有出场信号。
+# 根据交易哲学，我认为市场在多空方向上机制不同，所以这里的分析是把做多做空平仓的方式分开来看的。并不是多头必须要平仓才可以持有空仓。显然同一模式下入场信号的多空存在互斥，但是可能有在持有多仓未平仓的情况下，也可以出现做空信号而持有空仓。
+# 重叠的信号遵循先平后入。即做多信号与平多信号假如是同一个bar，则平多信号是平上一个做多的，做多信号是平仓后再次入场的，所以此bar依然有持仓。
 '''
+
+
+#%%
+### 重要测试：信号去重复 不等于 信号过程化
+signal = pd.Series([0,0,1,1,1,1,0,1,1,1,0,0,1,0,1,0])
+adj_signal = myBTV.__signal_no_repeat_hold__(signal, holding=2)
+#             前[0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0]
+#             后[0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0]
+# 由于持有2期 = [0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1] ≠ process
+
+signal_close = signal.shift(2)
+signal_close[signal_close == 1] = 2
+signal_process = myBTV.__get_signalprocess__(signal,signal_close,1,2)
+# signal  [0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0]
+# close   [n, n, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2, 0, 0, 2, 0]
+# process [0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1] ≠ 持有2期
 
 #%%
 # ---获取数据
@@ -66,25 +84,32 @@ k = 100
 lag_trade = 1
 
 # ---获取训练集的信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Continue")
-signal=signaldata["BuyOnly"]
+signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="All", stra_mode="Continue")
+signaldata = signaldata[0:50]
+signal_in = signaldata["All"]
+
 
 #%%
-signal.iloc[1] = 1
-signal.iloc[5] = 1
-signal.iloc[6] = 1
-signal.iloc[9] = 1
+# 信号分析，用于对比，只有holding=1才可以对比
+outStrat0, outSignal0 = myBTV.signal_quality_NoRepeatHold(signal_in, price_DataFrame=eurusd, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1)
+outStrat1, outSignal1 = myBTV.signal_quality(signal_in, price_DataFrame=eurusd, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1)
 
-signal2 = signal[0:14]
-# 做多出场信号设为2，做空出场信号设为-2
-signalout = signal2.copy()
-signalout.iloc[3] = 2
-signalout.iloc[6] = 2
-signalout.iloc[7] = 2
-signalout.iloc[11] = 2
 
 #%%
-myBTV.__get_signalprocess__(signal2,signalout,in_num=1,close_num=2)
+signalbuy = signaldata["BuyOnly"]
+signalsell = signaldata["SellOnly"]
+signal_closebuy = signalbuy.shift(1)
+signal_closebuy[signal_closebuy == 1] = 2
+signal_closesell = signalsell.shift(1)
+signal_closesell[signal_closesell == -1] = -2
+
+# 信号分析
+outStrat, outSignal = myBTV.signal_quality_NoEqualTimeWeight(signal_in, signal_closebuy, signal_closesell, price_DataFrame=eurusd, price_Series=price, lag_trade=lag_trade, plotRet=False, plotStrat=True, train_x0=train_x0, train_x1=train_x1, savefig=None, ax1=None, ax2=None, show=True, return_Ret=False)
+
+
+
+
+
 
 
 
