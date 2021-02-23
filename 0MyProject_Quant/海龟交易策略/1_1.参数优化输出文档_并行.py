@@ -89,15 +89,15 @@ opt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动
 opt.filename_prefix = "海龟动量"
 
 #%% ******修改函数******
-#  para_list策略参数，默认-1为lag_trade，-2为holding。
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
     return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
 opt.stratgy_signal = stratgy_signal
 
-#%%
+#%% ******修改函数******
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
-    return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
+    return [(n, holding, lag_trade, direct, timeframe, symbol) for n in range(2, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
 opt.get_strat_para_scope = get_strat_para_scope
 
 # 策略退出条件，strat_para = (k, holding, lag_trade)。
@@ -108,7 +108,7 @@ opt.strat_break = strat_break
 
 
 #%%
-opt.core_num = 7
+opt.core_num = 7 # 具体指定，不能是-1，要显示进度
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
