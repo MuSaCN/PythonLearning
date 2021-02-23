@@ -61,7 +61,7 @@ price = eurusd.Close   # 设定价格为考虑收盘价
 holding = 1
 k = 109
 # 获取信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Continue")
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
 # 信号分析
 outStrat, outSignal = myBTV.signal_quality(signaldata["buysignal"], price_DataFrame=eurusd, holding=holding, lag_trade=1, plotRet=True, plotStrat=True)
 myBTV.signal_quality_explain()
@@ -95,7 +95,7 @@ for k in range(1, k_end + 1):
         # 退出条件
         if holding > k: continue
         # 获取信号数据
-        signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Continue")
+        signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
         # 信号分析
         outStrat, outSignal = myBTV.signal_quality(signaldata["buysignal"], price_DataFrame=eurusd, holding=holding, lag_trade=1, plotRet=False, plotStrat=False)
         # 设置信号统计
@@ -155,7 +155,7 @@ for para in paralist:
     # 退出条件
     if holding > k: continue
     # 获取信号数据
-    signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode=sig_mode, stra_mode="Continue")
+    signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
     # 信号分析
     outStrat, outSignal = myBTV.signal_quality(signaldata[signalname], price_DataFrame=eurusd, holding=holding, lag_trade=lag_trade, plotRet=False, plotStrat=False)
     # 设置信号统计

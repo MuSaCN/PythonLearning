@@ -85,32 +85,14 @@ opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
 opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
 opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-opt.total_folder = "F:\\工作---策略研究\\简单的海龟策略\\_动量研究"
-opt.filename_prefix = "动量"
+opt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+opt.filename_prefix = "海龟动量"
 
-############################################
-# 函数要重写，类里面的也要重写，测试下类里面的重构，修改下全部
 #%% ******修改函数******
-#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
-def stratgy_signal(dataframe, sig_mode, para_list=list or tuple):
-    # ---上下轨道指标
-    indi_df = myMT5Indi.Donachian_Channel(dataframe, price_arug= ["High", "Low"], timeperiod=para_list[0])
-    # ---信号数据
-    signaldata = pd.concat([dataframe["Close"],indi_df,
-                            pd.Series(0, index=dataframe.index),
-                            pd.Series(0, index=dataframe.index),
-                            pd.Series(0, index=dataframe.index)], axis=1)
-    signaldata.columns = ["", "price_shift1", "price_shift", "BuyOnly", "SellOnly", "All"]
-
-    # ---
-    if sig_mode == "BuyOnly":
-
-
-
-
-    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+#  para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
 opt.stratgy_signal = stratgy_signal
-
 
 #%%
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)

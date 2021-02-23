@@ -83,7 +83,7 @@ for k in k_range:
     for holding in holding_range:
         for lag_trade in lag_trade_range:
             # ---获取信号数据
-            signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct, stra_mode="Continue")
+            signaldata_buy = myBTV.stra.momentum(data_total.Close, k=k, stra_mode="Continue")
 
             # ---(核心，在库中添加)获取指标
             indicator = myBTV.indi.get_trend_indicator(data_total, "sma", ['Close', 485])

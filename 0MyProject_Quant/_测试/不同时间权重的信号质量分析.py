@@ -84,7 +84,7 @@ k = 100
 lag_trade = 1
 
 # ---获取训练集的信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="All", stra_mode="Continue")
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
 signaldata = signaldata[0:50]
 signal_in = signaldata["All"]
 

@@ -68,8 +68,9 @@ more_h.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转
 
 #%% ******修改函数******
 #  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(price, sig_mode, stra_mode="Reverse", para_list=list or tuple):
-    return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
+def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
+    price = dataframe["Close"]
+    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
 more_h.stratgy_signal = stratgy_signal
 
 

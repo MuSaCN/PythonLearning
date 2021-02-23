@@ -65,7 +65,7 @@ k = 100
 lag_trade = 1
 
 # ---仅做多分析，获取训练集的信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="BuyOnly", stra_mode="Continue")
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
 signal=signaldata["buysignal"]
 
 # ---根据指标范围来过滤信号
@@ -93,7 +93,7 @@ k = 100
 lag_trade = 1
 
 # ---仅做空分析，获取训练集的信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="SellOnly", stra_mode="Continue")
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
 signal=signaldata["sellsignal"]
 
 # ---根据指标范围来过滤信号
@@ -121,8 +121,8 @@ k = 100
 lag_trade = 1
 
 # ---多空分析，获取训练集的信号数据
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode="All", stra_mode="Continue")
-signal=signaldata["allsignal"]
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
+signal=signaldata["All"]
 
 # ---根据指标范围来过滤信号
 signal_filter = signal.copy()

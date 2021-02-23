@@ -78,11 +78,11 @@ lag_trade = 1
 trade_direct = "All" # "BuyOnly","SellOnly","All"
 
 # ---获取训练集的信号
-signaldata_train = myBTV.stra.momentum(price_train, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
+signaldata_train = myBTV.stra.momentum(price_train, k=k, stra_mode="Continue")
 signal_train = signaldata_train[trade_direct]
 
 # ---计算整个样本的信号
-signaldata = myBTV.stra.momentum(price, k=k, holding=holding, sig_mode=trade_direct, stra_mode="Continue")
+signaldata = myBTV.stra.momentum(price, k=k, stra_mode="Continue")
 signal = signaldata[trade_direct]
 
 #%%

@@ -83,9 +83,9 @@ data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, 
 #%%
 # ---获取训练集和全集的信号
 # 获取训练集的信号 ******(修改这里)******
-signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, holding=holding, sig_mode=direct,stra_mode="Reverse")
+signaldata_train = myBTV.stra.momentum(data_train.Close, k=k, stra_mode="Reverse")
 signal_train = signaldata_train[direct]
-signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, holding=holding, sig_mode=direct,stra_mode="Reverse")
+signaldata_all = myBTV.stra.momentum(data_total.Close, k=k, stra_mode="Reverse")
 signal_all = signaldata_all[direct]
 
 # ---(核心，在库中添加)获取指标 ******(修改这里)******
