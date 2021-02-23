@@ -14,7 +14,7 @@ from scipy import stats
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
 
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\参数优化.log") # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\海龟交易策略参数优化.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
@@ -53,10 +53,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 ""
 # 策略说明：
 '''
-# 动量策略，采用最简单的动量计算形式：
-# 当天的收盘价A1 大于 过去某一期的收盘价B1，表示上涨动量会持续，则触发买入信号；
-# 当天的收盘价A2 小于 过去某一期的收盘价B2，表示下跌动量会持续，则触发卖出信号；
-# 信号触发后，下一期(或下n期)进行交易。持有仓位周期为1根K线。
+# 公开版海龟交易策略，运用唐奇安通道突破来入场，其中唐奇安通道本质就是bar之前的N个周期极值：
+# 只考虑入场，出场模式放在其他地方考虑。
+# 向上突破通道，触发做多信号；向下突破通道，触发做空信号。
+# 信号触发且确认后，下一期进行交易。持有仓位周期为1根K线。
 '''
 
 '''
@@ -77,19 +77,22 @@ opt = Strategy_Param_Opt_OutPut()
 
 #%% ************ 需要修改的部分 ************
 # 策略参数，设置范围的最大值，按顺序保存在 para 的前面
-opt.strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
-opt.para1_end = 400             # 动量向左参数
+opt.strategy_para_names = ["n", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
+opt.para1_end = 300         # 通道周期参数
 opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
 opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
 opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究test"
-opt.filename_prefix = "反转"
+opt.total_folder = "F:\\工作---策略研究\\简单的海龟策略\\_突破研究"
+opt.filename_prefix = "突破"
 
+
+
+############################################
 #%% ******修改函数******
 #  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
-def stratgy_signal(price, sig_mode, stra_mode="Reverse", para_list=list or tuple):
+def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
     return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
 opt.stratgy_signal = stratgy_signal
 

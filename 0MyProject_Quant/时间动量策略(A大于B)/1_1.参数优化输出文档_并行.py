@@ -78,7 +78,7 @@ opt = Strategy_Param_Opt_OutPut()
 #%% ************ 需要修改的部分 ************
 # 策略参数，设置范围的最大值，按顺序保存在 para 的前面
 opt.strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
-opt.k_end = 400             # 动量向左参数
+opt.para1_end = 400             # 动量向左参数
 opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
@@ -95,7 +95,7 @@ opt.stratgy_signal = stratgy_signal
 
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
-    return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.k_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
+    return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
 opt.get_strat_para_scope = get_strat_para_scope
 
 # 策略退出条件，strat_para = (k, holding, lag_trade)。
