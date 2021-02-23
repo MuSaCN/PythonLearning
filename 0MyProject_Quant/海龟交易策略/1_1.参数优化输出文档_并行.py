@@ -47,7 +47,8 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
+myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 ""
@@ -55,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 # 公开版海龟交易策略，运用唐奇安通道突破来入场，其中唐奇安通道本质就是bar之前的N个周期极值：
 # 只考虑入场，出场模式放在其他地方考虑。
-# 向上突破通道，触发做多信号；向下突破通道，触发做空信号。
+# 向上突破通道，close大于通道上轨，触发做多信号；向下突破通道，close小于通道下轨，触发做空信号。
 # 信号触发且确认后，下一期进行交易。持有仓位周期为1根K线。
 '''
 
@@ -84,18 +85,34 @@ opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
 opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
 opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-opt.total_folder = "F:\\工作---策略研究\\简单的海龟策略\\_突破研究"
-opt.filename_prefix = "突破"
-
-
+opt.total_folder = "F:\\工作---策略研究\\简单的海龟策略\\_动量研究"
+opt.filename_prefix = "动量"
 
 ############################################
+# 函数要重写，类里面的也要重写，测试下类里面的重构，修改下全部
 #%% ******修改函数******
 #  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
-def stratgy_signal(price, sig_mode, stra_mode="Continue", para_list=list or tuple):
+def stratgy_signal(dataframe, sig_mode, para_list=list or tuple):
+    # ---上下轨道指标
+    indi_df = myMT5Indi.Donachian_Channel(dataframe, price_arug= ["High", "Low"], timeperiod=para_list[0])
+    # ---信号数据
+    signaldata = pd.concat([dataframe["Close"],indi_df,
+                            pd.Series(0, index=dataframe.index),
+                            pd.Series(0, index=dataframe.index),
+                            pd.Series(0, index=dataframe.index)], axis=1)
+    signaldata.columns = ["", "price_shift1", "price_shift", "BuyOnly", "SellOnly", "All"]
+
+    # ---
+    if sig_mode == "BuyOnly":
+
+
+
+
     return myBTV.stra.momentum(price=price, k=para_list[0], holding=para_list[1], sig_mode=sig_mode, stra_mode=stra_mode)
 opt.stratgy_signal = stratgy_signal
 
+
+#%%
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
     return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
