@@ -47,6 +47,7 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+mypd.__init__(None,0)
 #%%
 import warnings
 warnings.filterwarnings('ignore')
@@ -63,7 +64,15 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 # price = myMT5Indi.applied_price(eurusd, price_arug=price_arug, mode=InpAppliedPrice)
 # func = myMT5Indi.ma_method_func(mode=InpMAMethod)
 
+#%%
+# Custom类
 
+# Donachian_Channel 唐奇安通道，返回series.
+price_arug = ["High", "Low"]
+df = myMT5Indi.Donachian_Channel(eurusd, price_arug=price_arug, timeperiod=20)
+
+
+#%%
 # Bill Williams类
 # Accelerator 加速振荡指标(Bill Williams类-幅图)，Accelerator Oscillator，返回series.
 price_arug = ["High","Low"]
