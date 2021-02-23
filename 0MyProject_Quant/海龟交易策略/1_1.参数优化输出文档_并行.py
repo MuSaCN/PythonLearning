@@ -108,7 +108,7 @@ opt.strat_break = strat_break
 
 
 #%%
-opt.core_num = 7 # 具体指定，不能是-1，要显示进度
+opt.core_num = 11 # 具体指定，不能是-1，要显示进度
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
