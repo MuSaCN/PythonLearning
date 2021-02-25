@@ -86,6 +86,7 @@ sum_choo = Sum_Auto_Choose()
 sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
 sum_choo.all_folder = choose_opt.total_folder
 sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
+sum_choo.file_suffix = ".original" # 输出的文档加后缀，""表示不加，加词缀要加点号".original"
 sum_choo.core_num = -1
 
 #%%
