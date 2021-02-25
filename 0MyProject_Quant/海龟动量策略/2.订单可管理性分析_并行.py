@@ -62,6 +62,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
 more_h = Auto_More_Holding()
 
+
 #%% ******修改这里******
 more_h.strategy_para_name = ["n", "holding", "lag_trade"]
 more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
@@ -70,6 +71,7 @@ more_h.label1, more_h.label2 = "sharpe", "winRate"  # 策略训练集多holding�
 more_h.readfile_suffix = ".original" # 输入的文档加后缀，""表示不加，加词缀要加点号".original"
 more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
 more_h.holding_testcount = 3 # 测试到的holding数量
+
 
 #%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
