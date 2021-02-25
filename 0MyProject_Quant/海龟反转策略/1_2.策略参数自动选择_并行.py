@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 
-#%% ###### 策略参数自动选择 ###########
+#%% ############################## 策略参数自动选择 ###########################
 from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Auto_Choose_StratOptParam
 choose_opt = Auto_Choose_StratOptParam()
 myDefault.set_backend_default("agg") # 这句必须放到类下面
@@ -72,17 +72,17 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 choose_opt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟反转研究"
 choose_opt.filename_prefix = "海龟反转"
 choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}]
+choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}] # key词缀不能搞错了
 
 #%%
 choose_opt.y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 choose_opt.core_num = -1 # -1表示留1个进程不执行运算。
 
-#%% ###### 汇总品种不同过滤结果 ###########
+#%% ######################### 汇总品种不同过滤结果 #########################
 from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
 sum_choo = Sum_Auto_Choose()
 
-#%% ************ 需要修改的部分 ************
+#%% ************ 可能需要修改的部分 ************
 sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
 sum_choo.all_folder = choose_opt.total_folder
 sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()

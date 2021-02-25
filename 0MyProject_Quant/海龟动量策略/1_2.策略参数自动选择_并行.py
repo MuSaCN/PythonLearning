@@ -56,8 +56,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 4.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
 # 5.为下一步批量自动回测做准备。
 '''
+''' 汇总过滤结果：
+# 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
+# 保存到 ...\_**研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
+# 汇总目的在于为后续分析提供便利。
+'''
 
-#%%
+#%% ##################### 策略参数自动选择 ###########################
 from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Auto_Choose_StratOptParam
 choose_opt = Auto_Choose_StratOptParam()
 myDefault.set_backend_default("agg") # 这句必须放到类下面
@@ -66,15 +71,31 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 choose_opt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
 choose_opt.filename_prefix = "海龟动量"
 choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}]
+choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}] # key词缀不能搞错了
 
 #%%
 choose_opt.y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
 choose_opt.core_num = -1 # -1表示留1个进程不执行运算。
+
+#%% ########################### 汇总品种不同过滤结果 ############################
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
+sum_choo = Sum_Auto_Choose()
+
+#%% ************ 可能需要修改的部分 ************
+sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
+sum_choo.all_folder = choose_opt.total_folder
+sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
+sum_choo.core_num = -1
+
+#%%
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
+    print("开始策略参数自动选择_并行")
     choose_opt.main_func()
+    # ---
+    print("开始汇总品种不同过滤结果_并行")
+    sum_choo.main_func()
 
 
 
