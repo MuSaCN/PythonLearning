@@ -62,6 +62,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
 strat_bt = Strategy_BackTest()
 
+
 #%% ************ 需要修改的部分 ************
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
 strat_bt.para_name = ["n", "holding", "lag_trade"]
@@ -75,6 +76,7 @@ strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
 def stratgy_signal(dataframe, para_list=list or tuple):
     return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
 strat_bt.stratgy_signal = stratgy_signal
+
 
 #%%
 ################# 多进程执行函数 ########################################
