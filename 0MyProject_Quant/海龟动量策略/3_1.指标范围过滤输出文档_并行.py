@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -8,9 +11,10 @@ import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 
-# ------------------------------------------------------------
+#------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标范围过滤输出文档.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -45,49 +49,46 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-# ------------------------------------------------------------
-
+#------------------------------------------------------------
 
 
 '''
-说明：
-# 由于优化结果被保存在硬盘，所以读取后解析参数和策略结果就可以进行分析。
-# 在多个参数的情况下，为了分析需要把一些参数取固定值、另一些参数不取固定值。需要通过字典传递。
-# 在分析最佳参数时，需要进行 单独测试 来观察图示。
-# 注意使用的表格是基于训练集样本，与后面的分析用全集样本时的sharpe不一样。
+# 说明
+# 1.根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
+# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
+# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
+# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
+# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
+# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
+# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
 '''
 
+#%%
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_Output
+rf_out = Range_Filter_Output()
 
-#%% 根据 非策略参数 定位文件 ###########################
-import warnings
-warnings.filterwarnings('ignore')
+#%% ************ 需要修改的部分 ************
+rf_out.strategy_para_name = ["n", "holding", "lag_trade"]
+rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_out.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+rf_out.readfile_suffix = ".holdingtest"
 
-# direct_para = ["BuyOnly","SellOnly","All"]
-symbol_list = ["EURUSD"]
-timeframe_list = ["TIMEFRAME_D1"]
+#%% ******修改这个函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+rf_out.stratgy_signal = stratgy_signal
+
+#%%
+rf_out.core_num = -1
+if __name__ == '__main__':
+    # ---
+    rf_out.main_func()
 
 
-#%% 根据 策略参数 分析 ############################
-# ---画参数图1D
-# k 动量向左参数；holding 必须小于 k
-symbol = symbol_list[0]
-timeframe = timeframe_list[0]
-direct = "BuyOnly"  # 0-"BuyOnly", 1-"SellOnly", 2-"All"
 
-# para_fixed = {"k":100, "holding":1, "lag_trade":None}
-# para_fixed = {"k":None, "holding":1, "lag_trade":1}
-# para_fixed = {"k":[0,400], "holding":1, "lag_trade":1}
-para_fixed = {"n":65, "holding":1, "lag_trade":1}
 
-folder = "F:\\工作---策略研究\\简单的动量反转" + "\\_动量研究\\{}.{}".format(symbol, timeframe)
-filepath = folder + "\\动量_{}.xlsx".format(direct)  # 选择训练集文件
-filecontent = pd.read_excel(filepath)
 
-y_name = ["sharpe"] # ["sharpe", "calmar_ratio", "cumRet"]
-
-myBTV.plot_strat_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, output=False)
-
-myBTV.auto_strat_para_1D(filepath=filepath, filecontent=filecontent, para_fixed=para_fixed, y_name=y_name, order=30, filterlevel=0, plot=True, savefolder=None, batch=False)
 
 
 

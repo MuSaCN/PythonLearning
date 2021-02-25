@@ -13,8 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\范围过滤策略回测.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\订单可管理性分析.log") # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -52,45 +51,36 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 '''
-# 说明
-# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
-# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
-# 根据训练集获取过滤区间，然后作用到整个样本。
-# 并行以品种来并行，以时间框来分组。
-# 由于指标较多，并行运算时间长，防止出错输出日志。
+# 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
+# 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
+# 采用无重复持仓模式和重复持仓模式。
+# 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
+# 并行运算以品种来并行
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_BackTest
-rf_bt = Range_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
+more_h = Auto_More_Holding()
 
-#%% ************ 需要修改的部分 ************
-rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+
+#%% ******修改这里******
+more_h.strategy_para_name = ["n", "holding", "lag_trade"]
+more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
+more_h.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+more_h.readfile_suffix = ".original" # 输入的文档加后缀
+more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
+
 
 #%% ******修改函数******
-# sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
-    price = dataframe["Close"]
-    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
-rf_bt.stratgy_signal = stratgy_signal
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+more_h.stratgy_signal = stratgy_signal
+
 
 #%%
-rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
+more_h.core_num = -1
 if __name__ == '__main__':
     # ---
-    rf_bt.main_func()
-
-
-
-
-
-
-
-
-
-
-
+    more_h.main_func()
 

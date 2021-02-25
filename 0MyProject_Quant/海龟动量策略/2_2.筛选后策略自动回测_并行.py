@@ -13,8 +13,6 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\范围过滤策略回测.log") # 日志记录类，需要放在上面才行
-
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -52,42 +50,39 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 '''
-# 说明
-# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
-# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
-# 根据训练集获取过滤区间，然后作用到整个样本。
-# 并行以品种来并行，以时间框来分组。
-# 由于指标较多，并行运算时间长，防止出错输出日志。
+# 0.这里的回测是建立在前面已经对策略的参数做了选择。
+# 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
+# 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
+# 3.策略测试所用的区间要增大。
+# 4.回测结果较多，构成策略库供后续选择研究。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_BackTest
-rf_bt = Range_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
+strat_bt = Strategy_BackTest()
 
 #%% ************ 需要修改的部分 ************
-rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
+strat_bt.para_name = ["n", "holding", "lag_trade"]
+strat_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+strat_bt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
 
-#%% ******修改函数******
-# sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
-    price = dataframe["Close"]
-    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
-rf_bt.stratgy_signal = stratgy_signal
+
+#%% ******修改这个函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+strat_bt.stratgy_signal = stratgy_signal
 
 #%%
-rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
+################# 多进程执行函数 ########################################
+strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
+# ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
-    rf_bt.main_func()
-
-
-
-
-
-
+    strat_bt.main_func()
 
 
 
