@@ -93,7 +93,7 @@ sum_choo.core_num = -1
 if __name__ == '__main__':
     # ---
     print("开始策略参数自动选择_并行")
-    #choose_opt.main_func()
+    choose_opt.main_func()
     # ---
     print("开始汇总品种不同过滤结果_并行")
     sum_choo.main_func()
