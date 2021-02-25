@@ -63,10 +63,10 @@ choose_opt = Auto_Choose_StratOptParam()
 myDefault.set_backend_default("agg") # 这句必须放到类下面
 
 #%% ************ 需要修改的部分 ************
-choose_opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
-choose_opt.filename_prefix = "动量"
+choose_opt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+choose_opt.filename_prefix = "海龟动量"
 choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choose_opt.para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}] # 仅检测 holding=1
+choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}]
 
 #%%
 choose_opt.y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
