@@ -58,20 +58,19 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_More_Holding
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strat_More_Holding
 more_h = Strat_More_Holding()
 
 #%% ******修改这里******
-more_h.strategy_para_name = ["k", "holding", "lag_trade"]
+more_h.strategy_para_name = ["n", "holding", "lag_trade"]
 more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
-more_h.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
-
+more_h.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+more_h.file_suffix = ".original" # 输出的文档加后缀，""表示不加，加词缀要加点号".original"
 
 #%% ******修改函数******
-#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
-    price = dataframe["Close"]
-    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
 more_h.stratgy_signal = stratgy_signal
 
 
