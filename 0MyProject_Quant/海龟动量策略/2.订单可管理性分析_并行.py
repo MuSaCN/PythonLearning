@@ -54,12 +54,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
 # 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
 # 采用无重复持仓模式和重复持仓模式。
+# 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
 # 并行运算以品种来并行
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.More_Holding import Strat_More_Holding
-more_h = Strat_More_Holding()
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
+more_h = Auto_More_Holding()
 
 #%% ******修改这里******
 more_h.strategy_para_name = ["n", "holding", "lag_trade"]
