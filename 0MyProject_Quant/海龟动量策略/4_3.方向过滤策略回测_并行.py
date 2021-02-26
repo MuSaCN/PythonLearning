@@ -71,14 +71,13 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 #%%
 rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+rf_bt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
 
 
 #%% ******修改函数******
-# sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
-    price = dataframe["Close"]
-    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
 rf_bt.stratgy_signal = stratgy_signal
 
 

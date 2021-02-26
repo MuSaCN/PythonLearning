@@ -13,7 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\方向过滤策略回测.log") # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标方向过滤输出文档.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
@@ -52,57 +52,39 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 
-
 '''
-# 说明
-# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
-# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，分别展示 过滤前训练集价格和指标、过滤前训练集策略、过滤后全集价格和指标、过滤后全集策略以及训练集策略。
-# 方向过滤作用到整个样本。
-# 并行以品种来并行，以时间框来分组。
-# 由于指标较多，并行运算时间长，防止出错输出日志。
+# 说明：
+# 1.根据趋势性指标进行策略方向性过滤。价格在指标上方，只做多、不做空；价格在指标下方，只做空，不做多。
+# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
+# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
+# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
+# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
+# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
+# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_BackTest
-rf_bt = Direct_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
+from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_Output
+df_out = Direct_Filter_Output()
+
+#%% ******修改这里******
+# 策略参数名称，用于文档中解析参数 ***修改这里***
+df_out.strategy_para_name = ["n", "holding", "lag_trade"]
+df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+df_out.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+
+
+#%% ******修改这个函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+df_out.stratgy_signal = stratgy_signal
 
 
 #%%
-rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
-
-
-#%% ******修改函数******
-# sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数
-def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
-    price = dataframe["Close"]
-    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
-rf_bt.stratgy_signal = stratgy_signal
-
-
-#%%
-rf_bt.core_num = -1
+df_out.core_num = -1
 if __name__ == '__main__':
     # ---
-    rf_bt.main_func()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    df_out.main_func()
 
 
