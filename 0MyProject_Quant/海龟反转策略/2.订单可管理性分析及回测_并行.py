@@ -78,7 +78,7 @@ more_h.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟
 more_h.readfile_suffix = ".original" # 输入的文档加后缀
 more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
 more_h.core_num = -1
-
+more_h.holding_testcount = 2  # 测试到的holding数量
 
 #%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
