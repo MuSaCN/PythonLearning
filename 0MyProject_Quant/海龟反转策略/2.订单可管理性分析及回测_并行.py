@@ -106,8 +106,8 @@ strat_bt.stratgy_signal = stratgy_signal
 
 if __name__ == '__main__':
     # ---
-    print("开始订单可管理性分析：")
+    print("开始订单可管理性分析： ")
     more_h.main_func()
-    print("开始筛选后策略自动回测：")
+    print("开始筛选后策略自动回测： ")
     strat_bt.main_func()
 
