@@ -79,22 +79,23 @@ opt = Strategy_Param_Opt_OutPut()
 #%% ************ 需要修改的部分 ************
 # 策略参数，设置范围的最大值，按顺序保存在 para 的前面
 opt.strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
-opt.para1_end = 400             # 动量向左参数
+opt.para1_end = 300         # 动量向左参数
 opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
 opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
 opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究test"
+opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
 opt.filename_prefix = "动量"
 
 #%% ******修改函数******
-#  sig_mode方向、stra_mode策略模式(默认值重要，不明写)、para_list策略参数。
+#  para_list策略参数、stra_mode策略模式(默认值重要，不明写)。
 def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Continue"):
     price = dataframe["Close"]
     return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
 opt.stratgy_signal = stratgy_signal
 
+#%% ******修改函数******
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
     return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
@@ -108,7 +109,7 @@ opt.strat_break = strat_break
 
 
 #%%
-opt.core_num = 7
+opt.core_num = 11 # 具体指定，不能是-1，要显示进度
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---

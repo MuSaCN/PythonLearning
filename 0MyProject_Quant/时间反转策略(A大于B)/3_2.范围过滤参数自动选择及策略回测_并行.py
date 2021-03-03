@@ -13,6 +13,8 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\范围过滤策略回测.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -49,55 +51,65 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-''' 自动选择部分：
-# 1.根据前面输出的优化结果，自动寻找最佳参数点。由于品种较多，再算上极值点判断方法，耗时较长，故采用多核运算。
-# 2.自动寻找的思路为：对 过滤0次、过滤1次、过滤2次 的数据寻找极值点。会输出图片和表格。注意过滤后的数据判断完极值后，会根据其位置索引到源数据，再组成表格的内容。注意图片中的过滤部分极值，并没有更改为源数据，仅表格更改了。
-# 3.并行运算必须处理好图片释放内存的问题，且并行逻辑与目录逻辑不一样要一样。此处是以品种作为并行方案。
-# 4.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
-# 5.为下一步批量自动回测做准备。
+
 '''
-''' 汇总过滤结果：
-# 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
-# 保存到 ...\_**研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
-# 汇总目的在于为后续分析提供便利。
+# 1.根据前面 信号利润过滤测试 输出的文档，解析文档名称，读取参数，选择极值。
+# 2.一个特定的策略参数作为一个目录，存放该下面所有指标的结果。
+# 3.不同名称的指标会自动判断极值，且输出图片。最后会输出表格文档，整理这些极值。
+# 4.由于不是大型计算，并行是一次性所有并行。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
+'''
+'''
+# 说明
+# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
+# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
+# 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
+# 根据训练集获取过滤区间，然后作用到整个样本。
+# 并行以品种来并行，以时间框来分组。
+# 由于指标较多，并行运算时间长，防止出错输出日志。
 '''
 
+#%%
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Auto_Choose_RFilter_Param
+choo_para = Auto_Choose_RFilter_Param()
+myDefault.set_backend_default("agg")
 
-#%% ############################## 策略参数自动选择 ###########################
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Auto_Choose_StratOptParam
-choose_opt = Auto_Choose_StratOptParam()
-myDefault.set_backend_default("agg") # 这句必须放到类下面
 
 #%% ************ 需要修改的部分 ************
-choose_opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
-choose_opt.filename_prefix = "动量"
-choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choose_opt.para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}] # key词缀不能搞错了
+choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choo_para.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+choo_para.core_num = -1 # -1表示留1个进程不执行运算。
+
 
 #%%
-choose_opt.y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
-choose_opt.core_num = -1 # -1表示留1个进程不执行运算。
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_BackTest
+rf_bt = Range_Filter_BackTest()
+myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
-#%% ######################### 汇总品种不同过滤结果 #########################
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
-sum_choo = Sum_Auto_Choose()
 
-#%% ************ 可能需要修改的部分 ************
-sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
-sum_choo.all_folder = choose_opt.total_folder
-sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
-sum_choo.outfile_suffix = ".original" # 输出的文档加后缀
-sum_choo.core_num = -1
+#%% ************ 需要修改的部分 ************
+rf_bt.symbol_list = choo_para.symbol_list
+rf_bt.total_folder = choo_para.total_folder
+rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
 
-#%%
+
+#%% ******修改函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
+    price = dataframe["Close"]
+    return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
+rf_bt.stratgy_signal = stratgy_signal
+
+
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
-    print("开始策略参数自动选择_并行")
-    choose_opt.main_func()
-    # ---
-    print("开始汇总品种不同过滤结果_并行")
-    sum_choo.main_func()
+    print("开始范围过滤参数自动选择：")
+    choo_para.main_func()
+    print("开始范围过滤策略回测：")
+    rf_bt.main_func()
+
+
 
 
 

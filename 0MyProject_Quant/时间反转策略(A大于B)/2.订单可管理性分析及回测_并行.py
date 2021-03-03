@@ -1,7 +1,7 @@
 # Author:Zhang Yuan
 import warnings
 warnings.filterwarnings('ignore')
-#
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -13,9 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\参数优化.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\订单可管理性分析.log") # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -51,71 +49,67 @@ myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级�
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
-""
-# 策略说明：
-'''
-# 反转策略，采用最简单的反转计算形式：
-# 当天的收盘价A1 小于 过去某一期的收盘价B1，表示下跌会反转，则触发买入信号；
-# 当天的收盘价A2 大于 过去某一期的收盘价B2，表示上涨会反转，则触发卖出信号；
-# 信号触发后，下一期(或下n期)进行交易。持有仓位周期为1根K线。
-'''
 
 '''
-# 参数优化说明：
-# 参数优化部分，需要专门设定训练集和测试集。由于参数较多，不可能都通过图示。所以，通过训练集来计算出各个参数下策略结果，安全起见保存结果到硬盘。
-# 再根据训练集参数优化的结果，计算对应参数下测试集策略结果，把结果保存到硬盘。
-# 整合两个结果到一张表格。
-# 需要注意的是，由于 训练集和测试集 信号计算时依赖的数据集不同，所以要设定两个函数。
-# 由于并行运算的原理，参数分为 策略参数 + 非策略参数
-# 为了提高运算速度，可以只测试训练集，然后再通过后面的分析筛选。
-# 由于并行运算时间长，防止出错输出日志。
+# 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
+# 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
+# 采用无重复持仓模式和重复持仓模式。
+# 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
+# 并行运算以品种来并行
+'''
+'''
+# 0.这里的回测是建立在前面已经对策略的参数做了选择。
+# 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
+# 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
+# 3.策略测试所用的区间要增大。
+# 4.回测结果较多，构成策略库供后续选择研究。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strategy_Param_Opt_OutPut
-opt = Strategy_Param_Opt_OutPut()
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
+more_h = Auto_More_Holding()
 
 
-#%% ************ 需要修改的部分 ************
-# 策略参数，设置范围的最大值，按顺序保存在 para 的前面
-opt.strategy_para_names = ["k", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
-opt.para1_end = 300         # 动量向左参数
-opt.holding_end = 1         # 持有期参数，可以不同固定为1
-opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
-# 非策略参数
-opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
-opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
-opt.filename_prefix = "反转"
+#%% ******修改这里******
+more_h.strategy_para_name = ["n", "holding", "lag_trade"]
+more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
+more_h.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
+more_h.readfile_suffix = ".original" # 输入的文档加后缀
+more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
+more_h.core_num = -1
+more_h.holding_testcount = 3  # 测试到的holding数量
+
 
 #%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Reverse"):
     price = dataframe["Close"]
     return myBTV.stra.momentum(price=price, k=para_list[0], stra_mode=stra_mode)
-opt.stratgy_signal = stratgy_signal
-
-#%% ******修改函数******
-# 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
-def get_strat_para_scope(direct, timeframe, symbol):
-    return [(k, holding, lag_trade, direct, timeframe, symbol) for k in range(1, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
-opt.get_strat_para_scope = get_strat_para_scope
-
-# 策略退出条件，strat_para = (k, holding, lag_trade)。
-def strat_break(strat_para):
-    if strat_para[1] > strat_para[0]:
-        return True
-opt.strat_break = strat_break
+more_h.stratgy_signal = stratgy_signal
 
 
 #%%
-opt.core_num = 11 # 具体指定，不能是-1，要显示进度
-# ---多进程必须要在这里执行
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
+strat_bt = Strategy_BackTest()
+
+
+#%% ************ 需要修改的部分 ************
+# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
+strat_bt.para_name = more_h.strategy_para_name
+strat_bt.symbol_list = more_h.symbol_list
+strat_bt.total_folder = more_h.total_folder
+strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
+strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
+strat_bt.stratgy_signal = stratgy_signal
+
+
+#%%
+
 if __name__ == '__main__':
     # ---
-    opt.main_func(run_testset=False)
-
-
-
-
+    print("开始订单可管理性分析： ")
+    more_h.main_func()
+    print("开始筛选后策略自动回测： ")
+    strat_bt.main_func()
 
