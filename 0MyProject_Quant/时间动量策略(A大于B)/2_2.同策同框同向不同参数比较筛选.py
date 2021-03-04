@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -55,6 +58,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
 s_better = Strategy_Better()
+myDefault.set_backend_default("agg")
 
 
 #%% ******修改这里******
