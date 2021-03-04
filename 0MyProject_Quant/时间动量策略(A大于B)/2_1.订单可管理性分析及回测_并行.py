@@ -69,6 +69,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
 more_h = Auto_More_Holding()
+myDefault.set_backend_default("agg")
 
 
 #%% ******修改这里******
@@ -92,6 +93,7 @@ more_h.stratgy_signal = stratgy_signal
 #%%
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
 strat_bt = Strategy_BackTest()
+myDefault.set_backend_default("agg")
 
 
 #%% ************ 需要修改的部分 ************
