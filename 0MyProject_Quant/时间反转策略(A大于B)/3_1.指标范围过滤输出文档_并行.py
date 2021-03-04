@@ -71,7 +71,7 @@ rf_out = Range_Filter_Output()
 rf_out.strategy_para_name = ["k", "holding", "lag_trade"]
 rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
 rf_out.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
-rf_out.readfile_suffix = ".holdingtest"
+rf_out.readfile_suffix = ".better"
 
 #%% ******修改这个函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。

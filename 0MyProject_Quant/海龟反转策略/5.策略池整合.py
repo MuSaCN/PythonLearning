@@ -71,7 +71,7 @@ strat_pool = Strat_Pool_Integration()
 strat_pool.strategy_para_name = ["n", "holding", "lag_trade"]
 strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
 strat_pool.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟反转研究"
-strat_pool.readfile_suffix = ".holdingtest"
+strat_pool.readfile_suffix = ".better"
 
 
 #%%

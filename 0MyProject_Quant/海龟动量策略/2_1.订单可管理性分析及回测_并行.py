@@ -13,6 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\订单可管理性分析.log") # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -50,6 +51,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 '''
+# 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
+# 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
+# 采用无重复持仓模式和重复持仓模式。
+# 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
+# 并行运算以品种来并行
+'''
+'''
 # 0.这里的回测是建立在前面已经对策略的参数做了选择。
 # 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
 # 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
@@ -59,35 +67,49 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
+more_h = Auto_More_Holding()
+myDefault.set_backend_default("agg")
+
+
+#%% ******修改这里******
+more_h.strategy_para_name = ["n", "holding", "lag_trade"]
+more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
+more_h.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+more_h.readfile_suffix = ".original" # 输入的文档加后缀
+more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
+more_h.core_num = -1
+more_h.holding_testcount = 3  # 测试到的holding数量
+
+
+#%% ******修改函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+more_h.stratgy_signal = stratgy_signal
+
+
+#%%
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
 strat_bt = Strategy_BackTest()
+myDefault.set_backend_default("agg")
 
 
 #%% ************ 需要修改的部分 ************
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
-strat_bt.para_name = ["n", "holding", "lag_trade"]
-strat_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-strat_bt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+strat_bt.para_name = more_h.strategy_para_name
+strat_bt.symbol_list = more_h.symbol_list
+strat_bt.total_folder = more_h.total_folder
 strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
-
-
-#%% ******修改这个函数******
-#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
-def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
+strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
 strat_bt.stratgy_signal = stratgy_signal
 
 
 #%%
-################# 多进程执行函数 ########################################
-strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
-# ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
+    print("开始订单可管理性分析： ")
+    more_h.main_func()
+    print("开始筛选后策略自动回测： ")
     strat_bt.main_func()
-
-
-
-
-
 

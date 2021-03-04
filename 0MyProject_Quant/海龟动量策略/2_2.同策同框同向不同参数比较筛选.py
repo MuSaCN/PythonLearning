@@ -11,10 +11,9 @@ import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\范围过滤策略回测.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -49,43 +48,40 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-#------------------------------------------------------------
+# ------------------------------------------------------------
 
 '''
-# 说明
-# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
-# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，min-max表示 "max最大的以max之前的min最小" 或 "min最小的以min之后的max最大"，start-end表示上涨额度最大的区间。
-# 根据训练集获取过滤区间，然后作用到整个样本。
-# 并行以品种来并行，以时间框来分组。
-# 由于指标较多，并行运算时间长，防止出错输出日志。
+# 1.同一个策略、同一个时间框、同一个方向下，不同的参数之间进行比较筛选。
+# 2.筛选最佳的占优策略。思路：先分析某个词缀(比如sharpe)下哪个策略的优势超过指定比率(比如60%)，该策略得1分。对所有词缀进行分析，若某个策略的得分最大且超过指定数量(词缀个数*2*60%)，则该策略认为是最佳的占优策略。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_BackTest
-rf_bt = Range_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
+s_better = Strategy_Better()
+myDefault.set_backend_default("agg")
 
 
-#%% ************ 需要修改的部分 ************
-rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_bt.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+#%% ******修改这里******
+s_better.strategy_para_name = ["n", "holding", "lag_trade"]
+s_better.symbol_list = myMT5Pro.get_main_symbol_name_list()
+s_better.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
+s_better.readfile_suffix = ".holdingtest" # 输入的文档加后缀 .holdingtest
+s_better.outfile_suffix = ".better" # 输出的文档加后缀
+s_better.core_num = -1
 
 
 #%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
     return myBTV.stra.turtle_momentum(dataframe, para_list[0], price_arug= ["High", "Low", "Close"])
-rf_bt.stratgy_signal = stratgy_signal
+s_better.stratgy_signal = stratgy_signal
 
 
 #%%
-rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
 if __name__ == '__main__':
     # ---
-    rf_bt.main_func()
-
-
+    print("开始同策同框同向不同参数比较筛选： ")
+    s_better.main_func()
 
 
 

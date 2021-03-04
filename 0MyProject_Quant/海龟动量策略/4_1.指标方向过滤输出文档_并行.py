@@ -72,7 +72,7 @@ df_out = Direct_Filter_Output()
 df_out.strategy_para_name = ["n", "holding", "lag_trade"]
 df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
 df_out.total_folder = "F:\\工作---策略研究\\公开的海龟策略\\_海龟动量研究"
-df_out.readfile_suffix = ".holdingtest"
+df_out.readfile_suffix = ".better"
 
 #%% ******修改这个函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
