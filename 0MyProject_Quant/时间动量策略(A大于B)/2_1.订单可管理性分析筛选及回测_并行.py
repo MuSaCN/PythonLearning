@@ -50,14 +50,20 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-'''
+''' ------订单可管理性分析：
 # 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
 # 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
 # 采用无重复持仓模式和重复持仓模式。
 # 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
 # 并行运算以品种来并行
 '''
+
+''' ------同策同框同向不同参数比较筛选：
+# 1.同一个策略、同一个时间框、同一个方向下，不同的参数之间进行比较筛选。
+# 2.筛选最佳的占优策略。思路：先分析某个词缀(比如sharpe)下哪个策略的优势超过指定比率(比如60%)，该策略得1分。对所有词缀进行分析，若某个策略的得分最大且超过指定数量(词缀个数*2*60%)，则该策略认为是最佳的占优策略。
 '''
+
+''' ------筛选后策略回测：
 # 0.这里的回测是建立在前面已经对策略的参数做了选择。
 # 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
 # 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
@@ -66,7 +72,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
-#%%
+#%% -------------------订单可管理性分析---------------------
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
 more_h = Auto_More_Holding()
 myDefault.set_backend_default("agg")
@@ -79,7 +85,6 @@ more_h.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量
 more_h.readfile_suffix = ".original" # 输入的文档加后缀
 more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
 more_h.core_num = -1
-more_h.holding_testcount = 3  # 测试到的holding数量
 
 
 #%% ******修改函数******
@@ -90,19 +95,35 @@ def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Continue"):
 more_h.stratgy_signal = stratgy_signal
 
 
-#%%
+#%% --------------------同策同框同向不同参数比较筛选--------------------
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
+s_better = Strategy_Better()
+myDefault.set_backend_default("agg")
+
+
+#%% ******修改这里******
+s_better.strategy_para_name = more_h.strategy_para_name
+s_better.symbol_list = more_h.symbol_list
+s_better.total_folder = more_h.total_folder
+s_better.readfile_suffix = ".holdingtest" # 输入的文档加后缀 .holdingtest
+s_better.outfile_suffix = ".better" # 输出的文档加后缀
+s_better.core_num = more_h.core_num
+s_better.stratgy_signal = stratgy_signal
+
+
+#%% --------------------------筛选后策略回测-----------------------
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
 strat_bt = Strategy_BackTest()
 myDefault.set_backend_default("agg")
 
 
 #%% ************ 需要修改的部分 ************
-# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
+# ******修改这里******
 strat_bt.para_name = more_h.strategy_para_name
 strat_bt.symbol_list = more_h.symbol_list
 strat_bt.total_folder = more_h.total_folder
-strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
-strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
+strat_bt.readfile_suffix = ".better" # 输入的文档加后缀
+strat_bt.core_num = more_h.core_num # -1表示留1个进程不执行运算。
 strat_bt.stratgy_signal = stratgy_signal
 
 
@@ -111,6 +132,10 @@ if __name__ == '__main__':
     # ---
     print("开始订单可管理性分析： ")
     more_h.main_func()
+    # ---
+    print("开始同策同框同向不同参数比较筛选： ")
+    s_better.main_func()
+    # ---
     print("开始筛选后策略自动回测： ")
     strat_bt.main_func()
 
