@@ -17,7 +17,7 @@ myMql5.dir_copy(myMql5.ScriptsPath,"My_Scripts")
 time.sleep(3)
 
 # ---Files, Logs清理操作
-myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS"])
+myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS","Common Files"])
 time.sleep(3)
 myMql5.dir_remove(myMql5.LogsPath,ignoreFolder=[])
 time.sleep(3)
