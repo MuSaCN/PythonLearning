@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -47,12 +50,18 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
+# myDefault.set_backend_default("agg")
+'''
+# 信号的最大的 做多正负波动 和 做空正负波动。
+# 即分析入场开始n个bar内的最大正向波动、最大负向波动。
+'''
+
 #%%
 strategy_para_name = ["k", "holding", "lag_trade"]
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 total_folder = "F:\\工作---策略研究\\1.简单的动量反转\\_动量研究"
 readfile_suffix = ".better"
-holding_testcount = 10
+holding_testcount = 20
 
 para = ("EURUSD",)
 symbol = para[0]  # symbol = "EURUSD"
@@ -85,54 +94,26 @@ for i in range(len(filecontent)):  # i=0
     # 展开holding参数
     holding_test = [holding for holding in range(1, holding_testcount + 1)]
 
+    #%%
     # ---
-    for holding in holding_test:  # holding=1
+    for holding in holding_test:  # holding=12
         # 策略参数更换 -2位置的holding参数
         para_list = strat_para[0:-2] + [holding] + [strat_para[-1]]
         # 获取信号数据
         signal = stratgy_signal(data_train, para_list=para_list)
         # ---
-        signal=signal["All"]
-        price_DataFrame=data_train
-        price_Series = data_train.Close
-        holding=holding
-        lag_trade=strat_para[-1]
+        myBTV.signal_fluctuate(signal=signal["All"], price_DataFrame=data_train, price_Series=data_train.Close,holding=holding, lag_trade=strat_para[-1], return_fluc=False, plot=True, bins=100, show=True, savefig=None, batch=False)
 
 
 
-        trade_signal = signal.shift(lag_trade)  # shift移动，以满足信号出现后下 lag_trade 期交易
-        # ---获得持有期价格波动(持有期收益率)
-        # if holding < 1:
-        #     raise "SignalQuality(): holding参数不能小于1"
 
-        # ---计算所有时间的最大的 做多正负波动 和 做空正负波动
-        df_fluc = pd.DataFrame([], index=price_DataFrame.index) if price_DataFrame is not None else pd.DataFrame([], index=price_Series.index)
-        if price_DataFrame is None and price_Series is not None :
-            df_fluc["price"] = price_Series
-            # 考虑未来的holding期波动，这里所以必须以holding+1滚动，且反向平移holding
-            df_fluc["holding_Highest"] = price_Series.rolling(holding+1).max().shift(-holding)
-            df_fluc["holding_Lowest"] = price_Series.rolling(holding + 1).min().shift(-holding)
-            df_fluc["BuyPositive"] = (df_fluc["holding_Highest"] - df_fluc["price"])/df_fluc["price"]
-            df_fluc["BuyNegative"] = (df_fluc["holding_Lowest"] - df_fluc["price"])/df_fluc["price"]
-            df_fluc["SellPositive"] = -df_fluc["BuyNegative"]
-            df_fluc["SellNegative"] = -df_fluc["BuyPositive"]
-        elif price_DataFrame is not None:
-            df_fluc[["Open","High","Low","Close"]] = price_DataFrame[["Open","High","Low","Close"]]
-            # 考虑未来的holding期波动，这里是以开盘价作为入场点，本身算一期，所以以holding滚动，且反向平移holding-1
-            df_fluc["holding_Highest"] = df_fluc["High"].rolling(holding).max().shift(-holding+1)
-            df_fluc["holding_Lowest"] = df_fluc["Low"].rolling(holding).min().shift(-holding + 1)
-            df_fluc["BuyPositive"] = (df_fluc["holding_Highest"] - df_fluc["Open"]) / df_fluc["Open"]
-            df_fluc["BuyNegative"] = (df_fluc["holding_Lowest"] - df_fluc["Open"]) / df_fluc["Open"]
-            df_fluc["SellPositive"] = -df_fluc["BuyNegative"]
-            df_fluc["SellNegative"] = -df_fluc["BuyPositive"]
 
-        # ---对做多做空积极消极做统计
-        buy_positive = df_fluc["BuyPositive"][trade_signal==1]
-        buy_negative = df_fluc["BuyNegative"][trade_signal==-1]
-        sell_positive = df_fluc["SellPositive"][trade_signal==-1]
-        sell_negative = df_fluc["SellNegative"][trade_signal==1]
-        all_positive = buy_positive.combine_first(sell_positive)
-        all_negative = buy_negative.combine_first(sell_negative)
+
+
+
+
+
+
 
 
 
