@@ -104,6 +104,7 @@ for i in range(len(filecontent)):  # i=0
         # ---获得持有期价格波动(持有期收益率)
         # if holding < 1:
         #     raise "SignalQuality(): holding参数不能小于1"
+
         # ---计算所有时间的最大的 做多正负波动 和 做空正负波动
         df_fluc = pd.DataFrame([], index=price_DataFrame.index) if price_DataFrame is not None else pd.DataFrame([], index=price_Series.index)
         if price_DataFrame is None and price_Series is not None :
