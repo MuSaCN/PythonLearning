@@ -61,7 +61,7 @@ strategy_para_name = ["k", "holding", "lag_trade"]
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 total_folder = "F:\\工作---策略研究\\1.简单的动量反转\\_动量研究"
 readfile_suffix = ".better"
-holding_testcount = 20
+holding_testcount = 5#20
 
 para = ("EURUSD",)
 symbol = para[0]  # symbol = "EURUSD"
@@ -78,6 +78,7 @@ def stratgy_signal(dataframe, para_list=list or tuple, stra_mode="Continue"):
 #%%
 # ---解析，显然没有内容则直接跳过
 for i in range(len(filecontent)):  # i=0
+    #%%
     # ---解析文档
     # 获取各参数
     timeframe = filecontent.iloc[i]["timeframe"]
@@ -96,13 +97,14 @@ for i in range(len(filecontent)):  # i=0
 
     #%%
     # ---
-    for holding in holding_test:  # holding=12
+    for holding in holding_test:  # holding=13
         # 策略参数更换 -2位置的holding参数
         para_list = strat_para[0:-2] + [holding] + [strat_para[-1]]
         # 获取信号数据
         signal = stratgy_signal(data_train, para_list=para_list)
         # ---
-        myBTV.signal_fluctuate(signal=signal["All"], price_DataFrame=data_train, price_Series=data_train.Close,holding=holding, lag_trade=strat_para[-1], return_fluc=False, plot=True, bins=100, show=True, savefig=None, batch=False)
+        myBTV.signal_max_volatility(signal=signal[direct], price_DataFrame=data_train, price_Series=data_train.Close,holding=holding, lag_trade=strat_para[-1], return_fluc=False, plot=True, bins=100, show=True, savefig=None, batch=False)
+        myBTV.signal_max_volatility_NoRe(signal=signal[direct], price_DataFrame=data_train, price_Series=data_train.Close, holding=holding, lag_trade=strat_para[-1], return_fluc=False, plot=True, bins=100, show=True, savefig=None, batch=False)
 
 
 
