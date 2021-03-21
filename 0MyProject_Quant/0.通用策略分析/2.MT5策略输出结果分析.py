@@ -52,8 +52,16 @@ file = __mypath__.get_desktop_path() + "\\MT5test.xlsx"
 
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(file)
 
-# 分析 deals
-# 获取一个交易单元。即 in 的累计Volume = out 的累计Volume
+# ---分析 deals，先拆分为 BuyOnly、SellOnly，要分开分析。
+deal_buyonly, deal_sellonly = myMT5Report.deal_split_buyonly_sellonly(deal_content)
+
+# ---分析 deal_buyonly, deal_sellonly
+# 从deal中获取交易单元(即 in 的累计Volume = out 的累计Volume)，生成时间df.
+time_buyonly = myMT5Report.get_deal_unit_time(deal_buyonly)
+time_sellonly = myMT5Report.get_deal_unit_time(deal_sellonly)
+
+
+
 
 
 
