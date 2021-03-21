@@ -52,7 +52,8 @@ file = __mypath__.get_desktop_path() + "\\MT5test.xlsx"
 
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(file)
 
-# 无重复持仓模式解析
+# 获取一个交易单元。即 in 的累计Volume = out 的累计Volume
+
 
 
 
