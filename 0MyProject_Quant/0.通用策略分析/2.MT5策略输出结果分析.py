@@ -48,9 +48,13 @@ myMT5Report = MyMql.MyClass_StratTestReport() # MT5策略报告类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-file = __mypath__.get_desktop_path() + "\\test.xlsx"
+file = __mypath__.get_desktop_path() + "\\MT5test.xlsx"
 
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(file)
+
+# 无重复持仓模式解析
+
+
 
 
 
