@@ -49,16 +49,27 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 
 file = __mypath__.get_desktop_path() + "\\MT5test.xlsx"
+# 读取报告
+strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
+# 解析下词缀
+symbol = strat_setting.loc["Symbol:"][0]
+timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting.loc["Period:"][0])
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(file)
-
-# ---分析 deals，先拆分为 BuyOnly、SellOnly，要分开分析。
+# 分析 deals，先拆分为 BuyOnly、SellOnly，要分开分析。
 deal_buyonly, deal_sellonly = myMT5Report.deal_split_buyonly_sellonly(deal_content)
 
-# ---分析 deal_buyonly, deal_sellonly
-# 从deal中获取交易单元(即 in 的累计Volume = out 的累计Volume)，生成时间df.
+# 分析 deal_buyonly, deal_sellonly。从deal中获取交易单元(即 in 的累计Volume = out 的累计Volume)，生成时间df.
 time_buyonly = myMT5Report.get_deal_unit_time(deal_buyonly)
 time_sellonly = myMT5Report.get_deal_unit_time(deal_sellonly)
+
+# 把报告中的 时间df 解析成 总数据 中的时间
+newtime_buyonly = myMT5Report.parse_timedf_norm(time_buyonly, data)
+newtime_sellonly = myMT5Report.parse_timedf_norm(time_sellonly, data)
+
+# 计算下各方向下的收益
+
 
 
 
