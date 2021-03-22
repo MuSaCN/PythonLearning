@@ -70,7 +70,8 @@ newtime_buyonly = myMT5Report.parse_timedf_norm(time_buyonly, data)
 newtime_sellonly = myMT5Report.parse_timedf_norm(time_sellonly, data)
 
 # 计算下各方向下的各种指标：收益、回撤、...
-
+# myBTV.__returns_result__()
+# myBTV.__strat__()
 
 
 
