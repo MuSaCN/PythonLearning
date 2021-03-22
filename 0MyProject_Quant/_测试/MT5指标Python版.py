@@ -47,7 +47,7 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-mypd.__init__(None,0)
+mypd.__init__(0,None)
 #%%
 import warnings
 warnings.filterwarnings('ignore')
@@ -71,6 +71,13 @@ eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,
 price_arug = ["High", "Low"]
 df = myMT5Indi.Donachian_Channel(eurusd, price_arug=price_arug, timeperiod=20)
 
+
+#%% 基础运算测试 %timeit
+lwma =  myMT5Indi.LinearWeightedMA(eurusd.Close, timeperiod=20) # 567 ms ± 6.27 ms
+# 1.196566 1.180928
+smooma = myMT5Indi.SmoothedMA(eurusd.Close, timeperiod=20)
+ema = myMT5Indi.ExponentialMA(eurusd.Close, timeperiod=20)
+sma = myMT5Indi.SimpleMA(eurusd.Close, timeperiod=20)
 
 #%%
 # Bill Williams类
@@ -203,7 +210,7 @@ wpr = myMT5Indi.WPR(eurusd,price_arug,14)
 wpr1 = myMT5Indi.WPR(eurusd1,price_arug,14)
 myMT5Indi.get_oscillators(eurusd,"WPR",14)
 
-#%%
+#%% %timeit
 # Trend
 # ADX 平均趋向指数(Trend类-幅图), Average Directional Movement Index, 返回df: ADX, +DI, -DI。(！算法有 ExponentialMA，必须一定数据后才相同)(注意，ADX，ADXW 在参数大时，与MT5结果不一样，因为无理数ema精度不一样)
 price_arug = ["High","Low","Close"] # 顺序不能搞错
@@ -213,9 +220,13 @@ myMT5Indi.get_trend(eurusd,"ADX",99)
 
 # AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["Open","High","Low","Close"]
-ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN")
+# 1.198273 1.178909  2000-12-15 0.892700
+# %timeit ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN") # 445 ms ± 8.37 ms
+ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN") # 698 ms ± 11.4 ms
 ama1 = myMT5Indi.AMA(eurusd1,price_arug,10,2,30,0,"PRICE_OPEN")
 myMT5Indi.get_trend(eurusd,"AMA",10,2,30,0,"PRICE_OPEN")
+
+dfsadfsa
 
 # ADXW 韦尔达平均定向移动指数(Trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须一定数据后才相同)(注意，ADX，ADXW 在参数大时，与MT5结果不一样，因为无理数ema精度不一样)
 price_arug = ["High","Low","Close"] # 顺序不能搞错
