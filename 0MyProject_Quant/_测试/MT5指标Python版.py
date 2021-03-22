@@ -220,13 +220,12 @@ myMT5Indi.get_trend(eurusd,"ADX",99)
 
 # AMA 适应移动平均指标(Trend类-主图)，Adaptive Moving Average，返回Series(效率不高)。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["Open","High","Low","Close"]
-# 1.198273 1.178909  2000-12-15 0.892700
 # %timeit ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN") # 445 ms ± 8.37 ms
+# 2000-12-15 0.892700   2020-11-19 1.178909   2020-12-04    1.198273  # 129 ms ± 2.29 ms
 ama = myMT5Indi.AMA(eurusd,price_arug,10,2,30,0,"PRICE_OPEN") # 698 ms ± 11.4 ms
 ama1 = myMT5Indi.AMA(eurusd1,price_arug,10,2,30,0,"PRICE_OPEN")
 myMT5Indi.get_trend(eurusd,"AMA",10,2,30,0,"PRICE_OPEN")
 
-dfsadfsa
 
 # ADXW 韦尔达平均定向移动指数(Trend类-幅图), ADX Wilder, 返回df：ADX Wilder, +DI, -DI。(！算法有 SmoothedMA，必须一定数据后才相同)(注意，ADX，ADXW 在参数大时，与MT5结果不一样，因为无理数ema精度不一样)
 price_arug = ["High","Low","Close"] # 顺序不能搞错
@@ -260,7 +259,9 @@ myMT5Indi.get_trend(eurusd,"Envelopes",14,0,0.1,"PRICE_CLOSE","MODE_SMA")
 
 # FrAMA 分形学适应移动平均指标(Trend类-主图)(效率不高)，Fractal Adaptive Moving Average，返回Series。(！算法有迭代，必须一定数据后才相同)
 price_arug = ["Open", "High", "Low", "Close"]
-frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
+# %timeit frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE") # 451 ms ± 12 ms
+# 2000-12-04 0.884500   2020-11-19 1.179224   2020-12-04 1.202853 # 176 ms ± 4.14 ms
+frama = myMT5Indi.FrAMA(eurusd,price_arug,14,0,"PRICE_CLOSE") # 687 ms ± 5.94 ms
 frama1 = myMT5Indi.FrAMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"FrAMA",14,0,"PRICE_CLOSE")
 
@@ -288,12 +289,12 @@ tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
 tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"TEMA",14,0,"PRICE_CLOSE")
 
-# VIDYA 变量指数动态平均数指标(Trend类-主图)，Variable Index Dynamic Average，返回Series。
+# VIDYA 变量指数动态平均数指标(Trend类-主图)(效率不高)，Variable Index Dynamic Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
 vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"VIDYA",9,12,0,"PRICE_CLOSE")
-
+dfsadfsadfsadfsadfsa
 
 #%%
 # Volumes
