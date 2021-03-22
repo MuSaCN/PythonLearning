@@ -61,7 +61,8 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 deal_buyonly, deal_sellonly = myMT5Report.deal_split_buyonly_sellonly(deal_content)
 
 # 分析 deal_buyonly, deal_sellonly。从deal中获取交易单元(即 in 的累计Volume = out 的累计Volume)，生成时间df.
-time_buyonly = myMT5Report.get_deal_unit_time(deal_buyonly)
+# %timeit time_buyonly = myMT5Report.get_deal_unit_time(deal_buyonly) # 497 ms ± 15.2 ms
+time_buyonly = myMT5Report.get_deal_unit_time(deal = deal_buyonly)
 time_sellonly = myMT5Report.get_deal_unit_time(deal_sellonly)
 
 # 把报告中的 时间df 解析成 总数据 中的时间
@@ -69,8 +70,6 @@ newtime_buyonly = myMT5Report.parse_timedf_norm(time_buyonly, data)
 newtime_sellonly = myMT5Report.parse_timedf_norm(time_sellonly, data)
 
 # 计算下各方向下的各种指标：收益、回撤、...
-
-
 
 
 
