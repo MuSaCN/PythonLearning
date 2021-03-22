@@ -295,7 +295,7 @@ vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
 vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"VIDYA",9,12,0,"PRICE_CLOSE")
 dfsadfsadfsadfsadfsa
-
+写 apply rolling rolling.apply 总结
 #%%
 # Volumes
 # AD 累积/分配指标(Volumes类-幅图)，Accumulation/Distribution，返回series.(！算法有累加，必须用全数据段才相同)
