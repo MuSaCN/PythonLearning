@@ -291,12 +291,13 @@ myMT5Indi.get_trend(eurusd,"TEMA",14,0,"PRICE_CLOSE")
 
 # VIDYA 变量指数动态平均数指标(Trend类-主图)(效率不高)，Variable Index Dynamic Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
-vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE")
+# 2020-12-04 1.192259   2020-11-19 1.176575   2000-12-19 0.895600   2000-12-04 0.884500
+# %timeit vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE") # 746 ms ± 59.4 ms
+vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE") # 176 ms ± 2.93 ms
 vidya1 = myMT5Indi.VIDYA(eurusd1,price_arug,9,12,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"VIDYA",9,12,0,"PRICE_CLOSE")
-dfsadfsadfsadfsadfsa
-写 apply rolling rolling.apply 总结
-df 按行rolling
+
+
 #%%
 # Volumes
 # AD 累积/分配指标(Volumes类-幅图)，Accumulation/Distribution，返回series.(！算法有累加，必须用全数据段才相同)
