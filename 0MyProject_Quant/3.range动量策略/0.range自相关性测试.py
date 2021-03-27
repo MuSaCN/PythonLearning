@@ -58,20 +58,29 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_D1"
+timeframe = "TIMEFRAME_H1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
-data_range = data_total["Range"]
+data_vola = data_total["Range"] # 只有range波动才有自相关性
 
 
 #%%
 # ---波动率分析
-myDA.tsa_auto_test(data_range)
-myDA.tsa_auto_ARIMA(data_range)
-myDA.tsa_auto_ARCH(data_range)
+# 自相关性分析
+# myDA.tsa_auto_test(data_range)
+# acf = myDA.tsa.tsa_acf(data_range, nlags=60)
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True)
+
+# 偏相关性
+# myDA.tsa.tsa_pacf(data_vola,nlags=100,plot=True)
+
 # ---序列自相关系数分析：1期波动与其滞后的相关系数曲线
-myDA.tsa.plot_selfcorrelation(data_range,count=100)
+# myDA.tsa.plot_selfcorrelation(data_vola,count=100)
+
+
+
+
 
 
 
