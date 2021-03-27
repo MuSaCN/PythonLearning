@@ -66,7 +66,7 @@ stats = prices.calc_stats()
 stats.display()
 # what about the drawdowns?
 prices.to_drawdown_series()
-myDA.fin.to_drawdown_series(prices=prices)
+myDA.fin.to_drawdown_series(prices=prices).min()
 myDA.fin.calc_max_drawdown(prices, datamode="p")
 r = prices.to_returns()
 p = myDA.fin.r_to_price(r,"r")

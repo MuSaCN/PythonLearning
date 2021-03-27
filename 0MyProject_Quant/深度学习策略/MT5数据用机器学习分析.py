@@ -65,13 +65,14 @@ myDA.fin.calc_max_up_range(data=prices,datamode="p",return_shift=True)
 myDA.fin.calc_max_down_range(data=prices,datamode="p",return_shift=True)
 prices[4] - prices[8]
 
-
+myDA.fin.calc_max_drawdown(data=prices,datamode="p",return_shift=True)
+myDA.fin.calc_max_drawdown(data=prices,datamode="p",return_shift=True)
 
 
 
 #%% ##############################################
 # 输入时间向量(时间序列)，获取其时间之前(包括指定时间)的，对应symbol和timeframe的n个收盘价收益率(波动率)(运算方式，效率高)：
-beforevola = myMT5Pro.getvolatility_beforetime(eurusd["time"],"EURUSD","TIMEFRAME_H1",count=5, updatetimeindex=False)
+beforevola = myMT5Pro.getvolatility_beforetime(eurusd["Time"],"EURUSD","TIMEFRAME_H1",count=5, updatetimeindex=False)
 
 data = pd.concat([eurusd, beforevola], axis=1, join="outer")
 (data == np.NaN).sum()
