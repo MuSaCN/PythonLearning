@@ -63,6 +63,8 @@ date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
 data_vola = data_total["Range"] # 只有range波动才有自相关性
+# data_vola = data_total["Close"] - data_total["Open"]
+# data_vola = np.power(data_vola,2)
 
 
 #%%
