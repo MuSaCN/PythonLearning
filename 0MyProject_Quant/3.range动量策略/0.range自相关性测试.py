@@ -48,7 +48,17 @@ myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-
+''' 分析结论：
+# 只有D1时间框以下的range才有明显的自相关性；
+# 自相关性特征：
+    ## D1时间框下各期都明显；
+    ## H12时间框下在2、4、6等2的倍数时明显；
+    ## H1时间框下在24、48等24的倍数时明显；
+    ## 以上说明自相关性是以 日 为单位的。且在D1以下的时间框中，数据要滞后以日为单位的时间段才有明显的自相关性。
+# 以 Close-Open、(High-Low)^2 计算的自相关性均小于以 High-Low 的自相关性。
+# range算多期平均后，没有自相关性。所以不能用平均来平滑range值。
+# 主要品种的各品种都符合上述规律。
+'''
 
 #%%
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
