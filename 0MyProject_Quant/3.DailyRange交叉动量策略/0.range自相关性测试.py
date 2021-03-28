@@ -74,6 +74,7 @@ data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
 
 
+
 #%%
 # ---波动率分析
 data_vola = data_total["Range"] # 只有range波动才有自相关性，且周期为D1
@@ -97,14 +98,14 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True)
 # %timeit dailydata = myMT5Pro.getsymboldata(symbol, "TIMEFRAME_D1", [2010, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=True) # 33 ms ± 284 µs
 
 # ---指标获取，open +- lastrange
-dailyrange = myMT5Indi.DailyRange(symbol, data_total, n=1)
+dailyrange = myMT5Indi.DailyRange(data_total, n=1)
 
 # ---测试交叉动量策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
-cross_momentum = myBTV.stra.dailyrange_cross_momentum(symbol,data_total,n=1)
+cross_momentum = myBTV.stra.dailyrange_cross_momentum(data_total,n=1)
 cross_momentum[cross_momentum["All"]==-1]
 
 # ---测试交叉反转策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
-cross_reverse = myBTV.stra.dailyrange_cross_reverse(symbol,data_total,n=1)
+cross_reverse = myBTV.stra.dailyrange_cross_reverse(data_total,n=1)
 cross_reverse[cross_reverse["All"]==-1]
 
 
