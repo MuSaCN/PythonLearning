@@ -99,11 +99,11 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True)
 # ---指标获取，open +- lastrange
 dailyrange = myMT5Indi.DailyRange(symbol, data_total, n=1)
 
-# ---测试交叉动量策略。PS:  注意该策略存在下面的情况：价格与上轨金叉的触发是因为上轨在日线切换时下跳；价格与下轨死叉的触发是因为下轨在日线切换时上跳。本策略并没有排除上下轨在日线切换时跳动触发交叉信号的情况。
+# ---测试交叉动量策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
 cross_momentum = myBTV.stra.dailyrange_cross_momentum(symbol,data_total,n=1)
 cross_momentum[cross_momentum["All"]==-1]
 
-# ---测试交叉反转策略。PS: 注意该策略存在下面的情况：价格与下轨金叉的触发是因为下轨在日线切换时下跳；价格与上轨死叉的触发是因为上轨在日线切换时上跳。本策略并没有排除上下轨在日线切换时跳动触发交叉信号的情况。
+# ---测试交叉反转策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
 cross_reverse = myBTV.stra.dailyrange_cross_reverse(symbol,data_total,n=1)
 cross_reverse[cross_reverse["All"]==-1]
 
