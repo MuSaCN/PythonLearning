@@ -108,8 +108,7 @@ opt.get_strat_para_scope = get_strat_para_scope
 
 # 策略退出条件，strat_para = (k, holding, lag_trade)。
 def strat_break(strat_para):
-    if strat_para[1] > strat_para[0]:
-        return True
+    pass # 这里不能有
 opt.strat_break = strat_break
 
 

@@ -81,7 +81,7 @@ opt = Strategy_Param_Opt_OutPut()
 #%% ************ 需要修改的部分 ************
 # 策略参数，设置范围的最大值，按顺序保存在 para 的前面
 opt.strategy_para_names = ["n", "holding", "lag_trade"]  # 顺序不能搞错了，要与信号函数中一致
-opt.para1_end = 2.0         # 通道的倍数参数，步长0.01 和 范围0.1~2.0
+opt.para1_end = 0.5         # 通道的倍数参数，步长0.01 和 范围0.1~2.0
 opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
@@ -109,13 +109,12 @@ opt.get_strat_para_scope = get_strat_para_scope
 
 # 策略退出条件，strat_para = (k, holding, lag_trade)。
 def strat_break(strat_para):
-    if strat_para[1] > strat_para[0]:
-        return True
+    pass # 这里不能有
 opt.strat_break = strat_break
 
 
 #%%
-opt.core_num = 11 # 具体指定，不能是-1，要显示进度
+opt.core_num = 1 # 要显示进度不能是-1，需具体指定
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
