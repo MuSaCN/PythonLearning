@@ -68,7 +68,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H4"
+timeframe = "TIMEFRAME_H1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
@@ -96,9 +96,16 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True)
 # %timeit dailydata = myMT5Pro.resample_up(data_total,rule="1D") # 244 ms ± 4.66 ms
 # %timeit dailydata = myMT5Pro.getsymboldata(symbol, "TIMEFRAME_D1", [2010, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=True) # 33 ms ± 284 µs
 
-# 指标获取，open +- lastrange
+# ---指标获取，open +- lastrange
 dailyrange = myMT5Indi.DailyRange(symbol, data_total, n=1)
 
+# ---测试交叉动量策略。PS:  注意该策略存在下面的情况：价格与上轨金叉的触发是因为上轨在日线切换时下跳；价格与下轨死叉的触发是因为下轨在日线切换时上跳。本策略并没有排除上下轨在日线切换时跳动触发交叉信号的情况。
+cross_momentum = myBTV.stra.dailyrange_cross_momentum(symbol,data_total,n=1)
+cross_momentum[cross_momentum["All"]==-1]
+
+# ---测试交叉反转策略。PS: 注意该策略存在下面的情况：价格与下轨金叉的触发是因为下轨在日线切换时下跳；价格与上轨死叉的触发是因为上轨在日线切换时上跳。本策略并没有排除上下轨在日线切换时跳动触发交叉信号的情况。
+cross_reverse = myBTV.stra.dailyrange_cross_reverse(symbol,data_total,n=1)
+cross_reverse[cross_reverse["All"]==-1]
 
 
 
