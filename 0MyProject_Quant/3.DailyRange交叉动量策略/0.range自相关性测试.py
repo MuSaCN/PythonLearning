@@ -68,7 +68,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H1"
+timeframe = "TIMEFRAME_D1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
@@ -78,6 +78,7 @@ data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
 #%%
 # ---波动率分析
 data_vola = data_total["Range"] # 只有range波动才有自相关性，且周期为D1
+# data_vola = myMT5Indi.ATR(data_total, InpAtrPeriod=1)
 # data_vola = data_total["Close"] - data_total["Open"]
 # data_vola = np.power(data_vola,2)
 # 自相关性分析
