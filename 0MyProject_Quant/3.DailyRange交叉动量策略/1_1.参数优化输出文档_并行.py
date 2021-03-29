@@ -112,6 +112,11 @@ def strat_break(strat_para):
     pass # 这里不能有
 opt.strat_break = strat_break
 
+# 单个策略过滤方式
+def filter_strategy(*args):
+    return myBTV.no_filter_strategy(*args)
+opt.filter_strategy = filter_strategy
+
 
 #%%
 opt.core_num = -1 # 要显示进度不能是-1，需具体指定
