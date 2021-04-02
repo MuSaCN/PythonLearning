@@ -104,7 +104,7 @@ rf_bt.stratgy_signal = stratgy_signal
 if __name__ == '__main__':
     # ---
     print("开始方向过滤参数自动选择：")
-    # choo_para.main_func()
+    choo_para.main_func()
     print("开始方向过滤策略回测：")
     rf_bt.main_func()
 
