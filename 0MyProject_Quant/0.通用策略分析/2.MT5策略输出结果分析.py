@@ -53,23 +53,6 @@ file = __mypath__.get_desktop_path() + "\\test.xlsx"
 # 读取报告
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
-# ---把 deal_content 的内容修正为基准仓位
-# 根据deal的仓位计算倍数
-multi = deal_content["Volume"][1:-1].astype(float) / 0.01
-# 根据倍数修正下数据
-deal_content["Volume"][1:-1] = deal_content["Volume"][1:-1].astype(float) / multi
-deal_content["Commission"][1:-1] = deal_content["Commission"][1:-1] / multi
-deal_content["Commission"].iloc[-1] /= 2
-deal_content["Swap"][1:-1] = deal_content["Swap"][1:-1] / multi
-deal_content["Swap"].iloc[-1] /= 2
-deal_content["Profit"][1:-1] = deal_content["Profit"][1:-1] / multi
-deal_content["Profit"].iloc[-1] /= 2
-cum = deal_content["Commission"] + deal_content["Swap"] + deal_content["Profit"]
-cum = cum[1:-1].cumsum()
-deal_content["Balance"][1:-1] = deal_content["Balance"].iloc[0] + cum
-deal_content["Balance"].iloc[-1] = deal_content["Balance"].iloc[-2]
-
-
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)

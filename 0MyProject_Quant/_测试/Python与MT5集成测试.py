@@ -77,14 +77,33 @@ myMT5.orders_get(symbol="EURUSD")
 myMT5.orders_get(group="*USD*")
 myMT5.orders_get(ticket=2248047902)
 
+# 获取未结持仓的数量。
+myMT5.positions_total()
+myMT5.positions_get(symbol="EURUSD")
+myMT5.positions_get(group="*USD*")
+myMT5.positions_get(ticket=2248047631)
 
 # 返回预付款（用账户货币表示）来执行指定的交易操作。
 myMT5.order_calc_margin("ORDER_TYPE_BUY","EURUSD",0.01)
 myMT5.order_calc_margin("ORDER_TYPE_SELL","EURUSD",0.01)
 
 # 返回指定交易操作的盈利（用账户货币表示）。
-myMT5.mt5.order_calc_profit()
+myMT5.order_calc_profit("ORDER_TYPE_BUY","EURUSD", 1, 1, 2.0)
+myMT5.order_calc_profit("ORDER_TYPE_BUY","EURUSD", 1, 1, None, 100)
+myMT5.order_calc_profit("ORDER_TYPE_BUY","EURUSD", 1, None, 1.18)
+myMT5.order_calc_profit("ORDER_TYPE_BUY","EURUSD", 1, 1.17, 1.18)
+myMT5.order_calc_profit("ORDER_TYPE_SELL","EURUSD", 1,  None, None, 100)
 
 
-#%%
+#%% 未完
+myMT5.mt5.history_deals_total()
 
+from datetime import datetime
+# 获取历史中的交易数量
+from_date = datetime(2020, 1, 1)
+to_date = datetime.now()
+deals = myMT5.mt5.history_deals_total(from_date, to_date)
+if deals > 0:
+    print("Total deals=", deals)
+print("Deals not found in history")
+deals = myMT5.mt5.history_deals_get(from_date, to_date)
