@@ -43,6 +43,17 @@ print(df.iloc[1:5,2:4])           #切片
 print(df.iloc[2,3])               #提取特定值
 #-----------------------------------------------------------------------------
 
+# ---修改数据时要注意，有时必须以列的形式定位数据再修改才可以修改成功
+df["Volume"].iloc[0] = 0
+# temp.Volume.iloc[0] = 0
+# ---注意，多次 loc 或 iloc 无法修改原数据的数值
+# deal_in_copy.loc[price, "Volume"].iloc[0] = 0
+# deal_in_copy.loc[price, "Volume"].iloc[0] = 0
+# deal_in_copy.loc[price].iloc[0]["Volume"] = 0
+# ---注意，数据修改以一整行或一整列，行切片叠加列切片不一定能修改数据
+
+
+#----------------------------------------------------------------------------
 #Series与DataFrame对象的运算
 #Series与Series是index匹配运算
 s1=pd.Series([1,2,3],index=list("ABC"))
