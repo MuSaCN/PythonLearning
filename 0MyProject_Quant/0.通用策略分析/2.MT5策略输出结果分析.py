@@ -60,18 +60,31 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content, deal_content)
+order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
 
 
 #%%
 # 分析 deal_buyonly, deal_sellonly。从deal中获取交易单元(即 in 的累计Volume = out 的累计Volume)，生成 订单号和累计利润df.
-# %timeit unit_buyonly = myMT5Report.get_deal_unit_order(deal_buyonly) # 497 ms ± 15.2 ms
+# %timeit unit_buyonly1 = myMT5Report.get_deal_unit_order1(deal_buyonly) # 2.11 s ± 35.3 ms
+# unit_buyonly1 = myMT5Report.get_deal_unit_order1(deal_direct=deal_buyonly)
+# %timeit unit_buyonly = myMT5Report.get_deal_unit_order(deal_buyonly) # 1.74 s ± 29 ms
 unit_buyonly = myMT5Report.get_deal_unit_order(deal_direct=deal_buyonly)
 unit_sellonly = myMT5Report.get_deal_unit_order(deal_direct=deal_sellonly)
 
+
+#%% #############################
 # 拆分内容为 in 和 out 两部分，并整理成df输出。
 df_buyonly = myMT5Report.to_in_out(unit_buyonly, deal_buyonly, order_buyonly)
 df_sellonly = myMT5Report.to_in_out(unit_sellonly, deal_sellonly, order_sellonly)
+
+
+myMT5.initialize_terminal(reconnect=True)
+myMT5.symbol_info(deal_buyonly["Symbol"][1])["digits"]
+myMT5.symbol_info(deal_buyonly["Symbol"][1])["point"]
+myMT5.symbol_info(deal_buyonly["Symbol"][1])["trade_tick_value_profit"]
+
+
+
 
 # 把报告中的 时间df 解析成 总数据 中的时间，因为报告中的时间太详细，我们定位到总数据中的时间框架中。
 newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_buyonly, deal_buyonly, data)
