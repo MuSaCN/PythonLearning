@@ -48,8 +48,12 @@ myMT5Report = MyMql.MyClass_StratTestReport() # MT5策略报告类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
+
 #%%
-file = __mypath__.get_desktop_path() + "\\test.xlsx"
+import warnings
+warnings.filterwarnings('ignore')
+
+file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test
 # 读取报告。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
@@ -65,36 +69,75 @@ order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_d
 
 #%%
 # 分析 deal_buyonly, deal_sellonly。从deal中获取交易单元(即对应 out 的 in)，生成 订单号和累计利润df.
-# %timeit myMT5Report.get_deal_unit_order1(deal_buyonly,order_buyonly) # 2.96 s ± 71.4 ms
-# %timeit myMT5Report.get_deal_unit_order(deal_buyonly,order_buyonly) # 2.23 s ± 37.5 ms
-unit_buyonly = myMT5Report.get_deal_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-unit_sellonly = myMT5Report.get_deal_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
+# %timeit myMT5Report.get_unit_order1(deal_buyonly,order_buyonly) # 2.96 s ± 71.4 ms
+# %timeit myMT5Report.get_unit_order(deal_buyonly,order_buyonly) # 2.23 s ± 37.5 ms
 
+# 'Profit_Base' 表示基准仓位时的 利润
+# 'NetProfit_Base' 表示基准仓位时的 净利润(除去了佣金和隔夜费)
+# 'Balance_Base' 表示基准仓位时的 余额(净利润的累积和)
+# 'Diff' 表示 out 的价格 - in 的价格差
+# 'Diff_Point' 表示 out 的价格 - in 的价格差的点数
+# 'Rate' 表示 价格收益率
+unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
+# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
+unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
-#%% #############################
-# 把报告中的 时间df 解析成 总数据 中的时间，因为报告中的时间太详细，我们定位到总数据中的时间框架中。
-newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_buyonly, deal_buyonly, data)
-newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, deal_sellonly, data)
-
-
-#%%
-unit_buyonly["Profit_Base"].cumsum().plot()
+unit_buyonly["Balance_Base"].plot()
 plt.show()
 
+deal_content["Balance"][1:-1].plot()
+plt.show()
 
-
-
+#%% #############################
+# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。
+newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
+newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 
 #%%
 # 计算下各方向下的各种指标：收益、回撤、...
 # myBTV.__returns_result__()
 # myBTV.__strat__()
 
+Deposit = 10000
+# p = myDA.fin.r_to_price(unit_buyonly["Rate"])
+p = unit_buyonly["Balance_Base"] + Deposit
+p.index = unit_buyonly["Time0"]
+returns = unit_buyonly["Rate"]
+returns.index = unit_buyonly["Time0"]
+
+# 最大回撤与起初资金有关
+maxDD = myDA.fin.calc_max_drawdown(p)
+# 累计净利润
+cumReturn = unit_buyonly["Balance_Base"].iloc[-1]
+# CAGR复合年增长率/收益率(用这个替代年化收益率)
+annRet = myDA.fin.calc_cagr(prices = p) if len(p) >= 2 else np.nan
+# Calmar比率(年收益率/最大回撤)
+calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 
 
-
-
-
+#%%
+Deposit = 5000
+alpha = 0.9
+np.random.seed(0)
+maxDD_list = []
+for i in range(1000):
+    balance = unit_buyonly["NetProfit_Base"].sample(frac=1).cumsum() + Deposit
+    # balance.reset_index(drop=True,inplace=True)
+    # balance.plot()
+    # plt.show()
+    maxDD = myDA.fin.calc_max_drawdown(balance)
+    maxDD_list.append(maxDD)
+#
+maxDD_data = pd.Series(maxDD_list)
+leftq = np.around(maxDD_data.quantile(q=(1-alpha)/2),4)
+rightq = np.around(maxDD_data.quantile(q=alpha + (1-alpha)/2),4)
+#
+maxDD_data.hist(bins=20)
+plt.axvline(x=leftq, color="red")
+plt.annotate(s="{:.2f}%".format(leftq*100), xy=[leftq,0], xytext=[leftq,0])
+plt.axvline(x=rightq, color="red")
+plt.annotate(s="{:.2f}%".format(rightq*100), xy=[rightq,0], xytext=[rightq,0])
+plt.show()
 
 
 
