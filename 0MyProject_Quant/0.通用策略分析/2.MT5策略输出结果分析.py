@@ -82,11 +82,19 @@ unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct
 # unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
 unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
+# 符合MT5实际的资金曲线计算。
 unit_buyonly["Balance_Base"].plot()
 plt.show()
-
 deal_content["Balance"][1:-1].plot()
 plt.show()
+
+# 回测框架以1为基准单位，算收益率
+myDA.fin.r_to_price(unit_buyonly["Rate"]).plot()
+plt.show()
+unit_buyonly["Profit_Base"].cumsum().plot()
+plt.show()
+
+
 
 #%% #############################
 # 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。
@@ -94,7 +102,7 @@ newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, da
 newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 
 #%%
-# 计算下各方向下的各种指标：收益、回撤、...
+# 计算下各方向下的各种指标。注意这里与回测中的计算有所不同，回测是以1单位算累计收益率。
 # myBTV.__returns_result__()
 # myBTV.__strat__()
 
