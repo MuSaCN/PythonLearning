@@ -53,6 +53,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 mypd.__init__(None)
 
 myMT5Lots = MyMql.MyClass_Lots_Basic(connect=True)
+myMT5Lots.is_dynamic = True
 myMT5Lots.sysleverage
 
 # myMT5Lots = MyClass_Lots_Basic(connect=True)
@@ -62,24 +63,51 @@ lever_arr = [2000,1000,500,200,100,25]
 myMT5Lots.set_value_lever(cumvalue_arr,lever_arr)
 myMT5Lots.cumvalue_array
 myMT5Lots.lever_array
-
-myMT5Lots.check_symbol("EURUSD")
-myMT5Lots.check_symbol("GBPUSD")
-myMT5Lots.symbol_df
-
-myMT5Lots.lots_normalize("EURUSD", 1.256)
+myMT5Lots.stepvalue_array
+myMT5Lots.margin_arr
+myMT5Lots.cummargin
 
 symbol = "EURUSD"
 
-currencyAccount = myMT5Lots.mt5.account_info.loc["currency"] # 账户货币
-currencyBase = myMT5Lots.symbol_df[symbol].loc["currency_base"] # 交易品种基础货币(前标)
-currencyQuote = myMT5Lots.symbol_df[symbol].loc["currency_profit"] # 利润货币(后标)
-symbolContract = myMT5Lots.symbol_df[symbol].loc["trade_contract_size"] # 交易合约大小
-# 需要ask和bid，必须要更新下symbol信息
 myMT5Lots.check_symbol(symbol)
-symbolBid = myMT5Lots.symbol_df[symbol].loc["bid"]
-symbolAsk = myMT5Lots.symbol_df[symbol].loc["ask"]
+myMT5Lots.symbol_df
 
+myMT5Lots.lots_normalize(symbol, 1.256)
+
+# "EURUSD" "USDJPY" "AUDCAD" "CADCHF" "Brent"
+myMT5Lots.check_symbol("USDJPY")
+myMT5Lots.get_contract_size(action="ORDER_TYPE_BUY", symbol="USDJPY", volume=1, price=None)
+myMT5Lots.check_symbol("AUDCAD")
+myMT5Lots.get_contract_size(action="ORDER_TYPE_BUY", symbol="AUDCAD", volume=1, price=1)
+
+myMT5Lots.get_spread(symbol,1,spread=-1)
+
+myMT5Lots.standard_margin(0,"ORDER_TYPE_BUY","EURUSD",None)
+myMT5Lots.standard_margin(0,"ORDER_TYPE_BUY","EURUSD",2)
+
+myMT5Lots.margin_open_fix("ORDER_TYPE_BUY","EURUSD",1,None)
+
+
+myMT5Lots.margin_arr = myMT5Lots.get_every_margin()
+myMT5Lots.get_every_stdmargin("ORDER_TYPE_BUY","EURUSD",price=None)
+myMT5Lots.get_every_lots("ORDER_TYPE_BUY","EURUSD",price=None)
+myMT5Lots.get_every_stdmargin_lots("ORDER_TYPE_BUY","EURUSD",price=None)
+stdmargin_arr, lots_arr = myMT5Lots.get_every_stdmargin_lots("ORDER_TYPE_BUY","EURUSD",price=None)
+
+#%%
+# "EURUSD" "USDJPY" "AUDCAD" "CADCHF" "Brent"
+symbol = "EURUSD"
+price = None
+myMT5Lots.is_dynamic = True# True
+myMT5Lots.check_symbol(symbol)
+myMT5Lots.margin_open_dy("ORDER_TYPE_BUY",symbol,50,price=price)
+myMT5Lots.margin_open_dy1("ORDER_TYPE_BUY",symbol,50,price=price)
+myMT5Lots.margin_open("ORDER_TYPE_BUY",symbol,50,price=price)
+
+
+myMT5Lots.lot_open_dy("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
+myMT5Lots.lot_open_fix("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
+myMT5Lots.lot_open("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
 
 
 
