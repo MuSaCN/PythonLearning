@@ -10,9 +10,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\record.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=False) # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -48,11 +46,28 @@ myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级�
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+#%%
+# 单log写入
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\record.log") # 日志记录类，需要放在上面才行
 
-# 由于默认设置的等级是warning，所有只有warning等级以上的信息会输出到控制台。
 mylogging.debug("This is a debug log.")
 mylogging.info("This is a info log.")
 mylogging.warning("This is a warning log.")
 mylogging.error("This is a error log.")
 mylogging.critical("This is a critical log.")
+
+#%% 多log写入，若单log也启动，则单log会写入所有。
+filename1 = __mypath__.get_desktop_path()+"\\record0.log"
+filename2 = __mypath__.get_desktop_path()+"\\record1.log"
+
+log1 = mylogging.getLogger(filename1)
+log2 = mylogging.getLogger(filename2)
+
+mylogging.warning("abc.",log1)
+mylogging.error("def.",log1)
+mylogging.critical("ghi.",log1)
+mylogging.warning("ABC.",log2)
+mylogging.error("DEF.",log2)
+mylogging.critical("GHI.",log2)
+
 
