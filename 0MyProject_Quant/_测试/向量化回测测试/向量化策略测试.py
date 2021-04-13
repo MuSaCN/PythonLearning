@@ -59,11 +59,11 @@ direct = "All"
 
 #%%
 # ---海龟交叉动量策略。当价格与上轨金叉，做多；当价格与下轨死叉，做空。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
-result = myBTV.stra.turtle_cross_momentum(eurusd,20)
+result = myBTV.stra.turtle_cross_momentum(eurusd,20,price_arug=["High", "Low", "Close"])
 a = result[direct][result[direct]!=0]
 
 # ---海龟交叉反转策略。当价格与上轨金叉，做空；当价格与下轨死叉，做多。(注意：因为唐奇安通道的性质，无法用策略：当价格与上轨死叉，做空；当价格与下轨金叉，做多。)(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
-result = myBTV.stra.turtle_cross_reverse(eurusd,20)
+result = myBTV.stra.turtle_cross_reverse(eurusd,20,price_arug=["High", "Low", "Close"])
 b = result[direct][result[direct]!=0]
 
 a[a != -b]
