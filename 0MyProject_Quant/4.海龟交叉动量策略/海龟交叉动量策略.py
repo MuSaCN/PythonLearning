@@ -52,7 +52,7 @@ myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓�
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
-myDefault.set_backend_default("agg") # 这句必须放到类下面
+# myDefault.set_backend_default("agg") # 这句必须放到类下面
 
 #%%
 "1_1.参数优化部分："
@@ -380,7 +380,8 @@ strat_pool.total_folder = total_folder
 strat_pool.readfile_suffix = s_better.outfile_suffix
 strat_pool.core_num = core_num
 
-
+#%%
+myDefault.set_backend_default("agg") # 这句必须放到类下面
 #%%
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
