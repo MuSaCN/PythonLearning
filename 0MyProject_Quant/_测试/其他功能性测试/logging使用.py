@@ -89,21 +89,6 @@ def multi_process_logging(para):
     print(2,logger.name)
     mylogging.warning(name, logger=logger)
 
-def multi_process_logginghandle(para):
-    name = para[0]
-    logger = para[-1]
-    print(0,logger) # 有对象
-    print(0,logger.name) # 有name
-    print(0,logger.handlers) # 传递的logger的handlers = []，所以无法写入。
-    # 下面重建内存虽可以写入，但是并行时不完全。
-    mylogging.handlers_clear(logger)
-    print(1,logger)
-    print(1,logger.name)
-    print(1,logger.handlers)
-    logger = mylogging.getLogger(logger.name)
-    print(2,logger.handlers)
-    print(2,logger.name)
-    mylogging.warning(name, logger=logger)
 
 
 #%%
@@ -115,9 +100,11 @@ if __name__ == '__main__':
     name_list = ["A","B","C","D","E"]
     para = [(i,log3) for i in name_list]
 
+
+
     # ---这个可以写入
-    # for onepara in para:
-    #     multi_process_logging(onepara)
+    for onepara in para:
+        multi_process_logging(onepara)
     # log3.handlers.clear()
     # mylogging.removeHandler(log3)
     # log3 = mylogging.getLogger(log3.name)

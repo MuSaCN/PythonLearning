@@ -379,7 +379,7 @@ strat_pool.total_folder = total_folder
 strat_pool.readfile_suffix = s_better.outfile_suffix
 strat_pool.core_num = core_num
 
-#%%
+#%% 设置图片输出方式
 myDefault.set_backend_default("agg") # 这句必须放到类下面
 #%%
 # ---多进程必须要在这里执行
