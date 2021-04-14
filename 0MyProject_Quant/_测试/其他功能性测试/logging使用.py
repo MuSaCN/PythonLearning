@@ -57,8 +57,8 @@ mylogging.error("This is a error log.")
 mylogging.critical("This is a critical log.")
 
 #%% 多log写入，若单log也启动，则单log会写入所有。
-filename1 = __mypath__.get_desktop_path()+"\\record0.log"
-filename2 = __mypath__.get_desktop_path()+"\\record1.log"
+filename1 = __mypath__.get_desktop_path()+"\\record1.log"
+filename2 = __mypath__.get_desktop_path()+"\\record2.log"
 
 log1 = mylogging.getLogger(filename1)
 log2 = mylogging.getLogger(filename2)
@@ -71,3 +71,28 @@ mylogging.error("DEF.",log2)
 mylogging.critical("GHI.",log2)
 
 
+#%%
+# 并行多log写入测试，默认情况下Python中的logging无法在多进程环境下打印日志。
+def multi_process_logging(para):
+    name = para[0]
+    logger = para[-1]
+    print(logger)
+    print(logger.name)
+    # 下面重建内存虽可以写入，但是并行时不完全。
+    # logger = mylogging.getLogger(logger.name)
+    mylogging.warning(name, logger=logger)
+
+#%%
+# 多进程必须要在这里写
+if __name__ == '__main__':
+    # ---
+    filename3 = __mypath__.get_desktop_path() + "\\record3.log"
+    log3 = mylogging.getLogger(filename3)
+    name_list = ["A","B","C","D","E"]
+    para = [(i,log3) for i in name_list]
+    # 这个可以写入
+    # for onepara in para:
+    #     multi_process_logging(onepara)
+    # 多进行无法写入
+    out = myBTV.muiltcore.multi_processing(multi_process_logging , para, 5)
+    print(out, "finished")
