@@ -113,6 +113,9 @@ p.index = unit_buyonly["Time0"]
 returns = unit_buyonly["Rate"]
 returns.index = unit_buyonly["Time0"]
 
+# 无杠杆单位1占用资金曲线的夏普比
+myDA.fin.calc_risk_return_ratio(returns) # 0.18956866861486457，MT5是 0.129751
+
 # 最大回撤与起初资金有关
 maxDD = myDA.fin.calc_max_drawdown(p)
 # 累计净利润
