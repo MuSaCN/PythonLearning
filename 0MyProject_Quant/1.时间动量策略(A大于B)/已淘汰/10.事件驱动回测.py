@@ -117,12 +117,14 @@ myBT.addstrategy(MomentumStrategy)
 result = myBT.run(plot=True, backend="pycharm")
 result[0].analyzers.CashValue.vals
 
+
 # 简介的资金曲线
 myDefault.set_backend_default("pycharm")
 myBT.plot_value(data0, cash_value=None, train_x0=pd.Timestamp('2000-01-01 00:00:00'), train_x1=pd.Timestamp('2014-12-31 00:00:00'))
 
 #%%
 # 画转成MT5的收益曲线(backtrader固定仓位才有效，且mt5点差大于50才有效)(用于测试策略信号是否相同)(可做点差压力测试)
+pnl_detail = myBT.every_finish_ticket_pnlpnlcom()
 myBT.plot_mt5_cumNET(data0, pnl_detail=None, mt5_spread=50, train_x0=pd.Timestamp('2000-01-01 00:00:00'), train_x1=pd.Timestamp('2014-12-31 00:00:00'))
 
 
@@ -132,6 +134,7 @@ print(len(all_analyzer))
 for key in all_analyzer[0]:
     print("--- ",key," :")
     print(all_analyzer[0][key])
+
 
 #%%
 # 多核优化时运行
