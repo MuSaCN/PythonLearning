@@ -71,16 +71,40 @@ mylogging.error("DEF.",log2)
 mylogging.critical("GHI.",log2)
 
 
-#%%
+#%% 结论：多核只能输出到单log；多log无法兼容多核，多log时折中办法是在里面重建。
 # 并行多log写入测试，默认情况下Python中的logging无法在多进程环境下打印日志。
 def multi_process_logging(para):
     name = para[0]
     logger = para[-1]
-    print(logger)
-    print(logger.name)
+    print(0,logger) # 有对象
+    print(0,logger.name) # 有name
+    print(0,logger.handlers) # 传递的logger的handlers = []，所以无法写入。
     # 下面重建内存虽可以写入，但是并行时不完全。
-    # logger = mylogging.getLogger(logger.name)
+    mylogging.handlers_clear(logger)
+    print(1,logger)
+    print(1,logger.name)
+    print(1,logger.handlers)
+    logger = mylogging.getLogger(logger.name)
+    print(2,logger.handlers)
+    print(2,logger.name)
     mylogging.warning(name, logger=logger)
+
+def multi_process_logginghandle(para):
+    name = para[0]
+    logger = para[-1]
+    print(0,logger) # 有对象
+    print(0,logger.name) # 有name
+    print(0,logger.handlers) # 传递的logger的handlers = []，所以无法写入。
+    # 下面重建内存虽可以写入，但是并行时不完全。
+    mylogging.handlers_clear(logger)
+    print(1,logger)
+    print(1,logger.name)
+    print(1,logger.handlers)
+    logger = mylogging.getLogger(logger.name)
+    print(2,logger.handlers)
+    print(2,logger.name)
+    mylogging.warning(name, logger=logger)
+
 
 #%%
 # 多进程必须要在这里写
@@ -90,9 +114,14 @@ if __name__ == '__main__':
     log3 = mylogging.getLogger(filename3)
     name_list = ["A","B","C","D","E"]
     para = [(i,log3) for i in name_list]
-    # 这个可以写入
+
+    # ---这个可以写入
     # for onepara in para:
     #     multi_process_logging(onepara)
-    # 多进行无法写入
+    # log3.handlers.clear()
+    # mylogging.removeHandler(log3)
+    # log3 = mylogging.getLogger(log3.name)
+
+    # ---多进行无法写入
     out = myBTV.muiltcore.multi_processing(multi_process_logging , para, 5)
     print(out, "finished")

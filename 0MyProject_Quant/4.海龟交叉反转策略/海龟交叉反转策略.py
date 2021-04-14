@@ -58,7 +58,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 "1_1.参数优化部分："
 # (***需修改***)策略说明：
 '''
-# 海龟交叉动量策略。当价格与上轨金叉，做多；当价格与下轨死叉，做空。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
+# 海龟交叉反转策略。当价格与上轨金叉，做空；当价格与下轨死叉，做多。(注意：因为唐奇安通道的性质，无法用策略：当价格与上轨死叉，做空；当价格与下轨金叉，做多。)(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
 # 由于指标为直线类轨道。固该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
 # 只考虑入场，出场模式放在其他地方考虑。
 # 信号触发且确认后，下一期进行交易。持有仓位周期为1根K线。
@@ -185,15 +185,15 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 ""
 # ---非策略设置
 core_num = -1
-total_folder = "F:\\工作---策略研究\\4.海龟交叉策略\\__海龟交叉动量研究"
-filename_prefix = "_动量"
+total_folder = "F:\\工作---策略研究\\4.海龟交叉策略\\__海龟交叉反转研究"
+filename_prefix = "_反转"
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 direct_para = ["BuyOnly", "SellOnly"] # 方向词缀 ["BuyOnly", "SellOnly", "All"]
 
 # ---策略类设置
 # 策略信号：策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.turtle_cross_momentum(dataframe, n=para_list[0], price_arug=["High", "Low", "Close"])
+    return myBTV.stra.turtle_cross_reverse(dataframe, n=para_list[0], price_arug=["High", "Low", "Close"])
 # 策略参数名称，顺序不能搞错了，要与信号函数中一致
 strategy_para_names = ["n", "holding", "lag_trade"]
 # 设置固定和浮动的策略参数，key词缀不能搞错了

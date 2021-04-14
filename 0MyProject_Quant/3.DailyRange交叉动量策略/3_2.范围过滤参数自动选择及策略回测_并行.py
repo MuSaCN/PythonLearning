@@ -71,14 +71,14 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 #%%
 from MyPackage.MyProjects.向量化策略测试.Range_Filter import Auto_Choose_RFilter_Param
-choo_para = Auto_Choose_RFilter_Param()
+rf_choo_para = Auto_Choose_RFilter_Param()
 myDefault.set_backend_default("agg")
 
 
 #%% ************ 需要修改的部分 ************
-choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choo_para.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
-choo_para.core_num = -1 # -1表示留1个进程不执行运算。
+rf_choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_choo_para.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
+rf_choo_para.core_num = -1 # -1表示留1个进程不执行运算。
 
 
 #%%
@@ -88,8 +88,8 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 
 #%% ************ 需要修改的部分 ************
-rf_bt.symbol_list = choo_para.symbol_list
-rf_bt.total_folder = choo_para.total_folder
+rf_bt.symbol_list = rf_choo_para.symbol_list
+rf_bt.total_folder = rf_choo_para.total_folder
 rf_bt.core_num = -1 # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
 
 
@@ -104,7 +104,7 @@ rf_bt.stratgy_signal = stratgy_signal
 if __name__ == '__main__':
     # ---
     print("开始范围过滤参数自动选择：")
-    choo_para.main_func()
+    rf_choo_para.main_func()
     print("开始范围过滤策略回测：")
     rf_bt.main_func()
 
