@@ -116,6 +116,7 @@ returns.index = unit_buyonly["Time0"]
 # 无杠杆单位1占用资金曲线的夏普比
 myDA.fin.calc_risk_return_ratio(returns) # 0.18956866861486457，MT5是 0.129751
 returns.mean() / returns.std()
+
 # 它反应的是持仓时间的算术平均盈利与其标准方差的比率。无风险比率, 此处也考虑从相应的银行存款资金获得的利润.
 profit = unit_buyonly["NetProfit_Base"] # NetProfit_Base Profit_Base Profit Diff Diff_Point
 profit.mean() / profit.std() # 0.1269115668443189
