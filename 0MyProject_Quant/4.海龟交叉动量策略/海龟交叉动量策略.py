@@ -322,18 +322,18 @@ rf_out.core_num = core_num
 
 #%% ##################### 3_2.范围过滤参数自动选择及策略回测 #####################
 from MyPackage.MyProjects.向量化策略测试.Range_Filter import Auto_Choose_RFilter_Param
-choo_para = Auto_Choose_RFilter_Param()
+rf_choo_para = Auto_Choose_RFilter_Param()
 
-choo_para.symbol_list = symbol_list
-choo_para.total_folder = total_folder
-choo_para.core_num = core_num
+rf_choo_para.symbol_list = symbol_list
+rf_choo_para.total_folder = total_folder
+rf_choo_para.core_num = core_num
 
 
 from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_BackTest
 rf_bt = Range_Filter_BackTest()
 
-rf_bt.symbol_list = choo_para.symbol_list
-rf_bt.total_folder = choo_para.total_folder
+rf_bt.symbol_list = symbol_list
+rf_bt.total_folder = total_folder
 rf_bt.core_num = core_num  # 注意，M1, M2时间框数据量较大时，并行太多会爆内存。
 rf_bt.stratgy_signal = stratgy_signal
 
@@ -353,20 +353,20 @@ df_out.core_num = core_num
 
 #%% ##################### 4_2.方向过滤参数自动选择及策略回测 #####################
 from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Auto_Choose_DFilter_Param
-choo_para = Auto_Choose_DFilter_Param()
+df_choo_para = Auto_Choose_DFilter_Param()
 
-choo_para.symbol_list = symbol_list
-choo_para.total_folder = total_folder
-choo_para.core_num = core_num
+df_choo_para.symbol_list = symbol_list
+df_choo_para.total_folder = total_folder
+df_choo_para.core_num = core_num
 
 
 from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_BackTest
-rf_bt = Direct_Filter_BackTest()
+df_bt = Direct_Filter_BackTest()
 
-rf_bt.symbol_list = symbol_list
-rf_bt.total_folder = total_folder
-rf_bt.core_num = core_num
-rf_bt.stratgy_signal = stratgy_signal
+df_bt.symbol_list = symbol_list
+df_bt.total_folder = total_folder
+df_bt.core_num = core_num
+df_bt.stratgy_signal = stratgy_signal
 
 
 
@@ -384,6 +384,7 @@ strat_pool.core_num = core_num
 #%%
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
+
     # ---1_1.参数优化。写入log
     print("1_1. 开始策略参数优化_并行")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\1_1.参数优化.log")
@@ -394,6 +395,7 @@ if __name__ == '__main__':
     # ---1_3.汇总品种不同过滤结果
     print("1_3. 开始汇总品种不同过滤结果_并行")
     sum_choo.main_func()
+
     # ---2_1.开始订单可管理性分析。包括 2_1_1新的文档文件、2_1_2分析图片写入log
     print("2_1. 开始订单可管理性分析： ")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\2_1.订单可管理性分析.log")
@@ -404,6 +406,7 @@ if __name__ == '__main__':
     # ---2_3.同策同框同向不同参数比较筛选
     print("2_3. 开始同策同框同向不同参数比较筛选： ")
     s_better.main_func()
+
     # ---3_1.指标范围过滤输出文档
     print("3_1. 开始指标范围过滤输出文档")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_1.指标范围过滤输出文档.log")
@@ -411,11 +414,12 @@ if __name__ == '__main__':
     # ---3_2.范围过滤参数自动选择及策略回测
     # 3_2_1.范围过滤参数自动选择
     print("3_2_1. 开始范围过滤参数自动选择：")
-    choo_para.main_func()
+    rf_choo_para.main_func()
     # 3_2_2. 范围过滤策略回测
     print("3_2_2. 开始范围过滤策略回测：")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_2.范围过滤策略回测.log")
     rf_bt.main_func(logger=logger)
+
     # ---4_1.指标方向过滤输出文档
     print("4_1. 开始指标方向过滤输出文档")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_1.指标方向过滤输出文档.log")
@@ -423,11 +427,12 @@ if __name__ == '__main__':
     # ---4_2.方向过滤参数自动选择及策略回测
     # 4_2_1 方向过滤参数自动选择
     print("4_2_1. 开始方向过滤参数自动选择：")
-    choo_para.main_func()
+    df_choo_para.main_func()
     # 4_2_2 方向过滤策略回测
     print("4_2_2. 开始方向过滤策略回测：")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")
-    rf_bt.main_func(logger=logger)
+    df_bt.main_func(logger=logger)
+
     # ---5.策略池整合
     print("5. 策略池整合")
     strat_pool.main_func()
