@@ -8,9 +8,9 @@ import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 
-# ------------------------------------------------------------
+#------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=False) # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -42,11 +42,14 @@ myFactorD = MyQuant.MyClass_Factor_Detection()  # 因子检测类
 myKeras = MyDeepLearning.MyClass_tfKeras()  # tfKeras综合类
 myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
-myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
-myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
+myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect = False) # Python链接MT5高级类
+myMT5Indi = MyMql.MyClass_MT5Indicator() # MT5指标Python版
 myMT5Report = MyMql.MyClass_StratTestReport() # MT5策略报告类
+myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False) # 固定杠杆仓位类
+myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False) # 浮动杠杆仓位类
+myMoneyM = MyTrade.MyClass_MoneyManage() # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-# ------------------------------------------------------------
+#------------------------------------------------------------
 
 
 #%%
@@ -83,16 +86,48 @@ unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct
 unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
 # 符合MT5实际的资金曲线计算。
-unit_buyonly["Balance_Base"].plot()
-plt.show()
-deal_content["Balance"][1:-1].plot()
-plt.show()
+# unit_buyonly["Balance_Base"].plot()
+# plt.show()
+# deal_content["Balance"][1:-1].plot()
+# plt.show()
 
-# 回测框架以1为基准单位，算收益率
-myDA.fin.r_to_price(unit_buyonly["Rate"]).plot()
-plt.show()
-unit_buyonly["Profit_Base"].cumsum().plot()
-plt.show()
+# 回测框架以单位1为基准单位，算收益率
+# myDA.fin.r_to_price(unit_buyonly["Rate"]).plot()
+# plt.show()
+# unit_buyonly["Profit_Base"].cumsum().plot()
+# plt.show()
+
+#%%
+mypd.__init__(0)
+strat_result
+
+# 以基准仓位算各项结果
+# 胜率要以净利润算。不要字符串解析，win_rate = strat_result.loc["Profit Trades (% of total):"]
+win_rate = (unit_buyonly["NetProfit_Base"] > 0).sum() / 104
+# 平均利润 strat_result.loc["Average profit trade:"]
+average_profit = unit_buyonly["NetProfit_Base"][unit_buyonly["NetProfit_Base"] > 0].mean()
+# 平均亏损 strat_result.loc["Average loss trade:"]
+average_loss = unit_buyonly["NetProfit_Base"][unit_buyonly["NetProfit_Base"] <= 0].mean()
+# 几何平均利润率
+rate_profit = unit_buyonly["Rate"][unit_buyonly["Rate"] > 0]
+rate_profit = rate_profit + 1
+grate_profit = stats.gmean(rate_profit) - 1 # 计算=0.0222 表格=0.0221
+# 几何平均亏损率
+rate_loss = unit_buyonly["Rate"][unit_buyonly["Rate"] <= 0]
+rate_loss = rate_loss + 1
+grate_loss = 1 - stats.gmean(rate_loss) # 计算=0.0109 表格= 0.011
+# 凯利公式结果
+myMoneyM.kelly_losslot_percent(win_rate, average_profit, average_loss) # 计算=0.129 表格=0.13
+myMoneyM.kelly_occupylot_lever(win_rate, grate_profit, grate_loss) # 计算=11.504 表格=11.1
+
+# 用历史回报法求 使"最终财富比值TWR"最大的"资金百分比f"
+profit_series = unit_buyonly["NetProfit_Base"] # NetProfit_Base Profit_Base Rate
+myMoneyM.terminal_wealth_relative(profit_series, bounds=(0,1)) # f = 0.19377305347158474
+
+
+
+
+
 
 
 
@@ -101,8 +136,7 @@ plt.show()
 newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
 newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 
-#%%
-# 计算下各方向下的各种指标。注意这里与回测中的计算有所不同，回测是以1单位算累计收益率。
+#%% 计算下各方向下的各种指标。注意这里与向量化回测中的计算有所不同，向量化回测是以1单位算累计收益率。
 # myBTV.__returns_result__()
 # myBTV.__strat__()
 
@@ -125,7 +159,7 @@ profit.mean() / profit.std() # 0.1269115668443189
 # profit = temp["Profit"]+temp["Commission"]+temp["Swap"] # Balance
 # profit.mean() / profit.std(ddof=0)
 
-# 最大回撤与起初资金有关
+# 最大回撤与起初资金有关(最大回撤以真实情况来计算，非单位1全额交易.)
 maxDD = myDA.fin.calc_max_drawdown(p)
 # 累计净利润
 cumReturn = unit_buyonly["Balance_Base"].iloc[-1]
@@ -135,12 +169,14 @@ annRet = myDA.fin.calc_cagr(prices = p) if len(p) >= 2 else np.nan
 calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 
 
-#%%
+#%% 无仓位管理，打乱收益，模拟最大回撤分布。
+# 最大回撤以真实情况来计算，非单位1全额交易。
 Deposit = 5000
 alpha = 0.9
 np.random.seed(0)
 maxDD_list = []
 for i in range(1000):
+    # 最大回撤以真实情况来计算，非单位1全额交易。
     balance = unit_buyonly["NetProfit_Base"].sample(frac=1).cumsum() + Deposit
     # balance.reset_index(drop=True,inplace=True)
     # balance.plot()

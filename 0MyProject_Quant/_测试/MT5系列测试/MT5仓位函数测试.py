@@ -82,11 +82,11 @@ myMT5Lots_Dy.symbol_df[symbol].loc["trade_tick_value"]
 
 
 #%%
-myMT5Lots_Fix.lot_open_marginP(16631.21, "EURUSD", "ORDER_TYPE_BUY", 0.01, None, False)
-myMT5Lots_Dy.lot_open_marginP(16631.21, "EURUSD", "ORDER_TYPE_BUY", 0.01, None, False)
+myMT5Lots_Fix.lots_open_marginP(16631.21, "EURUSD", "ORDER_TYPE_BUY", 0.01, None, False)
+myMT5Lots_Dy.lots_open_marginP(16631.21, "EURUSD", "ORDER_TYPE_BUY", 0.01, None, False)
 
-myMT5Lots_Fix.lot_optlever(16631.21, "EURUSD", "ORDER_TYPE_BUY", 5, None, False)
-myMT5Lots_Dy.lot_optlever(16631.21, "EURUSD", "ORDER_TYPE_BUY", 5, None, False)
+myMT5Lots_Fix.lots_optlever(16631.21, "EURUSD", "ORDER_TYPE_BUY", 5, None, False)
+myMT5Lots_Dy.lots_optlever(16631.21, "EURUSD", "ORDER_TYPE_BUY", 5, None, False)
 
 myMT5Lots_Fix.lots_risk_percent(16631.21, "EURUSD", 0.1, 100, -1, False)
 myMT5Lots_Dy.lots_risk_percent(16631.21, "EURUSD", 0.1, 100, -1, False)
@@ -132,9 +132,9 @@ myMT5Lots_Dy.__margin_open_dy1__("ORDER_TYPE_BUY",symbol,50,price=price)
 myMT5Lots_Dy.margin_open("ORDER_TYPE_BUY",symbol,50,price=price)
 
 
-myMT5Lots_Dy.__lot_open_dy__("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
-myMT5Lots_Dy.__lot_open_fix__("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
-myMT5Lots_Dy.lot_open("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
+myMT5Lots_Dy.__lots_open_dy__("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
+myMT5Lots_Dy.__lots_open_fix__("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
+myMT5Lots_Dy.lots_open("EURUSD", "ORDER_TYPE_BUY", 2000, None, True)
 
 
 
