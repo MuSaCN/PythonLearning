@@ -117,16 +117,21 @@ rate_loss = unit_buyonly["Rate"][unit_buyonly["Rate"] <= 0]
 rate_loss = rate_loss + 1
 grate_loss = 1 - stats.gmean(rate_loss) # 计算=0.0109 表格= 0.011
 # 凯利公式结果
-myMoneyM.kelly_losslot_percent(win_rate, average_profit, average_loss) # 计算=0.129 表格=0.13
-myMoneyM.kelly_occupylot_lever(win_rate, grate_profit, grate_loss) # 计算=11.504 表格=11.1
+f_kelly = myMoneyM.kelly_losslot_percent(win_rate, average_profit, average_loss) # 计算=0.129 表格=0.13
+lever = myMoneyM.kelly_occupylot_lever(win_rate, grate_profit, grate_loss) # 计算=11.504 表格=11.1
 
-# 用历史回报法求 使"最终财富比值TWR"最大的"资金百分比f"
+# 用历史回报法求 使"最终财富比值TWR"最大的"资金百分比f"("保证金止损仓位")
 profit_series = unit_buyonly["NetProfit_Base"] # NetProfit_Base Profit_Base Rate
-myMoneyM.terminal_wealth_relative(profit_series, bounds=(0,1)) # f = 0.19377305347158474
+f_twr, max_twr = myMoneyM.terminal_wealth_relative(profit_series, bounds=(0,1)) # f = 0.19377305347158474
 
-
-
-
+# 假设报酬率限定为2时，且 胜率 > 1/3 时，破产概率为：
+win_rate
+# 实际报酬率，盈亏比
+np.abs(average_profit / average_loss)
+# 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
+myMoneyM.bankrupt_risk(win_rate, f_kelly, reward_rate=2) # f_kelly, f_twr
+# 限定破产风险为指定值，得出最大的仓位比例f，error=None。
+myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward_rate=2)
 
 
 
