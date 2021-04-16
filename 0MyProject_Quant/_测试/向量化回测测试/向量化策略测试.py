@@ -58,6 +58,24 @@ direct = "SellOnly"
 direct = "All"
 
 #%%
+# ---DailyRange交叉动量策略。当价格与上轨金叉，做多；当价格与下轨死叉，做空。基于DailyRange指标，其中 DailyRange 以当日open为标的，+- 上个日线的 range*n 波动。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
+result1 = myBTV.stra.dailyrange_cross_momentum(eurusd, 1.0)
+a = result1[direct][result1[direct]!=0]
+
+# ---DailyRange交叉反转策略。当价格与上轨金叉，做空；当价格与下轨死叉，做多。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
+result2 = myBTV.stra.dailyrange_cross_reverse(eurusd, 1.0)
+b = result2[direct][result2[direct]!=0]
+
+a[a != -b]
+
+# ---DailyRange交叉反转策略(先突破再交叉)。当价格与下轨金叉，做多；当价格与上轨死叉，做空。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
+result3 = myBTV.stra.dailyrange_break_cross_reverse(eurusd, 0.1)
+c = result3[direct][result3[direct]!=0]
+
+
+
+
+#%%
 # ---海龟交叉动量策略。当价格与上轨金叉，做多；当价格与下轨死叉，做空。(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
 result = myBTV.stra.turtle_cross_momentum(eurusd,20,price_arug=["High", "Low", "Close"])
 a = result[direct][result[direct]!=0]

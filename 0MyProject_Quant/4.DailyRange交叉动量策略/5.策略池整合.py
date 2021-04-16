@@ -11,7 +11,7 @@ import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 
-# ------------------------------------------------------------
+#------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
 mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
@@ -48,49 +48,34 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-# ------------------------------------------------------------
+#------------------------------------------------------------
 
 '''
-# 1.同一个策略、同一个时间框、同一个方向下，不同的参数之间进行比较筛选。
-# 2.筛选最佳的占优策略 或排除最差的策略。思路：模式1：先分析词缀sharpe和cumRet下是否有指定比率(比如80%)领先者，若有则领先者为最佳，否则进入模式2；模式2：先分析某个词缀(比如sharpe)下哪个策略的优势超过指定比率(比如80%)，该策略得1分。对所有词缀进行分析，若某个策略的得分最大且超过指定数量(词缀个数*2*80%)，则该策略认为是最佳的占优策略。
-# 3.排除最差策略思想与上述相反。
-# 4.反复筛选，直到剩余1个 或 找不到最佳最差 或 找到最佳。
+# 说明：
+# 我们的思想是，不同组的策略参数可以看成不同的策略进行叠加。但是过滤的指标参数只能选择一个。
+# 这一步把这些结果整合到一起，形成策略池。
+# 前面已经对一个品种、一个时间框、一个方向、一组参数进行了指标范围过滤和指标方向过滤。
+# 某个品种某个时间框某个参数组有许多个过滤情况，我们可以通过“策略参数自动选择”输出的极值图片来排除哪些策略参数组不好。
+# 过滤后的结果选择 filter1 中的 sharpe_filter 最大值，即选择思想为过滤后的最大值。
+# 由于前面对某些品种可能设置了条件，整合时注意要先判断对应的参数目录是否存在。
+# 复制图片，必须夏普比率有所提高才复制。
+# 并行运算以品种为并行参数。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
-s_better = Strategy_Better()
-myDefault.set_backend_default("agg")
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_Pool_Integration
+strat_pool = Strat_Pool_Integration()
 
 
 #%% ******修改这里******
-s_better.strategy_para_name = ["n", "holding", "lag_trade"]
-s_better.symbol_list = myMT5Pro.get_main_symbol_name_list()
-s_better.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉反转研究"
-s_better.readfile_suffix = ".holdingtest" # 输入的文档加后缀 .holdingtest
-s_better.outfile_suffix = ".better" # 输出的文档加后缀
-s_better.core_num = -1
-
-
-#%% ******修改函数******
-#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
-def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.dailyrange_cross_reverse(dataframe, n=para_list[0])
-s_better.stratgy_signal = stratgy_signal
-
+strat_pool.strategy_para_name = ["n", "holding", "lag_trade"]
+strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
+strat_pool.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
+strat_pool.readfile_suffix = ".better"
 
 #%%
+strat_pool.core_num = -1
 if __name__ == '__main__':
     # ---
-    print("开始同策同框同向不同参数比较筛选： ")
-    s_better.main_func()
-
-
-
-
-
-
-
-
-
+    strat_pool.main_func()
 

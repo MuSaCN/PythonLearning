@@ -13,7 +13,6 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -50,32 +49,66 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+''' 自动选择部分：
+# 1.根据前面输出的优化结果，自动寻找最佳参数点。由于品种较多，再算上极值点判断方法，耗时较长，故采用多核运算。
+# 2.自动寻找的思路为：对 过滤0次、过滤1次、过滤2次 的数据寻找极值点。会输出图片和表格。注意过滤后的数据判断完极值后，会根据其位置索引到源数据，再组成表格的内容。注意图片中的过滤部分极值，并没有更改为源数据，仅表格更改了。
+# 3.并行运算必须处理好图片释放内存的问题，且并行逻辑与目录逻辑不一样要一样。此处是以品种作为并行方案。
+# 4.根据输出的图片看过滤几次较好，以及判断极值每一边用有多少点进行比较较好。
+# 5.为下一步批量自动回测做准备。
 '''
-# 说明：
-# 我们的思想是，不同组的策略参数可以看成不同的策略进行叠加。但是过滤的指标参数只能选择一个。
-# 这一步把这些结果整合到一起，形成策略池。
-# 前面已经对一个品种、一个时间框、一个方向、一组参数进行了指标范围过滤和指标方向过滤。
-# 某个品种某个时间框某个参数组有许多个过滤情况，我们可以通过“策略参数自动选择”输出的极值图片来排除哪些策略参数组不好。
-# 过滤后的结果选择 filter1 中的 sharpe_filter 最大值，即选择思想为过滤后的最大值。
-# 由于前面对某些品种可能设置了条件，整合时注意要先判断对应的参数目录是否存在。
-# 复制图片，必须夏普比率有所提高才复制。
-# 并行运算以品种为并行参数。
+''' 汇总过滤结果：
+# 由于一个品种 30、40、50 的极值选择会有重复的。所以我们汇总到一起，删除重复的。
+# 保存到 ...\_**研究\策略参数自动选择\symbol\symbol.total.filter*.xlsx
+# 汇总目的在于为后续分析提供便利。
 '''
+
+
+#%% ############################## 策略参数自动选择 ###########################
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Auto_Choose_StratOptParam
+choose_opt = Auto_Choose_StratOptParam()
+myDefault.set_backend_default("agg") # 这句必须放到类下面
+
+
+#%% ************ 需要修改的部分 ************
+choose_opt.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
+choose_opt.filename_prefix = "DailyRange交叉反转"
+choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}] # key词缀不能搞错了
+
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_Pool_Integration
-strat_pool = Strat_Pool_Integration()
+choose_opt.y_name = ["sharpe"] # 过滤的y轴，不能太多。仅根据夏普选择就可以了.
+choose_opt.core_num = -1 # -1表示留1个进程不执行运算。
 
 
-#%% ******修改这里******
-strat_pool.strategy_para_name = ["n", "holding", "lag_trade"]
-strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
-strat_pool.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
-strat_pool.readfile_suffix = ".better"
+#%% ######################### 汇总品种不同过滤结果 #########################
+from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
+sum_choo = Sum_Auto_Choose()
+
+
+#%% ************ 可能需要修改的部分 ************
+sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
+sum_choo.all_folder = choose_opt.total_folder
+sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
+sum_choo.outfile_suffix = ".original" # 输出的文档加后缀
+sum_choo.core_num = -1
+
 
 #%%
-strat_pool.core_num = -1
+# ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---
-    strat_pool.main_func()
+    print("开始策略参数自动选择_并行")
+    choose_opt.main_func()
+    # ---
+    print("开始汇总品种不同过滤结果_并行")
+    sum_choo.main_func()
+
+
+
+
+
+
+
+
 

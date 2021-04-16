@@ -70,33 +70,33 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 #%%
 from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Auto_Choose_DFilter_Param
-df_choo_para = Auto_Choose_DFilter_Param()
+choo_para = Auto_Choose_DFilter_Param()
 myDefault.set_backend_default("agg")
 
 
 #%% ******需要修改******
-df_choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
-df_choo_para.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
-df_choo_para.core_num = -1
+choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choo_para.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
+choo_para.core_num = -1
 
 
 #%%
 from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_BackTest
-df_bt = Direct_Filter_BackTest()
+rf_bt = Direct_Filter_BackTest()
 myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 
 #%%
-df_bt.symbol_list = df_choo_para.symbol_list
-df_bt.total_folder = df_choo_para.total_folder
-df_bt.core_num = -1
+rf_bt.symbol_list = choo_para.symbol_list
+rf_bt.total_folder = choo_para.total_folder
+rf_bt.core_num = -1
 
 
 #%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.dailyrange_cross_momentum(dataframe, n=para_list[0])
-df_bt.stratgy_signal = stratgy_signal
+    return myBTV.stra.dailyrange_break_cross_reverse(dataframe, n=para_list[0])
+rf_bt.stratgy_signal = stratgy_signal
 
 
 #%%
@@ -104,9 +104,9 @@ df_bt.stratgy_signal = stratgy_signal
 if __name__ == '__main__':
     # ---
     print("开始方向过滤参数自动选择：")
-    df_choo_para.main_func()
+    choo_para.main_func()
     print("开始方向过滤策略回测：")
-    df_bt.main_func()
+    rf_bt.main_func()
 
 
 

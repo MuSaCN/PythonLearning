@@ -13,8 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标方向过滤输出文档.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\订单可管理性分析.log") # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -51,40 +50,66 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-
 '''
-# 说明：
-# 1.根据趋势性指标进行策略方向性过滤。价格在指标上方，只做多、不做空；价格在指标下方，只做空，不做多。
-# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
-# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
-# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
-# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
-# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
-# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
+# 订单可管理性：如果一个策略在未来1期持仓表现不错，同时在未来多期持仓也表现不错。这就表明，这个策略的交易订单在时间伸展上能够被管理，我们称作为订单具备可管理性。
+# 对训练集进行多holding回测，展示结果的夏普比曲线和胜率曲线。
+# 采用无重复持仓模式和重复持仓模式。
+# 如果前3个夏普都是递增的，则选择之。输出测试图片。否则不认为具有可管理性，则弃之。
+# 并行运算以品种来并行
+'''
+'''
+# 0.这里的回测是建立在前面已经对策略的参数做了选择。
+# 1.根据前面整理的自动选择的最佳参数表格文档，读取参数，再做原始的策略测试。
+# 2.策略结果保存到 "策略参数自动选择\品种\auto_para_1D_{order}\原始策略回测_filter1" 文件夹下面。
+# 3.策略测试所用的区间要增大。
+# 4.回测结果较多，构成策略库供后续选择研究。
+# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_Output
-df_out = Direct_Filter_Output()
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
+more_h = Auto_More_Holding()
+myDefault.set_backend_default("agg")
+
 
 #%% ******修改这里******
-# 策略参数名称，用于文档中解析参数 ***修改这里***
-df_out.strategy_para_name = ["n", "holding", "lag_trade"]
-df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
-df_out.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
-df_out.readfile_suffix = ".better"
+more_h.strategy_para_name = ["n", "holding", "lag_trade"]
+more_h.symbol_list = myMT5Pro.get_main_symbol_name_list()
+more_h.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
+more_h.readfile_suffix = ".original" # 输入的文档加后缀
+more_h.outfile_suffix = ".holdingtest" # 输出的文档加后缀
+more_h.core_num = -1
+more_h.holding_testcount = 3  # 测试到的holding数量
 
-#%% ******修改这个函数******
+
+#%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
     return myBTV.stra.dailyrange_cross_momentum(dataframe, n=para_list[0])
-df_out.stratgy_signal = stratgy_signal
+more_h.stratgy_signal = stratgy_signal
 
 
 #%%
-df_out.core_num = -1
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_BackTest
+strat_bt = Strategy_BackTest()
+myDefault.set_backend_default("agg")
+
+
+#%% ************ 需要修改的部分 ************
+# 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
+strat_bt.para_name = more_h.strategy_para_name
+strat_bt.symbol_list = more_h.symbol_list
+strat_bt.total_folder = more_h.total_folder
+strat_bt.readfile_suffix = ".holdingtest" # 输入的文档加后缀
+strat_bt.core_num = -1 # -1表示留1个进程不执行运算。
+strat_bt.stratgy_signal = stratgy_signal
+
+
+#%%
 if __name__ == '__main__':
     # ---
-    df_out.main_func()
-
+    print("开始订单可管理性分析： ")
+    more_h.main_func()
+    print("开始筛选后策略自动回测： ")
+    strat_bt.main_func()
 

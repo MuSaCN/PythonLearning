@@ -11,10 +11,9 @@ import seaborn as sns
 import statsmodels.api as sm
 from scipy import stats
 
-#------------------------------------------------------------
+# ------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标方向过滤输出文档.log") # 日志记录类，需要放在上面才行
-
+mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -49,42 +48,49 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-#------------------------------------------------------------
-
+# ------------------------------------------------------------
 
 '''
-# 说明：
-# 1.根据趋势性指标进行策略方向性过滤。价格在指标上方，只做多、不做空；价格在指标下方，只做空，不做多。
-# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
-# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
-# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
-# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
-# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
-# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
+# 1.同一个策略、同一个时间框、同一个方向下，不同的参数之间进行比较筛选。
+# 2.筛选最佳的占优策略 或排除最差的策略。思路：模式1：先分析词缀sharpe和cumRet下是否有指定比率(比如80%)领先者，若有则领先者为最佳，否则进入模式2；模式2：先分析某个词缀(比如sharpe)下哪个策略的优势超过指定比率(比如80%)，该策略得1分。对所有词缀进行分析，若某个策略的得分最大且超过指定数量(词缀个数*2*80%)，则该策略认为是最佳的占优策略。
+# 3.排除最差策略思想与上述相反。
+# 4.反复筛选，直到剩余1个 或 找不到最佳最差 或 找到最佳。
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_Output
-df_out = Direct_Filter_Output()
+from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
+s_better = Strategy_Better()
+myDefault.set_backend_default("agg")
+
 
 #%% ******修改这里******
-# 策略参数名称，用于文档中解析参数 ***修改这里***
-df_out.strategy_para_name = ["n", "holding", "lag_trade"]
-df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
-df_out.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉反转研究"
-df_out.readfile_suffix = ".better"
+s_better.strategy_para_name = ["n", "holding", "lag_trade"]
+s_better.symbol_list = myMT5Pro.get_main_symbol_name_list()
+s_better.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
+s_better.readfile_suffix = ".holdingtest" # 输入的文档加后缀 .holdingtest
+s_better.outfile_suffix = ".better" # 输出的文档加后缀
+s_better.core_num = -1
 
-#%% ******修改这个函数******
+
+#%% ******修改函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.dailyrange_cross_reverse(dataframe, n=para_list[0])
-df_out.stratgy_signal = stratgy_signal
+    return myBTV.stra.dailyrange_break_cross_reverse(dataframe, n=para_list[0])
+s_better.stratgy_signal = stratgy_signal
 
 
 #%%
-df_out.core_num = -1
 if __name__ == '__main__':
     # ---
-    df_out.main_func()
+    print("开始同策同框同向不同参数比较筛选： ")
+    s_better.main_func()
+
+
+
+
+
+
+
+
 
 

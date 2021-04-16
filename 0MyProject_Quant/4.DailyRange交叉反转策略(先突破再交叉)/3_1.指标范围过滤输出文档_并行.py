@@ -13,7 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\方向过滤策略回测.log") # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标范围过滤输出文档.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
@@ -51,62 +51,39 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-'''
-# 1.根据前面 信号利润过滤测试 输出的文档，解析文档名称，读取参数，选择极值。
-# 2.一个特定的策略参数作为一个目录，存放该下面所有指标的结果。
-# 3.不同名称的指标会自动判断极值，且输出图片。最后会输出表格文档，整理这些极值。
-# 4.由于不是大型计算，并行是一次性所有并行。
-# 5.并行运算注意内存释放，并且不要一次性都算完，这样容易爆内存。分组进行并行。
-'''
+
 '''
 # 说明
-# 这里的策略回测是建立在前面已经对指标的范围过滤做了参数选择。
-# 前面对每个具体策略都通过指标过滤方式，算出了各个指标过滤效果的极值。我们根据极值对应的指标值做回测。
-# 画的图中，分别展示 过滤前训练集价格和指标、过滤前训练集策略、过滤后全集价格和指标、过滤后全集策略以及训练集策略。
-# 方向过滤作用到整个样本。
-# 并行以品种来并行，以时间框来分组。
-# 由于指标较多，并行运算时间长，防止出错输出日志。
+# 1.根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
+# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
+# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
+# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
+# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
+# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
+# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Auto_Choose_DFilter_Param
-choo_para = Auto_Choose_DFilter_Param()
-myDefault.set_backend_default("agg")
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_Output
+rf_out = Range_Filter_Output()
 
+#%% ************ 需要修改的部分 ************
+rf_out.strategy_para_name = ["n", "holding", "lag_trade"]
+rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_out.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
+rf_out.readfile_suffix = ".better"
 
-#%% ******需要修改******
-choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
-choo_para.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉反转研究"
-choo_para.core_num = -1
-
-
-#%%
-from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_BackTest
-rf_bt = Direct_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
-
-
-#%%
-rf_bt.symbol_list = choo_para.symbol_list
-rf_bt.total_folder = choo_para.total_folder
-rf_bt.core_num = -1
-
-
-#%% ******修改函数******
+#%% ******修改这个函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.dailyrange_cross_reverse(dataframe, n=para_list[0])
-rf_bt.stratgy_signal = stratgy_signal
-
+    return myBTV.stra.dailyrange_break_cross_reverse(dataframe, n=para_list[0])
+rf_out.stratgy_signal = stratgy_signal
 
 #%%
-# ---多进程必须要在这里执行
+rf_out.core_num = -1
 if __name__ == '__main__':
     # ---
-    print("开始方向过滤参数自动选择：")
-    choo_para.main_func()
-    print("开始方向过滤策略回测：")
-    rf_bt.main_func()
+    rf_out.main_func()
 
 
 

@@ -13,7 +13,7 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标范围过滤输出文档.log") # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标方向过滤输出文档.log") # 日志记录类，需要放在上面才行
 
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
@@ -53,8 +53,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 '''
-# 说明
-# 1.根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
+# 说明：
+# 1.根据趋势性指标进行策略方向性过滤。价格在指标上方，只做多、不做空；价格在指标下方，只做空，不做多。
 # 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
 # 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
 # 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
@@ -64,32 +64,27 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_Output
-rf_out = Range_Filter_Output()
+from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_Output
+df_out = Direct_Filter_Output()
 
-#%% ************ 需要修改的部分 ************
-rf_out.strategy_para_name = ["n", "holding", "lag_trade"]
-rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
-rf_out.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉动量研究"
-rf_out.readfile_suffix = ".better"
+#%% ******修改这里******
+# 策略参数名称，用于文档中解析参数 ***修改这里***
+df_out.strategy_para_name = ["n", "holding", "lag_trade"]
+df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+df_out.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
+df_out.readfile_suffix = ".better"
 
 #%% ******修改这个函数******
 #  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
     return myBTV.stra.dailyrange_cross_momentum(dataframe, n=para_list[0])
-rf_out.stratgy_signal = stratgy_signal
+df_out.stratgy_signal = stratgy_signal
+
 
 #%%
-rf_out.core_num = -1
+df_out.core_num = -1
 if __name__ == '__main__':
     # ---
-    rf_out.main_func()
-
-
-
-
-
-
-
+    df_out.main_func()
 
 

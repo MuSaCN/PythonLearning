@@ -13,7 +13,8 @@ from scipy import stats
 
 #------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\指标范围过滤输出文档.log") # 日志记录类，需要放在上面才行
+
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -50,33 +51,45 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+
 '''
-# 说明：
-# 我们的思想是，不同组的策略参数可以看成不同的策略进行叠加。但是过滤的指标参数只能选择一个。
-# 这一步把这些结果整合到一起，形成策略池。
-# 前面已经对一个品种、一个时间框、一个方向、一组参数进行了指标范围过滤和指标方向过滤。
-# 某个品种某个时间框某个参数组有许多个过滤情况，我们可以通过“策略参数自动选择”输出的极值图片来排除哪些策略参数组不好。
-# 过滤后的结果选择 filter1 中的 sharpe_filter 最大值，即选择思想为过滤后的最大值。
-# 由于前面对某些品种可能设置了条件，整合时注意要先判断对应的参数目录是否存在。
-# 复制图片，必须夏普比率有所提高才复制。
-# 并行运算以品种为并行参数。
+# 说明
+# 1.根据信号的利润，运用其他指标来过滤，从累计利润角度进行过滤。可以分析出 其他指标的值 的哪些区间对于累计利润是正的贡献、哪些区间是负的贡献。所用的思想为“求积分(累积和)来进行噪音过滤”。
+# 2.根据训练集获取过滤区间，然后作用到训练集，不是整个样本。
+# 3.一个策略参数有许多个指标，每个指标有许多指标参数，这些结果都放到一个表格中。
+# 4.有许多个指标，所以通过并行运算。并行是对一个品种、一个时间框下、一个方向下，不同指标的不同参数进行并行。
+# 5.表格文档存放到硬盘路径"_**研究\过滤指标参数自动选择\symbol.timeframe"，以便于下一步极值分析。
+# 6.由于属于大型计算，并行运算时间长，防止出错要输出日志。
+# 7.后期要通过动态读取文件来解析品种、时间框、方向、策略参数名、策略参数值等
 '''
 
 #%%
-from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_Pool_Integration
-strat_pool = Strat_Pool_Integration()
+from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_Output
+rf_out = Range_Filter_Output()
 
+#%% ************ 需要修改的部分 ************
+rf_out.strategy_para_name = ["n", "holding", "lag_trade"]
+rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_out.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
+rf_out.readfile_suffix = ".better"
 
-#%% ******修改这里******
-strat_pool.strategy_para_name = ["n", "holding", "lag_trade"]
-strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
-strat_pool.total_folder = "F:\\工作---策略研究\\3.DailyRange交叉策略\\_交叉反转研究"
-strat_pool.readfile_suffix = ".better"
-
+#%% ******修改这个函数******
+#  策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
+def stratgy_signal(dataframe, para_list=list or tuple):
+    return myBTV.stra.dailyrange_cross_momentum(dataframe, n=para_list[0])
+rf_out.stratgy_signal = stratgy_signal
 
 #%%
-strat_pool.core_num = -1
+rf_out.core_num = -1
 if __name__ == '__main__':
     # ---
-    strat_pool.main_func()
+    rf_out.main_func()
+
+
+
+
+
+
+
+
 

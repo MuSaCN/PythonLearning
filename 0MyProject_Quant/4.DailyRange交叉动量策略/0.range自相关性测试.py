@@ -106,7 +106,7 @@ cross_momentum = myBTV.stra.dailyrange_cross_momentum(data_total,n=1)
 cross_momentum[cross_momentum["All"]==-1]
 
 # ---测试交叉反转策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
-cross_reverse = myBTV.stra.dailyrange_cross_reverse(data_total,n=1)
+cross_reverse = myBTV.stra.dailyrange_break_cross_reverse(data_total,n=1)
 cross_reverse[cross_reverse["All"]==-1]
 
 

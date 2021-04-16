@@ -58,7 +58,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 "1_1.参数优化部分："
 # (***需修改***)策略说明：
 '''
-# 海龟交叉反转策略。当价格与上轨金叉，做空；当价格与下轨死叉，做多。(注意：因为唐奇安通道的性质，无法用策略：当价格与上轨死叉，做空；当价格与下轨金叉，做多。)(PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。)
+# DailyRange交叉动量策略，运用 "当天日线bar的open" +- "前一日线bar的range*n" 得到上下通道。
+# close 向上交叉上轨，触发做空信号；向下交叉下轨，触发做多信号。
 # 由于指标为直线类轨道。固该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
 # 只考虑入场，出场模式放在其他地方考虑。
 # 信号触发且确认后，下一期进行交易。持有仓位周期为1根K线。
@@ -185,15 +186,15 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 ""
 # ---非策略设置
 core_num = -1
-total_folder = "F:\\工作---策略研究\\4.海龟交叉策略\\__海龟交叉反转研究"
-filename_prefix = "_反转"
+total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究"
+filename_prefix = "DailyRange交叉反转"
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 direct_para = ["BuyOnly", "SellOnly"] # 方向词缀 ["BuyOnly", "SellOnly", "All"]
 
 # ---策略类设置
 # 策略信号：策略的当期信号(不用平移)：para_list策略参数，默认-1为lag_trade，-2为holding。
 def stratgy_signal(dataframe, para_list=list or tuple):
-    return myBTV.stra.turtle_cross_reverse(dataframe, n=para_list[0], price_arug=["High", "Low", "Close"])
+    return myBTV.stra.dailyrange_cross_reverse(dataframe, n=para_list[0])
 # 策略参数名称，顺序不能搞错了，要与信号函数中一致
 strategy_para_names = ["n", "holding", "lag_trade"]
 # 设置固定和浮动的策略参数，key词缀不能搞错了
@@ -207,14 +208,14 @@ opt = Strategy_Param_Opt_OutPut()
 # ************ 需要修改的部分 ************
 # (***需修改***)策略参数，设置范围的最大值，按顺序保存在 para 的前面
 opt.strategy_para_names = strategy_para_names  # 顺序不能搞错了，要与信号函数中一致
-opt.para1_end = 300         # n周期
+opt.para1_end = 2.0         # 通道的倍数参数，步长0.01 和 范围0.1~2.0
 opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 
 # (***需修改***)获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
     return [(n, holding, lag_trade, direct, timeframe, symbol)
-            for n in [i for i in range(2, opt.para1_end + 1, 1)]
+            for n in [i / 100.0 for i in range(1, int(opt.para1_end) * 100 + 1, 1)]
             for holding in range(1, opt.holding_end + 1)
             for lag_trade in range(1, opt.lag_trade_end + 1)]
 opt.get_strat_para_scope = get_strat_para_scope
@@ -225,8 +226,8 @@ def strat_break(strat_para):
 opt.strat_break = strat_break
 
 # (***需修改***)单个策略过滤方式
-def filter_strategy(*args):
-    return myBTV.filter_strategy(*args) # return myBTV.no_filter_strategy(*args)
+def filter_strategy(*args): # 由于结果太少，不做过滤。
+    return myBTV.no_filter_strategy(*args) # no_filter_strategy filter_strategy
 opt.filter_strategy = filter_strategy
 
 
