@@ -96,7 +96,7 @@ lock = myparallel.lock()
 lock1 = myparallel.lock()
 # myparallel.lock().release() # 会失败
 # lock1.acquire() # lock1锁对象锁住
-# lock1.acquire() # 会阻断，非多线程会卡主。
+# lock1.acquire() # 会阻断相同的对象lock1的这句语句，非多线程会卡主。
 
 import random
 tickt_count = 10
