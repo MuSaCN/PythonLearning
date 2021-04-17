@@ -64,15 +64,48 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # 一个进程所含的不同线程间共享内存，这就意味着任何一个变量都可以被任何一个线程修改，因此线程之间共享数据最大的危险在于多个线程同时改一个变量，把内容给改乱了。如果不同线程间有共享的变量，其中一个方法就是在修改前给其上一把锁lock，确保一次只有一个线程能修改它。threading.lock()方法可以轻易实现对一个共享变量的锁定，修改完后release供其它线程使用。比如下例中账户余额balance是一个共享变量，使用lock可以使其不被改乱。
 '''
 
+# param_list = [[],[],[]] 表示多组参数，里面元素为 func 的参数，要以[...]来写.
+
 #%% 简单测试，是否结构返回的结果
 def worker(n):
     import time
     print("worker")
+    print(n)
     time.sleep(1)
     return n
+myparallel.multi_threading(worker,([1],[2],[3],[4],[5]))
+myparallel.multi_threading(worker,([1],[2],[3],[4],[5]))
+myparallel.multi_threading(worker,([[1,2]],[(3,4)],[5]))
 
-myparallel.multi_threading(worker,(1,2,3,4,5))
-myparallel.multi_threading_result(worker,(1,2,3,4,5)) # [5, 3, 2, 4, 1]
+myparallel.multi_threading_list(worker,([1],[2],[3],[4],[5]))
+myparallel.multi_threading_list(worker,([[1,2]],[3],[4],[5]))
+
+myparallel.multi_threading_df(worker,([[1],[2],[3],[4],[5]]))
+myparallel.multi_threading_df(worker,([[1,2]],[3],[(4,)],[5]))
+
+myparallel.multi_threading_dict(worker,([[1,2]],((3,4),),[5])) # [5, 3, 2, 4, 1]
+myparallel.multi_threading_dict(worker,[[1],[2],[3],[4],[5]]) # [5, 3, 2, 4, 1]
+
+
+#%%
+def worker(*args):
+    import time
+    print("args=",args)
+    print("*args=",*args)
+    time.sleep(1)
+    return 1
+myparallel.multi_threading(worker,[[[1],[2]],[3],[4],[5]])
+myparallel.multi_threading(worker,[[1],[2],[3],[4],[5]])
+myparallel.multi_threading(worker, [[1,2],[(3,4)],[([3,4]),]] )
+
+myparallel.multi_threading_list(worker,[[[1],[2]],[3],[4],[5]])
+
+myparallel.multi_threading_df(worker,([[1,2]],[3],[(4,)],[5]) )
+myparallel.multi_threading_df(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
+
+myparallel.multi_threading_dict(worker,([[1,2]],[3],[(4,)],[5]))
+myparallel.multi_threading_dict(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
+myparallel.multi_threading_dict(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
 
 
 #%% 测试2，多参数
@@ -80,16 +113,13 @@ num = 0
 def add(a,b,c):
     global num
     print(a,b,c)
-    num += 1
     return [num,a,b,c]
 param_list = [["A","B","C"],[1,2,3],["A",1,3],[4,1,2],[8,"DE",0]]
 myparallel.multi_threading(add,param_list=param_list)
-myparallel.multi_threading_result(add,param_list=param_list)
-# [[11, 'A', 'B', 'C'],
-#  [12, 1, 2, 3],
-#  [13, 'A', 1, 3],
-#  [14, 4, 1, 2],
-#  [15, 8, 'DE', 0]]
+myparallel.multi_threading_list(add,param_list=param_list)
+myparallel.multi_threading_df(add, param_list=param_list)
+myparallel.multi_threading_dict(add, param_list=param_list)
+
 
 #%% lock阻断测试
 lock = myparallel.lock()
@@ -115,7 +145,7 @@ def run():
 
 for i in range(100):
     tickt_count = 10
-    myparallel.multi_threading_result(run,param_list=[[],[],[]])
+    myparallel.multi_threading_df(run,param_list=[[],[],[]])
     print('tickt count ',tickt_count) # 不lock，会出现-1
     if tickt_count == -1:
         raise ValueError("结果出现-1")
