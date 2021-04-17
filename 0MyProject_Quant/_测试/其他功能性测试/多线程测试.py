@@ -93,6 +93,11 @@ myparallel.multi_threading_result(add,param_list=param_list)
 
 #%% lock阻断测试
 lock = myparallel.lock()
+lock1 = myparallel.lock()
+# myparallel.lock().release() # 会失败
+# lock1.acquire() # lock1锁对象锁住
+# lock1.acquire() # 会阻断，非多线性会卡主。
+
 import random
 tickt_count = 10
 def run():
@@ -110,7 +115,7 @@ def run():
 
 for i in range(100):
     tickt_count = 10
-    myparallel.multi_threading(run,param_list=[[],[],[]])
+    myparallel.multi_threading_result(run,param_list=[[],[],[]])
     print('tickt count ',tickt_count) # 不lock，会出现-1
     if tickt_count == -1:
         raise ValueError("结果出现-1")
