@@ -15,6 +15,7 @@ myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
 mytime = MyTime.MyClass_Time()  # 时间类
+myparallel = MyTools.MyClass_ParallelCal() # 并行运算类
 myplt = MyPlot.MyClass_Plot()  # 直接绘图类(单个图窗)
 mypltpro = MyPlot.MyClass_PlotPro()  # Plot高级图系列
 myfig = MyPlot.MyClass_Figure(AddFigure=False)  # 对象式绘图类(可多个图窗)
@@ -69,6 +70,10 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 # 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
 order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
 
+tick_value = myMT5.symbol_info(deal_buyonly["Symbol"][1])["trade_tick_value_profit"]
+digits = myMT5.symbol_info(deal_buyonly["Symbol"][1])["digits"]
+point = myMT5.symbol_info(deal_buyonly["Symbol"][1])["point"]
+
 
 #%%
 # 分析 deal_buyonly, deal_sellonly。从deal中获取交易单元(即对应 out 的 in)，生成 订单号和累计利润df.
@@ -103,7 +108,7 @@ strat_result
 
 # 以基准仓位算各项结果
 # 胜率要以净利润算。不要字符串解析，win_rate = strat_result.loc["Profit Trades (% of total):"]
-win_rate = (unit_buyonly["NetProfit_Base"] > 0).sum() / 104
+win_rate = (unit_buyonly["NetProfit_Base"] > 0).sum() / len(unit_buyonly)
 # 平均利润 strat_result.loc["Average profit trade:"]
 average_profit = unit_buyonly["NetProfit_Base"][unit_buyonly["NetProfit_Base"] > 0].mean()
 # 平均亏损 strat_result.loc["Average loss trade:"]
@@ -133,6 +138,47 @@ myMoneyM.bankrupt_risk(win_rate, f_kelly, reward_rate=2) # f_kelly, f_twr
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
 myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward_rate=2)
 
+
+#%%
+mypd.__init__(0)
+unit_buyonly
+volume_min = myMT5.symbol_info(symbol)["volume_min"]
+tick_value = myMT5.symbol_info(symbol)["trade_tick_value_profit"]
+digits = myMT5.symbol_info(symbol)["digits"]
+point = myMT5.symbol_info(symbol)["point"]
+
+# 最差的一单
+worst = unit_buyonly["NetProfit_Base"].min()
+worst_point = np.abs(np.around(worst / volume_min / tick_value, 0))
+
+# ---
+init_deposit = 10000
+used_percent = 0.2# 0.12
+# 以浮动杠杆来分析。
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+#
+current_deposit = init_deposit
+result_netprofit = pd.Series([])
+for i, row in unit_buyonly.iterrows():
+    # break
+    used_equity = current_deposit * used_percent
+    # stoplosspoint = row["StopLossPoint"] if row["StopLossPoint"] > 0 else worst_point
+    # cur_lots = myMT5Lots_Dy.lots_risk_percent(fund=used_equity,symbol=symbol,riskpercent=used_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
+    cur_lots = myMT5Lots_Dy.lots_risk_percent(fund=used_equity, symbol=symbol, riskpercent=used_percent, stoplosspoint=worst_point, spread=0, adjust=True)
+    cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
+    result_netprofit.loc[i] = cur_netprofit
+    current_deposit = current_deposit + cur_netprofit
+
+# 资金曲线
+new_balance = result_netprofit.cumsum() + init_deposit
+new_balance.plot()
+plt.show()
+
+# 当前的最大回撤
+myDA.fin.calc_max_drawdown(new_balance)
+
+# 模拟最大回撤分布
+myMT5Report.maxDD_distribution(result_netprofit, deposit=init_deposit, alpha=0.9, seed=0, random_count=1000)
 
 
 
@@ -178,31 +224,11 @@ calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 # 最大回撤以真实情况来计算，非单位1全额交易。
 Deposit = 5000
 alpha = 0.9
-np.random.seed(0)
-maxDD_list = []
-for i in range(1000):
-    # 最大回撤以真实情况来计算，非单位1全额交易。
-    balance = unit_buyonly["NetProfit_Base"].sample(frac=1).cumsum() + Deposit
-    # balance.reset_index(drop=True,inplace=True)
-    # balance.plot()
-    # plt.show()
-    maxDD = myDA.fin.calc_max_drawdown(balance)
-    maxDD_list.append(maxDD)
-#
-maxDD_data = pd.Series(maxDD_list)
-leftq = np.around(maxDD_data.quantile(q=(1-alpha)/2),4)
-rightq = np.around(maxDD_data.quantile(q=alpha + (1-alpha)/2),4)
-#
-maxDD_data.hist(bins=20)
-plt.axvline(x=leftq, color="red")
-plt.annotate(s="{:.2f}%".format(leftq*100), xy=[leftq,0], xytext=[leftq,0])
-plt.axvline(x=rightq, color="red")
-plt.annotate(s="{:.2f}%".format(rightq*100), xy=[rightq,0], xytext=[rightq,0])
-plt.show()
+seed = 0
+random_count = 1000
+net_profit_series = unit_buyonly["NetProfit_Base"]
 
-
-
-
+leftq, rightq = myMT5Report.maxDD_distribution(net_profit_series, deposit=Deposit, alpha=alpha,seed=seed, random_count=random_count)
 
 
 
