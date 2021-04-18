@@ -228,7 +228,7 @@ seed = 0
 random_count = 1000
 net_profit_series = unit_buyonly["NetProfit_Base"]
 
-leftq, rightq = myMT5Report.maxDD_distribution(net_profit_series, deposit=Deposit, alpha=alpha,seed=seed, random_count=random_count)
+leftq, rightq = myMT5Report.maxDD_distribution(net_profit_series=net_profit_series, deposit=Deposit, alpha=alpha, seed=seed, random_count=random_count)
 
 
 
