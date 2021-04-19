@@ -57,8 +57,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\test.xlsx" # ATR_test test
-# 读取报告。注意部分平仓不适合deal_standard = True修正。
+file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
 # 解析下词缀
@@ -69,7 +69,6 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 
 # 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
 order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
-
 
 # ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
 
@@ -110,119 +109,43 @@ f_limit_bankrupt = myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward
 
 
 #%% ############
-volume_min = myMT5.symbol_info(symbol)["volume_min"]
-tick_value = myMT5.symbol_info(symbol)["trade_tick_value_profit"]
-digits = myMT5.symbol_info(symbol)["digits"]
-point = myMT5.symbol_info(symbol)["point"]
-
+volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
+tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
+digits = myMT5Report.symbol_df[symbol]["digits"]
+point = myMT5Report.symbol_df[symbol]["point"]
 
 
 # 最差的一单
 worst = unit_buyonly["NetProfit_Base"].min()
 worst_point = np.abs(np.around(worst / volume_min / tick_value, 0))
 
-# 以浮动杠杆来分析。
+#
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
-init_deposit = 5000
+myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
+init_deposit = 10000
 used_percent = 0.2# 0.12
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint"]].copy()
+backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 
-# ---原始
-current_deposit = init_deposit
-result_netprofit = []  # 记录每次模拟的净利润数组
-for i, row in backtest_data.iterrows():
-    # break
-    used_equity = current_deposit * used_percent
-    cur_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=used_percent, stoplosspoint=row['StopLossPoint'], spread=0, adjust=True)
-    cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
-    result_netprofit.append(cur_netprofit)
-    current_deposit = current_deposit + cur_netprofit
+# ---
+stoplosspoint=worst_point # "StopLossPoint" worst_point
+ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
-ret, maxDD, pnl_ratio = myMT5Report.process_netprofit(result_netprofit, init_deposit=init_deposit,plot=True,show=True,ax=None,text_base=text_base)
-
-
-
+# unit_buyonly["Balance_Base"].plot()
+# plt.show()
 
 
 
 #%%
 # ---模拟
-np.random.seed(0)
-simulate_return = []
-simulate_maxDD = []
-simulate_pl_ratio = []
-for i in range(1000):
-    # ---
-    simulate_data = backtest_data.sample(frac=1)
-    current_deposit = init_deposit
-    simulate_netprofit = [] # 记录每次模拟的净利润数组
-    for i, row in simulate_data.iterrows():
-        # break
-        used_equity = current_deposit * used_percent
-        cur_lots = myMT5Lots_Dy.lots_risk_percent(fund=used_equity,symbol=symbol,riskpercent=used_percent, stoplosspoint=worst_point, spread=0, adjust=True)
-        cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
-        simulate_netprofit.append(cur_netprofit)
-        current_deposit = current_deposit + cur_netprofit
-    # ---
-    # 资金曲线
-    simulate_netprofit =  pd.Series(simulate_netprofit)
-    simulate_balance = simulate_netprofit.cumsum() + init_deposit
-    # 平均利润 strat_result.loc["Average profit trade:"]
-    average_profit = result_netprofit[result_netprofit > 0].mean()
-    # 平均亏损 strat_result.loc["Average loss trade:"]
-    average_loss = result_netprofit[result_netprofit <= 0].mean()
-    # 当前的收益
-    simulate_return.append(simulate_balance.iloc[-1] / init_deposit)
-    # 当前的最大回撤
-    simulate_maxDD.append(myDA.fin.calc_max_drawdown(simulate_balance))
-    # 盈亏比
-    simulate_pl_ratio.append(np.abs(average_profit / average_loss))
-
-# ---
-simulate_return = pd.Series(simulate_return)
-simulate_maxDD = pd.Series(simulate_maxDD)
-simulate_pl_ratio = pd.Series(simulate_pl_ratio)
-
-
-# ---画图
-alpha=0.9 # 分布的分位概率
-
-myfig.__init__(nrows=2, ncols=2, figsize=[1920,1080], AddFigure=True)
-# 画原始顺序的走势图
-
-
-
-# 画模拟结果的散点图
-myplt.scatter(simulate_return,simulate_maxDD)
-
-
-
-# 画模拟结果的最大回撤分布图
-myplt.hist(simulate_maxDD, bins=50, objectname="simulate_maxDD", show=False)
-maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
-maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
-
-plt.axvline(x=maxDD_leftq, color="red")
-plt.annotate(s="{:.2f}%".format(maxDD_leftq * 100), xy=[maxDD_leftq, 0], xytext=[maxDD_leftq, 0], color="red")
-plt.axvline(x=maxDD_rightq, color="red")
-plt.annotate(s="{:.2f}%".format(maxDD_rightq * 100), xy=[maxDD_rightq, 0], xytext=[maxDD_rightq, 0], color="red")
-plt.show()
-
-# 画模拟结果的总收益分布图
-myplt.hist(simulate_return, bins=50, objectname="simulate_return", show=False)
-ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)
-ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
-plt.axvline(x=ret_leftq, color="red")
-plt.annotate(s="{:.2f}%".format(ret_leftq * 100), xy=[ret_leftq, 0], xytext=[ret_leftq, 0], color="red")
-plt.axvline(x=ret_rightq, color="red")
-plt.annotate(s="{:.2f}%".format(ret_rightq * 100), xy=[ret_rightq, 0], xytext=[ret_rightq, 0], color="red")
-plt.show()
-
-
-
-# return maxDD_leftq, maxDD_rightq, ret_leftq, ret_rightq
-
-
+stoplosspoint = worst_point # "StopLossPoint" worst_point
+backtest_func=myMT5Report.backtest_with_lots_risk_percent
+kwargs = {"lots_class_case":myMT5Lots_Dy,
+          "init_deposit":init_deposit,"used_percent":used_percent,
+          "stoplosspoint":stoplosspoint,"text_base":text_base}
+maxDD_q, ret_q, plr_q = \
+    myMT5Report.simulate_backtest(seed=0,simucount=1000,alpha=0.9,
+                                  backtest_data=backtest_data, plot=True,show=True,
+                                  backtest_func=backtest_func, **kwargs)
 
 
 
@@ -269,14 +192,7 @@ calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 
 
 #%% 无仓位管理，打乱收益，模拟最大回撤分布。
-# 最大回撤以真实情况来计算，非单位1全额交易。
-Deposit = 5000
-alpha = 0.9
-seed = 0
-random_count = 1000
-net_profit_series = unit_buyonly["NetProfit_Base"]
 
-leftq, rightq = myMT5Report.maxDD_distribution(net_profit_series=net_profit_series, deposit=Deposit, alpha=alpha, seed=seed, random_count=random_count)
 
 
 
