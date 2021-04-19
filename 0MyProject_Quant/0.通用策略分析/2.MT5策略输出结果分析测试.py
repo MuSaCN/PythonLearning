@@ -142,8 +142,8 @@ backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,
           "stoplosspoint":stoplosspoint,"text_base":text_base}
-maxDD_q, ret_q, plr_q = \
-    myMT5Report.simulate_backtest(seed=0,simucount=1000,alpha=0.9,
+simulate_return, simulate_maxDD, simulate_pl_ratio = \
+    myMT5Report.simulate_backtest(seed=0,simucount=1000,
                                   backtest_data=backtest_data, plot=True,show=True,
                                   backtest_func=backtest_func, **kwargs)
 

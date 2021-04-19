@@ -107,7 +107,7 @@ myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
-init_deposit = 5000
+init_deposit = 10000
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 used_percent_list = [(i+1)/100 for i in range(100)]
 stoplosspoint = worst_point # "StopLossPoint" worst_point
@@ -135,11 +135,16 @@ backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,
           "stoplosspoint":stoplosspoint,"text_base":text_base}
-maxDD_q, ret_q, plr_q = \
-    myMT5Report.simulate_backtest(seed=0,simucount=1000,alpha=0.9,
+simulate_return, simulate_maxDD, simulate_pl_ratio = \
+    myMT5Report.simulate_backtest(seed=0,simucount=100,
                                   backtest_data=backtest_data, plot=True,show=True,
                                   backtest_func=backtest_func, **kwargs)
-
+# maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
+# maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
+# ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)
+# ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
+# plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
+# plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
 
 
 
