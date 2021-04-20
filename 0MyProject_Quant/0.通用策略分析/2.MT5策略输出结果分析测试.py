@@ -116,8 +116,7 @@ point = myMT5Report.symbol_df[symbol]["point"]
 
 
 # 最差的一单
-worst = unit_buyonly["NetProfit_Base"].min()
-worst_point = np.abs(np.around(worst / volume_min / tick_value, 0))
+worst_point = myMT5Report.worst_point(unit_buyonly)
 
 #
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
@@ -127,7 +126,7 @@ used_percent = 0.2# 0.12
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 
 # ---
-stoplosspoint=worst_point # "StopLossPoint" worst_point
+stoplosspoint="worst_point" # "StopLossPoint" "worst_point"
 ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
 # unit_buyonly["Balance_Base"].plot()
@@ -137,7 +136,7 @@ ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_c
 
 #%%
 # ---模拟
-stoplosspoint = worst_point # "StopLossPoint" worst_point
+stoplosspoint = "worst_point" # "StopLossPoint" "worst_point"
 backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,

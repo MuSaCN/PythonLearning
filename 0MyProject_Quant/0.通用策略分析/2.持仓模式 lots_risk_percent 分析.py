@@ -56,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\test.xlsx" # ATR_test test
+file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
@@ -87,7 +87,7 @@ print(text_base)
 # ---破产风险分析
 # 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
 # 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
-myMoneyM.bankrupt_risk(win_rate, f_kelly, reward_rate=2) # f_kelly, f_twr
+myMoneyM.bankrupt_risk(win_rate, f_twr, reward_rate=2) # f_kelly, f_twr
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
 f_limit_bankrupt = myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward_rate=2)
 
@@ -98,9 +98,6 @@ tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
 point = myMT5Report.symbol_df[symbol]["point"]
 
-# 最差的一单
-worst = unit_buyonly["NetProfit_Base"].min()
-worst_point = np.abs(np.around(worst / volume_min / tick_value, 0))
 
 # 以浮动杠杆来分析。
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
@@ -110,7 +107,7 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 init_deposit = 10000
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 used_percent_list = [(i+1)/100 for i in range(100)]
-stoplosspoint = worst_point # "StopLossPoint" worst_point
+stoplosspoint = "worst_point" # "StopLossPoint" "worst_point"
 
 # ---
 out = pd.DataFrame()
@@ -125,12 +122,18 @@ plt.show()
 
 # ---单独调试
 used_percent = f_kelly # f_kelly, f_twr
+#  "StopLossPoint" 表示以止损点来计算；"worst_point" 表示以基准仓位最大亏损额的点数来计算；
+stoplosspoint = "worst_point"
 ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
 
-#%% 模特卡洛模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
+#%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
 # ---以 lots_risk_percent()指定百分比的"保证金止损仓位" 的方式模拟
-stoplosspoint = "StopLossPoint" # "StopLossPoint" worst_point
+# 最差的一单
+worst_point = myMT5Report.worst_point(unit_buyonly)
+
+
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
 backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,
