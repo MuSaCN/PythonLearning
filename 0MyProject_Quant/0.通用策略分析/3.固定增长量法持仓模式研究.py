@@ -52,7 +52,13 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
+#%% 单独测试
 mypd.__init__(0) # None 0
+# 以浮动杠杆和固定杠杆来分析。
+myMoneyM.lots_FixedIncrement_SplitFund(6000,5000,delta=100,init_lots=0.03,min_lots=0.01)
+myMoneyM.lots_FixedIncrement_SplitFormula(6000,5000,delta=100,init_lots=0.03,min_lots=0.01)
+
+
 
 #%%
 import warnings
