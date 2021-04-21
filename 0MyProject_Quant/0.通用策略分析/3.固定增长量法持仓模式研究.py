@@ -97,7 +97,6 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
-init_percent = 0.1
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 
 # --- # myMT5Report
@@ -106,51 +105,24 @@ worst_point = myMT5Report.worst_point(backtest_data)
 maxDDr = myMT5Report.basic_max_down_range(backtest_data)
 
 # 初始化的仓位
-init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=init_percent, stoplosspoint=worst_point, spread=0, adjust=True)
+init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
 # 设置固定增长的delta
 delta = maxDDr/2 # maxDDr/2 np.abs(worst)*2
-# 固定增长法模式 lots_FixedIncrement_SplitFund lots_FixedIncrement_SplitFormula
-lots_func = myMT5Lots_Dy.lots_FixedIncrement_SplitFund
-symbol = backtest_data["Symbol"][0]
-
-# ---
-current_deposit = init_deposit
-result_netprofit = []  # 记录每次模拟的净利润数组
-lots_list = []
-for i, row in backtest_data.iterrows():
-    # 固定增长法计算持仓量
-    cur_lots = lots_func(symbol=symbol, current_equity=current_deposit, init_equity=init_deposit, delta=delta, init_lots=init_lots, adjust=True)
-    cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
-    result_netprofit.append(cur_netprofit)
-    current_deposit = current_deposit + cur_netprofit
-    lots_list.append(cur_lots)
-
-# ---处理净利润结果
-myMT5Report.__process_netprofit__(result_netprofit=result_netprofit, init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
-
-
-
-
+# funcmode = "SplitFund" / "SplitFormula"
 
 # ---单独调试
+myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFund", plot=True, show=True, ax=None, text_base=text_base)
+myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFormula", plot=True, show=True, ax=None, text_base=text_base)
+
+
 
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
-# ---以 lots_risk_percent()指定百分比的"保证金止损仓位" 的方式模拟
-# 最差的一单
-worst_point = myMT5Report.worst_point(unit_buyonly)
 
 
-stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
-backtest_func=myMT5Report.backtest_with_lots_risk_percent
-kwargs = {"lots_class_case":myMT5Lots_Dy,
-          "init_deposit":init_deposit,"used_percent":used_percent,
-          "stoplosspoint":stoplosspoint,"text_base":text_base}
-simulate_return, simulate_maxDD, simulate_pl_ratio = \
-    myMT5Report.simulate_backtest(seed=0,simucount=100,
-                                  backtest_data=backtest_data, plot=True,show=True,
-                                  backtest_func=backtest_func, **kwargs)
+
+
 # maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
 # maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
 # ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)
