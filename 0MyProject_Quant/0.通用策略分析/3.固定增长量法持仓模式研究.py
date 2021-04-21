@@ -52,13 +52,6 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-#%% 函数测试
-# 固定增长法计算持仓量，这个方法在利润大于0时，全部资金符合固定增长量delta。在利润<0时，依然以初始仓位开仓，所以亏损时不符合固定增长量delta。
-myMoneyM.constant_increment_lots(current_equity=5300, init_equity=5000, delta=100, n_split=1, min_lots=0.01)
-
-# 自定义的固定增长法计算持仓量(原公式拆分为=初期开仓+增减开仓)。这个方法的意思是 增加减少的仓位都符合固定增长量delta，注意不是全部仓位。若初始仓位init_lots=基仓，则全部仓位符合固定增长量delta。
-myMoneyM.constant_increment_mylots(current_equity=4700,init_equity=5000,delta=100,init_lots=1,min_lots=0.01)
-
 mypd.__init__(0) # None 0
 
 #%%
@@ -93,16 +86,12 @@ text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}
 print(text_base)
 
 #%% 测试仓位比例
-# 固定增长法计算持仓量，自定义的固定增长法计算持仓量
-myMoneyM.constant_increment_lots(current_equity=5300, init_equity=5000, delta=100, n_split=1, min_lots=0.01)
-myMoneyM.constant_increment_mylots(current_equity=4700,init_equity=5000,delta=100,init_lots=1,min_lots=0.01)
-
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
 tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
 point = myMT5Report.symbol_df[symbol]["point"]
 
-# 以浮动杠杆来分析。
+# 以浮动杠杆和固定杠杆来分析。
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
@@ -112,9 +101,6 @@ init_percent = 0.1
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 
 # --- # myMT5Report
-symbol = backtest_data["Symbol"][0]
-volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
-
 worst = backtest_data["NetProfit_Base"].min()
 worst_point = myMT5Report.worst_point(backtest_data)
 maxDDr = myMT5Report.basic_max_down_range(backtest_data)
@@ -122,8 +108,10 @@ maxDDr = myMT5Report.basic_max_down_range(backtest_data)
 # 初始化的仓位
 init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=init_percent, stoplosspoint=worst_point, spread=0, adjust=True)
 # 设置固定增长的delta
-delta = np.abs(worst)*2 # maxDDr np.abs(worst)*2
-n_split = init_lots / volume_min
+delta = maxDDr/2 # maxDDr/2 np.abs(worst)*2
+# 固定增长法模式 lots_FixedIncrement_SplitFund lots_FixedIncrement_SplitFormula
+lots_func = myMT5Lots_Dy.lots_FixedIncrement_SplitFund
+symbol = backtest_data["Symbol"][0]
 
 # ---
 current_deposit = init_deposit
@@ -131,9 +119,7 @@ result_netprofit = []  # 记录每次模拟的净利润数组
 lots_list = []
 for i, row in backtest_data.iterrows():
     # 固定增长法计算持仓量
-    # cur_lots = myMoneyM.constant_increment_lots(current_equity=current_deposit, init_equity=init_deposit, delta=delta, n_split=n_split, min_lots=volume_min)
-    cur_lots = myMoneyM.constant_increment_mylots(current_equity=current_deposit, init_equity=init_deposit, delta=delta, init_lots=init_lots, min_lots=volume_min)
-    cur_lots = myMT5Lots_Dy.lots_normalize(symbol, cur_lots)
+    cur_lots = lots_func(symbol=symbol, current_equity=current_deposit, init_equity=init_deposit, delta=delta, init_lots=init_lots, adjust=True)
     cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
     result_netprofit.append(cur_netprofit)
     current_deposit = current_deposit + cur_netprofit
