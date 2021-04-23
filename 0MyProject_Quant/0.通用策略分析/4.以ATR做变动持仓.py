@@ -52,31 +52,11 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-#%% 单独测试
-mypd.__init__(None) # None 0
-# 以浮动杠杆和固定杠杆来分析。
-myMoneyM.lots_FixedIncrement_SplitFund(6000,5000,delta=100,init_lots=0.03,min_lots=0.01)
-myMoneyM.lots_FixedIncrement_SplitFormula(6000,5000,delta=100,init_lots=0.03,min_lots=0.01)
-
-a = myMoneyM.lots_FixedIncrement_SplitFormula(6000,5000,delta=100,init_lots=0.03,min_lots=0.01)
-
-init=5000
-delta = 100
-init_lots = 0.01
-out = []
-for n in range(0,50):
-    a = myMoneyM.lots_FixedIncrement_SplitFund(init+n*delta, init, delta=delta, init_lots=init_lots, min_lots=0.01)
-    out.append(a)
-out=pd.Series(out)
-out.plot()
-plt.show()
-
-
 #%%
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+file = __mypath__.get_desktop_path() + "\\test.xlsx" # ATR_test test
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
@@ -94,6 +74,7 @@ unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct
 # unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
 unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
+
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
@@ -102,6 +83,12 @@ win_rate, maxDD_nolots, return_nolots, pnl_ratio_base, f_kelly, f_lever, f_twr =
 
 text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}\n基仓盈亏比={:.5f}".format(win_rate, return_nolots, maxDD_nolots, pnl_ratio_base)
 print(text_base)
+
+
+# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。
+newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
+newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
+
 
 #%% 测试仓位比例
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
@@ -115,35 +102,44 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
+used_percent = 0.1
+multiple = 1.0 # ATR点数的倍数
+atr_period = 14 # ATR的周期
+# ---由于ATR算法有迭代，必须一定数据后才相同。
+# 时间左移
+timefrom_atr = myMT5Indi.time_move_left(newtime_buyonly["Time0"][0], timeframe)
+# 重新获取数据
+data_atr = myMT5Pro.getsymboldata(symbol,timeframe,timefrom_atr, timeto,index_time=True, col_capitalize=True)
+atr = myMT5Indi.ATR(data_atr, price_arug=["High", "Low", "Close"], InpAtrPeriod = atr_period)
+atr_1 = atr.shift(1) # 利用上一期的atr
+atr_1 = atr_1.loc[newtime_buyonly["Time0"]].reset_index(drop=True)
+
+# 回测数据
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
+backtest_data["ATR_Point"] = (atr_1 * multiple / point).map(lambda x:int(x))
 
-# --- # myMT5Report
-worst = backtest_data["NetProfit_Base"].min()
-worst_point = myMT5Report.worst_point(backtest_data)
-maxDDr = myMT5Report.basic_max_down_range(backtest_data)
-
-# 初始化的仓位
-init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
-# 设置固定增长的delta
-delta = maxDDr/2 # maxDDr/2 np.abs(worst)*2
-# funcmode = "SplitFund" / "SplitFormula"
-
-# ---单独调试
-myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFund", plot=True, show=True, ax=None, text_base=text_base)
-myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFormula", plot=True, show=True, ax=None, text_base=text_base)
-
-
-
+# 开始回测
+stoplosspoint = "ATR_Point" # "ATR_Point" "StopLossPoint" "worst_point"
+ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
-
-
-
-
+stoplosspoint = "ATR_Point" # "ATR_Point" "StopLossPoint" "worst_point"
+backtest_func=myMT5Report.backtest_with_lots_risk_percent
+kwargs = {"lots_class_case":myMT5Lots_Dy,
+          "init_deposit":init_deposit,"used_percent":used_percent,
+          "stoplosspoint":stoplosspoint,"text_base":text_base}
+simulate_return, simulate_maxDD, simulate_pl_ratio = \
+    myMT5Report.simulate_backtest(seed=0,simucount=1000,
+                                  backtest_data=backtest_data,
+                                  plot=True,suptitle=stoplosspoint,show=True,
+                                  backtest_func=backtest_func, **kwargs)
 # maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
 # maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
 # ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)
 # ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
 # plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
 # plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
+
+
+
