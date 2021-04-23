@@ -56,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\test.xlsx" # ATR_test test
+file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
@@ -100,31 +100,72 @@ point = myMT5Report.symbol_df[symbol]["point"]
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
+# ---获得 N倍的ATR点数
+def get_atr_point(multiple, atr_period):
+    # ---由于ATR算法有迭代，必须一定数据后才相同。
+    # 时间左移
+    timefrom_atr = myMT5Indi.time_move_left(newtime_buyonly["Time0"][0], timeframe)
+    # 重新获取数据
+    data_atr = myMT5Pro.getsymboldata(symbol,timeframe,timefrom_atr, timeto,index_time=True, col_capitalize=True)
+    atr = myMT5Indi.ATR(data_atr, price_arug=["High", "Low", "Close"], InpAtrPeriod = atr_period)
+    atr_1 = atr.shift(1) # 利用上一期的atr
+    atr_1 = atr_1.loc[newtime_buyonly["Time0"]].reset_index(drop=True)
+    return (atr_1 * multiple / point).map(lambda x:int(x))
+
 # ---
 init_deposit = 10000
 used_percent = 0.1
 multiple = 1.0 # ATR点数的倍数
-atr_period = 14 # ATR的周期
-# ---由于ATR算法有迭代，必须一定数据后才相同。
-# 时间左移
-timefrom_atr = myMT5Indi.time_move_left(newtime_buyonly["Time0"][0], timeframe)
-# 重新获取数据
-data_atr = myMT5Pro.getsymboldata(symbol,timeframe,timefrom_atr, timeto,index_time=True, col_capitalize=True)
-atr = myMT5Indi.ATR(data_atr, price_arug=["High", "Low", "Close"], InpAtrPeriod = atr_period)
-atr_1 = atr.shift(1) # 利用上一期的atr
-atr_1 = atr_1.loc[newtime_buyonly["Time0"]].reset_index(drop=True)
+stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
+atr_period_list = [i for i in range(3,50,1)]
+out = pd.DataFrame()
+for atr_period in atr_period_list:
+    # 回测数据
+    backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol"]].copy()
+    backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
+    # 开始回测
+    ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(
+        lots_class_case=myMT5Lots_Dy,backtest_data=backtest_data,
+        init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint,
+        plot=False,show=False, ax=None, text_base=text_base)
+    out = out.append([[ret, maxDD, pnl_ratio]])
 
+out.columns = ["ret", "maxDD", "pnl_ratio"]
+out.index = atr_period_list
+out["recovery"] = out["ret"] / np.abs(out["maxDD"])
+out["recovery"].plot() # out.plot()
+plt.show()
+
+
+
+# ---单独测试
+init_deposit = 10000
+used_percent = 0.1
+multiple = 1.0 # ATR点数的倍数
+atr_period = 14 # ATR的周期
 # 回测数据
 backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
-backtest_data["ATR_Point"] = (atr_1 * multiple / point).map(lambda x:int(x))
+backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
 
 # 开始回测
 stoplosspoint = "ATR_Point" # "ATR_Point" "StopLossPoint" "worst_point"
-ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
+ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(
+    lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,
+    used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None,
+    text_base=text_base)
+ret / np.abs(maxDD)
+
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
+init_deposit = 10000
+used_percent = 0.1
+multiple = 1.0 # ATR点数的倍数
+atr_period = 14 # ATR的周期
 stoplosspoint = "ATR_Point" # "ATR_Point" "StopLossPoint" "worst_point"
+backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
+backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
+
 backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,
@@ -134,6 +175,8 @@ simulate_return, simulate_maxDD, simulate_pl_ratio = \
                                   backtest_data=backtest_data,
                                   plot=True,suptitle=stoplosspoint,show=True,
                                   backtest_func=backtest_func, **kwargs)
+
+
 # maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
 # maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
 # ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)

@@ -116,6 +116,7 @@ for used_percent in used_percent_list: # used_percent = 0.5# 0.12
     out = out.append([[ret, maxDD, pnl_ratio]])
 out.columns =["ret", "maxDD", "pnl_ratio"]
 out.index = used_percent_list
+out["recovery"] = out["ret"] / np.abs(out["maxDD"])
 
 out.plot()
 plt.show()

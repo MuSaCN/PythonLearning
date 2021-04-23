@@ -124,11 +124,26 @@ maxDDr = myMT5Report.basic_max_down_range(backtest_data)
 
 # 初始化的仓位
 init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
+funcmode = "SplitFund" # "SplitFund" / "SplitFormula"
+delta_list = [i for i  in range(10,200,5)]
+out = pd.DataFrame()
+for delta in delta_list:
+    ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode=funcmode, plot=False, show=False, ax=None, text_base=text_base)
+    out = out.append([[ret, maxDD, pnl_ratio]])
+
+out.columns = ["ret", "maxDD", "pnl_ratio"]
+out.index = delta_list
+out["recovery"] = out["ret"] / np.abs(out["maxDD"])
+
+out.plot()
+plt.show()
+
+
+
+# ---单独调试
 # 设置固定增长的delta
 delta = maxDDr/2 # maxDDr/2 np.abs(worst)*2
 # funcmode = "SplitFund" / "SplitFormula"
-
-# ---单独调试
 myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFund", plot=True, show=True, ax=None, text_base=text_base)
 myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFormula", plot=True, show=True, ax=None, text_base=text_base)
 
