@@ -108,27 +108,30 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol","Rate"]].copy()
+backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 used_percent_list = [(i+1)/100 for i in range(100)]
 stoplosspoint = "worst_point" # "StopLossPoint" "worst_point"
 
 # ---
 out = pd.DataFrame()
 for used_percent in used_percent_list: # used_percent = 0.5# 0.12
-    ret, maxDD, weighted_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None, text_base=text_base)
-    out = out.append([[ret, maxDD, weighted_sharpe, pnl_ratio, tb]])
-out.columns =["ret", "maxDD", "weighted_sharpe", "pnl_ratio", "tb"]
+    count, ret, maxDD, deposit_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None, text_base=text_base)
+    out = out.append([[count, ret, maxDD, deposit_sharpe, pnl_ratio, tb]])
+out.columns =["count", "ret", "maxDD", "deposit_sharpe", "pnl_ratio", "tb"]
 out.index = used_percent_list
 out["recovery"] = out["ret"] / np.abs(out["maxDD"])
+# 除去无法交易的和爆仓的。
+out = out[out["count"]==len(backtest_data)]
 
-out.plot() # out["weighted_sharpe"].plot()
+
+out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
 plt.show()
 
 # ---单独调试
-used_percent = f_twr # f_kelly, f_twr
+used_percent = 0.9 # best_f.f_kelly, best_f.f_twr
 #  "StopLossPoint" 表示以止损点来计算；"worst_point" 表示以基准仓位最大亏损额的点数来计算；
 stoplosspoint = "worst_point"
-ret, maxDD, weighted_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
+count, ret, maxDD, deposit_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
