@@ -84,9 +84,6 @@ text_base = result_base.to_string()
 print(text_base)
 # print(strat_result.to_string())
 
-
-
-
 # ---破产风险分析
 # 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
 # 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
@@ -108,45 +105,52 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 used_percent_list = [(i+1)/100 for i in range(100)]
-stoplosspoint = "worst_point" # "StopLossPoint" "worst_point"
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
 
 # ---
 out = pd.DataFrame()
 for used_percent in used_percent_list: # used_percent = 0.5# 0.12
-    count, ret, maxDD, deposit_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None, text_base=text_base)
-    out = out.append([[count, ret, maxDD, deposit_sharpe, pnl_ratio, tb]])
-out.columns =["count", "ret", "maxDD", "deposit_sharpe", "pnl_ratio", "tb"]
+    temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None)
+    out = out.append([temp_out])
+
 out.index = used_percent_list
-out["recovery"] = out["ret"] / np.abs(out["maxDD"])
-# 除去无法交易的和爆仓的。
-out = out[out["count"]==len(backtest_data)]
 
-
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"]==len(unit_buyonly)]
 out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
 plt.show()
 
+#%%
 # ---单独调试
-used_percent = 0.9 # best_f.f_kelly, best_f.f_twr
-#  "StopLossPoint" 表示以止损点来计算；"worst_point" 表示以基准仓位最大亏损额的点数来计算；
-stoplosspoint = "worst_point"
-count, ret, maxDD, deposit_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
+# 以浮动杠杆来分析。
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
+init_deposit = 10000
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+
+used_percent = best_f.f_kelly # best_f.f_kelly, best_f.f_twr
+
+result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
+
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
 # ---以 lots_risk_percent()指定百分比的"保证金止损仓位" 的方式模拟
-# 最差的一单
-worst_point = myMT5Report.worst_point(unit_buyonly)
-
-
+# 以浮动杠杆来分析。
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
+init_deposit = 10000
+used_percent = best_f.f_kelly # best_f.f_kelly, best_f.f_twr
 stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+
+backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy() # 必须指定
 backtest_func=myMT5Report.backtest_with_lots_risk_percent
 kwargs = {"lots_class_case":myMT5Lots_Dy,
           "init_deposit":init_deposit,"used_percent":used_percent,
-          "stoplosspoint":stoplosspoint,"text_base":text_base}
+          "stoplosspoint":stoplosspoint}
 simulate_return, simulate_maxDD, simulate_pl_ratio = \
-    myMT5Report.simulate_backtest(seed=0,simucount=100,
+    myMT5Report.simulate_backtest(seed=0,simucount=100,unit_order=unit_buyonly,
                                   backtest_data=backtest_data, plot=True,show=True,
                                   backtest_func=backtest_func, **kwargs)
 # maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
@@ -155,6 +159,7 @@ simulate_return, simulate_maxDD, simulate_pl_ratio = \
 # ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
 # plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
 # plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
+
 
 
 

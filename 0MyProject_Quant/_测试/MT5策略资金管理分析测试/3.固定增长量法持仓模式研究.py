@@ -98,9 +98,8 @@ unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_dire
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-win_rate, maxDD_nolots, return_nolots, pnl_ratio_base, f_kelly, f_lever, f_twr = myMT5Report.cal_result_no_money_manage(unit_buyonly)
-
-text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}\n基仓盈亏比={:.5f}".format(win_rate, return_nolots, maxDD_nolots, pnl_ratio_base)
+result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
+text_base = result_base.to_string()
 print(text_base)
 
 #%% 测试仓位比例
@@ -115,12 +114,11 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 
 # --- # myMT5Report
-worst = backtest_data["NetProfit_Base"].min()
-worst_point = myMT5Report.worst_point(backtest_data)
-maxDDr = myMT5Report.basic_max_down_range(backtest_data)
+worst = unit_buyonly["NetProfit_Base"].min()
+worst_point = myMT5Report.worst_point(unit_buyonly)
+maxDDr = myMT5Report.basic_max_down_range(unit_buyonly)
 
 # 初始化的仓位
 init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
@@ -128,14 +126,14 @@ funcmode = "SplitFund" # "SplitFund" / "SplitFormula"
 delta_list = [i for i  in range(10,200,5)]
 out = pd.DataFrame()
 for delta in delta_list:
-    ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode=funcmode, plot=False, show=False, ax=None, text_base=text_base)
-    out = out.append([[ret, maxDD, pnl_ratio]])
+    temp_out = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode=funcmode, plot=False, show=False, ax=None)
+    out = out.append([temp_out])
 
-out.columns = ["ret", "maxDD", "pnl_ratio"]
 out.index = delta_list
-out["recovery"] = out["ret"] / np.abs(out["maxDD"])
 
-out.plot()
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"]==len(unit_buyonly)]
+out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
 plt.show()
 
 
@@ -144,8 +142,8 @@ plt.show()
 # 设置固定增长的delta
 delta = maxDDr/2 # maxDDr/2 np.abs(worst)*2
 # funcmode = "SplitFund" / "SplitFormula"
-myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFund", plot=True, show=True, ax=None, text_base=text_base)
-myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, backtest_data, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFormula", plot=True, show=True, ax=None, text_base=text_base)
+myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFund", plot=True, show=True, ax=None)
+myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode="SplitFormula", plot=True, show=True, ax=None)
 
 
 

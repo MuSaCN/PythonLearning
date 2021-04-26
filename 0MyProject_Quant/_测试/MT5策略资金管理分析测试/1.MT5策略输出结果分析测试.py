@@ -190,6 +190,73 @@ annRet = myDA.fin.calc_cagr(prices = p) if len(p) >= 2 else np.nan
 calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 
 
+#%%
+# ------测试"保证金占用仓位"
+def test_lots_open():
+    # ---获取基准仓位的策略结果 # myMT5Report
+    result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    text_base = result_base.to_string()
+
+    backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol", "Price0"]].copy()
+
+    # --- # myMT5Report
+    symbol = backtest_data["Symbol"][0]
+    volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
+    # ---
+    current_deposit = init_deposit
+    result_netprofit = []  # 记录每次模拟的净利润数组
+    result_deposit_rate = []  # 记录资金波动率
+    for i, row in backtest_data.iterrows():
+        # break
+        used_equity = current_deposit * used_percent
+        cur_lots = myMT5Lots_Dy.lots_open(symbol=symbol, action="ORDER_TYPE_BUY",
+                                          input_margin=used_equity, price=row["Price0"],
+                                          adjust=True)
+        cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
+        result_netprofit.append(cur_netprofit)
+        deposit_rate = cur_netprofit / current_deposit  # current_deposit
+        result_deposit_rate.append(deposit_rate)
+        current_deposit = current_deposit + cur_netprofit
+
+    # ---处理净利润结果
+    return myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate,
+                                          init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
+result = test_lots_open()
+
+# ------测试"凯利杠杆"
+def test_lever():
+    # ---获取基准仓位的策略结果 # myMT5Report
+    result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    text_base = result_base.to_string()
+
+    backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol", "Price0"]].copy()
+    lever = best_f.f_lever
+
+    # --- # myMT5Report
+    symbol = backtest_data["Symbol"][0]
+    volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
+    # ---
+    current_deposit = init_deposit
+    result_netprofit = []  # 记录每次模拟的净利润数组
+    result_deposit_rate = []  # 记录资金波动率
+    for i, row in backtest_data.iterrows():
+        # break
+        cur_lots = myMT5Lots_Dy.lots_optlever(fund=current_deposit, symbol=symbol,
+                                              action="ORDER_TYPE_BUY", opt_lever=lever,
+                                              price=row["Price0"], adjust=True)
+
+        cur_netprofit = row["NetProfit_Base"] * (cur_lots / volume_min)
+        result_netprofit.append(cur_netprofit)
+        deposit_rate = cur_netprofit / current_deposit  # current_deposit
+        result_deposit_rate.append(deposit_rate)
+        current_deposit = current_deposit + cur_netprofit
+
+    # ---处理净利润结果
+    return myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate,
+                                          init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
+result = test_lever()
+
+
 #%% 无仓位管理，打乱收益，模拟最大回撤分布。
 
 

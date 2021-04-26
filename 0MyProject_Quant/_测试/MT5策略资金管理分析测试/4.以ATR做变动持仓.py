@@ -79,9 +79,8 @@ unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_dire
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-win_rate, maxDD_nolots, return_nolots, pnl_ratio_base, f_kelly, f_lever, f_twr = myMT5Report.cal_result_no_money_manage(unit_buyonly)
-
-text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}\n基仓盈亏比={:.5f}".format(win_rate, return_nolots, maxDD_nolots, pnl_ratio_base)
+result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
+text_base = result_base.to_string()
 print(text_base)
 
 
@@ -100,7 +99,7 @@ point = myMT5Report.symbol_df[symbol]["point"]
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
-# ---获得 N倍的ATR点数
+# ---获得 N倍的ATR点数，内部有时间左移。
 def get_atr_point(multiple, atr_period):
     # ---由于ATR算法有迭代，必须一定数据后才相同。
     # 时间左移
@@ -118,22 +117,24 @@ used_percent = 0.1
 multiple = 1.0 # ATR点数的倍数
 stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
 atr_period_list = [i for i in range(3,50,1)]
+
 out = pd.DataFrame()
-for atr_period in atr_period_list:
-    # 回测数据
+for atr_period in atr_period_list: # atr_period = atr_period_list[0]
+    # 回测数据，必须指定
     backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol"]].copy()
     backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
     # 开始回测
-    ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(
-        lots_class_case=myMT5Lots_Dy,backtest_data=backtest_data,
+    temp_out = myMT5Report.backtest_with_lots_risk_percent(
+        lots_class_case=myMT5Lots_Dy,unit_order=unit_buyonly, backtest_data=backtest_data,
         init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint,
-        plot=False,show=False, ax=None, text_base=text_base)
-    out = out.append([[ret, maxDD, pnl_ratio]])
+        plot=False,show=False, ax=None)
+    out = out.append([temp_out])
 
-out.columns = ["ret", "maxDD", "pnl_ratio"]
 out.index = atr_period_list
-out["recovery"] = out["ret"] / np.abs(out["maxDD"])
-out["recovery"].plot() # out.plot()
+
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"]==len(unit_buyonly)]
+out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
 plt.show()
 
 
