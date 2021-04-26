@@ -77,22 +77,25 @@ unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_dire
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 
 # ---各项结果以及最佳仓位f
-# 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
+# 数量；胜率；信号总收益率；信号最大回撤；信号恢复比；信号夏普比；基仓盈利因子；基仓盈亏比；基仓恢复因子；基仓TB；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-win_rate, maxDD_nolots, return_nolots, pnl_ratio_base, f_kelly, f_lever, f_twr = myMT5Report.cal_result_no_money_manage(unit_buyonly)
-
-text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}\n基仓盈亏比={:.5f}".format(win_rate, return_nolots, maxDD_nolots, pnl_ratio_base)
+result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+text_base = result_base.to_string()
 print(text_base)
+# print(strat_result.to_string())
+
+
+
 
 # ---破产风险分析
 # 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
 # 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
-myMoneyM.bankrupt_risk(win_rate, f_twr, reward_rate=2) # f_kelly, f_twr
+myMoneyM.bankrupt_risk(result_base.winRate, best_f.f_twr, reward_rate=2) # f_kelly, f_twr
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
-f_limit_bankrupt = myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward_rate=2)
+f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=0.1, reward_rate=2)
 
 
-#%% 测试仓位比例
+#%% 测试仓位比例 ###### 完善 ##############################
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
 tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
@@ -105,27 +108,27 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
 init_deposit = 10000
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
+backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol","Rate"]].copy()
 used_percent_list = [(i+1)/100 for i in range(100)]
 stoplosspoint = "worst_point" # "StopLossPoint" "worst_point"
 
 # ---
 out = pd.DataFrame()
 for used_percent in used_percent_list: # used_percent = 0.5# 0.12
-    ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None, text_base=text_base)
-    out = out.append([[ret, maxDD, pnl_ratio]])
-out.columns =["ret", "maxDD", "pnl_ratio"]
+    ret, maxDD, weighted_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None, text_base=text_base)
+    out = out.append([[ret, maxDD, weighted_sharpe, pnl_ratio, tb]])
+out.columns =["ret", "maxDD", "weighted_sharpe", "pnl_ratio", "tb"]
 out.index = used_percent_list
 out["recovery"] = out["ret"] / np.abs(out["maxDD"])
 
-out.plot()
+out.plot() # out["weighted_sharpe"].plot()
 plt.show()
 
 # ---单独调试
-used_percent = f_kelly # f_kelly, f_twr
+used_percent = f_twr # f_kelly, f_twr
 #  "StopLossPoint" 表示以止损点来计算；"worst_point" 表示以基准仓位最大亏损额的点数来计算；
 stoplosspoint = "worst_point"
-ret, maxDD, pnl_ratio = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
+ret, maxDD, weighted_sharpe, pnl_ratio, tb = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None, text_base=text_base)
 
 
 #%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
