@@ -52,37 +52,29 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
+
 #%%
 import warnings
 warnings.filterwarnings('ignore')
 
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
-# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
+# 读取报告，加载品种信息到 self.symbol_df。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
-# 获取数据
+# 从MT5获取品种数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
+# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
+unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
-# ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
-unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
-#%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
-
-# ---各项结果以及最佳仓位f
-# 数量；胜率；信号总收益率；信号最大回撤；信号恢复比；信号夏普比；基仓盈利因子；基仓盈亏比；基仓恢复因子；基仓TB；
+#%%
+# ---各项基仓测试结果以及最佳仓位f
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
 result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
-text_base = result_base.to_string()
-print(text_base)
-# print(strat_result.to_string())
 
 # ---破产风险分析
 # 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
@@ -91,35 +83,34 @@ myMoneyM.bankrupt_risk(result_base.winRate, best_f.f_twr, reward_rate=2) # f_kel
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
 f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=0.1, reward_rate=2)
 
-
-#%% 测试仓位比例 ###### 完善 ##############################
-volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
-tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
-digits = myMT5Report.symbol_df[symbol]["digits"]
-point = myMT5Report.symbol_df[symbol]["point"]
-
-
 # 以浮动杠杆来分析。
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
-# ---
-init_deposit = 10000
-used_percent_list = [(i+1)/100 for i in range(100)]
+#%% 以 lots_risk_percent 分析
+init_deposit = 5000
+used_percent_list = [(i+1)/1000 for i in range(1000)] # 仓位百分比
 stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+
+# 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
+result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
 
 # ---
 out = pd.DataFrame()
 for used_percent in used_percent_list: # used_percent = 0.5# 0.12
     temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None)
     out = out.append([temp_out])
-
 out.index = used_percent_list
-
 # 除去无法交易的和爆仓的，很重要
 out = out[out["count"]==len(unit_buyonly)]
-out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
+
+# ---对仓位优化结果做卡尔曼滤波，并且画图。f_extrema 选择的判定规则为词缀"ret_maxDD"。
+f_kelly, f_twr, f_maxDD, f_extrema = \
+    myMT5Report.lots_opt_result_kalman(opt_result=out,best_f=best_f,order=100,plot=True)
 plt.show()
+
+
+
 
 #%%
 # ---单独调试
@@ -159,6 +150,8 @@ simulate_return, simulate_maxDD, simulate_pl_ratio = \
 # ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
 # plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
 # plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
+
+
 
 
 

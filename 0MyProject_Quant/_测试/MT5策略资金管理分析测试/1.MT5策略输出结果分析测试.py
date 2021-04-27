@@ -57,9 +57,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+file = __mypath__.get_desktop_path() + "\\ATR_test_M5.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
+strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
+
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
@@ -71,12 +72,22 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
 
 # ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-
-# %timeit myMT5Report.get_unit_order1(deal_buyonly,order_buyonly) # 2.96 s ± 71.4 ms
-# %timeit myMT5Report.get_unit_order(deal_buyonly,order_buyonly) # 2.23 s ± 37.5 ms
+# %timeit myMT5Report.get_unit_order1(deal_buyonly,order_buyonly)
+# 2.96 s ± 71.4 ms 2min 25s ± 2.16 s
+# %timeit myMT5Report.get_unit_order(deal_buyonly,order_buyonly)
+# 2.23 s ± 37.5 ms 43.8 s ± 476 ms
 unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
 # unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
 unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
+
+import timeit
+start = timeit.default_timer()
+unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
+print("Time used:", (timeit.default_timer() - start)) # 657.0548607000001
+start = timeit.default_timer()
+unit_buyonly = myMT5Report.get_unit_order1(deal_direct=deal_buyonly, order_direct=order_buyonly)
+print("Time used:", (timeit.default_timer() - start)) # 1189.9454991000002
+
 
 # ---符合MT5实际的资金曲线计算。
 # unit_buyonly["Balance_Base"].plot()
@@ -219,8 +230,10 @@ def test_lots_open():
         current_deposit = current_deposit + cur_netprofit
 
     # ---处理净利润结果
-    return myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate,
-                                          init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
+    return myMT5Report.__process_result__(result_netprofit=result_netprofit,
+                                          result_deposit_rate=result_deposit_rate,
+                                          init_deposit=init_deposit, plot=True, show=True, ax=None,
+                                          text_base=text_base)
 result = test_lots_open()
 
 # ------测试"凯利杠杆"
@@ -252,8 +265,10 @@ def test_lever():
         current_deposit = current_deposit + cur_netprofit
 
     # ---处理净利润结果
-    return myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate,
-                                          init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
+    return myMT5Report.__process_result__(result_netprofit=result_netprofit,
+                                          result_deposit_rate=result_deposit_rate,
+                                          init_deposit=init_deposit, plot=True, show=True, ax=None,
+                                          text_base=text_base)
 result = test_lever()
 
 
