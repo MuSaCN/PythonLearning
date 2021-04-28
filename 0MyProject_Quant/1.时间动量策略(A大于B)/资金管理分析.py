@@ -90,25 +90,25 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 #%% 以 lots_risk_percent 分析
 init_deposit = 5000
 used_percent_list = [(i+1)/1000 for i in range(1000)] # 仓位百分比
-stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
-
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
 result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
 
-# ---
-out = pd.DataFrame()
-for used_percent in used_percent_list: # used_percent = 0.5# 0.12
-    temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None)
-    out = out.append([temp_out])
-out.index = used_percent_list
-# 除去无法交易的和爆仓的，很重要
-out = out[out["count"]==len(unit_buyonly)]
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
 
-# ---对仓位优化结果做卡尔曼滤波，并且画图。f_extrema 选择的判定规则为词缀"ret_maxDD"。
-f_kelly, f_twr, f_maxDD, f_extrema = \
-    myMT5Report.lots_opt_result_kalman(opt_result=out,best_f=best_f,order=100,plot=True)
-plt.show()
+for stoplosspoint in ["StopLossPoint","worst_point"]:
+    out = pd.DataFrame()
+    for used_percent in used_percent_list: # used_percent = 0.5# 0.12
+        temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None)
+        out = out.append([temp_out])
+    out.index = used_percent_list
+    # 除去无法交易的和爆仓的，很重要
+    out = out[out["count"]==len(unit_buyonly)]
 
+    # ---对仓位优化结果做卡尔曼滤波，并且画图。f_extrema 选择的判定规则为词缀"ret_maxDD"。
+    f_kelly, f_twr, f_maxDD, f_extrema = \
+        myMT5Report.lots_opt_result_kalman(opt_result=out,best_f=best_f,order=100,
+                                           plot=True,suptitle=stoplosspoint)
+    plt.show()
 
 
 
