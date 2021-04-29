@@ -54,6 +54,24 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 # 说明：
 '''
+仓位管理逻辑：
+模式1：lots_risk_percent() (保证金止损仓位)固定比例仓位。
+    ·对于止损点，分别考虑开仓的止损点 "StopLossPoint"、基仓回测下最大亏损 "worst_point" 对应的止损点。
+    ·由于涉及固定比例，所以最优仓位理论作为关键比例进行考虑。
+    ·考虑破产概率。
+    ·比例优化的范围可以外部指定
+模式2：lots_FixedIncrement_*() 固定增长法计算仓位。
+    ·分别考虑 "分割资金SplitFund" "拆分公式SplitFormula" 两种不同的方式。
+    ·涉及初期开仓，所以最优仓位理论仅能用于初期开仓。
+    ·比例不固定，无法考虑破产概率。
+    ·delta资金的优化针对不同的品种而不同，内部自动判定，不做外部指定。
+    ·关键的delta值为"基仓回测系统"中：历史最大回撤数值的一半 或者 最大亏损额的倍数。
+
+所有的模式都有：
+    ·以 收益率/最大回撤 ret_maxDD 的1次卡尔曼过滤作为标的，进行极值判定。结果作为关键比例。
+    ·不同的方法，极值判定的order不一样。
+    ·对于关键的结果，进行蒙特卡罗模拟测试 最大回撤分布、收益率分布、盈亏比分布。
+
 
 '''
 
@@ -68,7 +86,7 @@ simucount = 100 # 模拟次数
 used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
 order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
 # ---固定增长量法专用参数
-init_percent = 0.1 # 0.1, f_kelly, f_twr, 利用多核来执行多个
+init_percent = 0.1 # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
 order_fixed_increment = 50  # 用于固定增长量判断极值
 
 
