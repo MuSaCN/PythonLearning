@@ -63,9 +63,9 @@ warnings.filterwarnings('ignore')
 
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 init_deposit = 5000
-used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
+used_percent_list = [(i + 1) / 1000 for i in range(1000)]  # 仓位百分比0.001精度
 order = 100 # 用于判断极值
-simucount = 100 # 模拟次数
+simucount = 10000 # 模拟次数
 
 #%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
 from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent

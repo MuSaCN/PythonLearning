@@ -57,7 +57,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test_M5.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
+file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
@@ -106,9 +106,9 @@ print("Time used:", (timeit.default_timer() - start)) # 1189.9454991000002
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-win_rate, maxDD_nolots, return_nolots, pnl_ratio_base, f_kelly, f_lever, f_twr = myMT5Report.cal_result_no_money_manage(unit_buyonly)
+result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
 
-text_base = "胜率={:.5f}\n信号总收益率={:.5f}\n信号最大回撤={:.5f}\n基仓盈亏比={:.5f}".format(win_rate, return_nolots, maxDD_nolots, pnl_ratio_base)
+text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
 
 # ---破产风险分析
