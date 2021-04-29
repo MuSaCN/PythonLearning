@@ -53,106 +53,40 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 
 
+
 #%%
 import warnings
 warnings.filterwarnings('ignore')
 
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
-# 读取报告，加载品种信息到 self.symbol_df。
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
-
-# 解析下词缀
-symbol = strat_setting.loc["Symbol:"][0]
-timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
-# 从MT5获取品种数据
-data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
-
-# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
-unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
-
-
-#%%
-# ---各项基仓测试结果以及最佳仓位f
-# 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
-
-# ---破产风险分析
-# 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
-# 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
-myMoneyM.bankrupt_risk(result_base.winRate, best_f.f_twr, reward_rate=2) # f_kelly, f_twr
-# 限定破产风险为指定值，得出最大的仓位比例f，error=None。
-f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=0.1, reward_rate=2)
-
-# 以浮动杠杆来分析。
-myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
-myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
-
-#%% 以 lots_risk_percent 分析
 init_deposit = 5000
-used_percent_list = [(i+1)/1000 for i in range(1000)] # 仓位百分比
-# 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
+order = 100 # 用于判断极值
+simucount = 100 # 模拟次数
 
-stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+#%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
+from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
+mode_lots_rist_percent0 = Mode_Lots_Rist_Percent()
+mode_lots_rist_percent0.file = file
+mode_lots_rist_percent0.init_deposit = init_deposit
+mode_lots_rist_percent0.stoplosspoint = "StopLossPoint"
+mode_lots_rist_percent0.used_percent_list = used_percent_list
+mode_lots_rist_percent0.order = order
+mode_lots_rist_percent0.simucount = simucount
 
-for stoplosspoint in ["StopLossPoint","worst_point"]:
-    out = pd.DataFrame()
-    for used_percent in used_percent_list: # used_percent = 0.5# 0.12
-        temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=False, show=False, ax=None)
-        out = out.append([temp_out])
-    out.index = used_percent_list
-    # 除去无法交易的和爆仓的，很重要
-    out = out[out["count"]==len(unit_buyonly)]
+mode_lots_rist_percent0.run()
 
-    # ---对仓位优化结果做卡尔曼滤波，并且画图。f_extrema 选择的判定规则为词缀"ret_maxDD"。
-    f_kelly, f_twr, f_maxDD, f_extrema = \
-        myMT5Report.lots_opt_result_kalman(opt_result=out,best_f=best_f,order=100,
-                                           plot=True,suptitle=stoplosspoint)
-    plt.show()
+#%% 以 lots_risk_percent() 的 "worst_point" 分析
+from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
+mode_lots_rist_percent1 = Mode_Lots_Rist_Percent()
+mode_lots_rist_percent1.file = file
+mode_lots_rist_percent1.init_deposit = init_deposit
+mode_lots_rist_percent1.stoplosspoint = "worst_point"
+mode_lots_rist_percent1.used_percent_list = used_percent_list
+mode_lots_rist_percent1.order = order
+mode_lots_rist_percent1.simucount = simucount
 
-
-
-#%%
-# ---单独调试
-# 以浮动杠杆来分析。
-myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
-myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
-init_deposit = 10000
-stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
-
-used_percent = best_f.f_kelly # best_f.f_kelly, best_f.f_twr
-
-result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
-
-
-
-#%% 蒙特卡罗模拟 # 按顺序并不能说明太多内容，所以打乱净利润再重新回测。
-# ---以 lots_risk_percent()指定百分比的"保证金止损仓位" 的方式模拟
-# 以浮动杠杆来分析。
-myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
-myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
-init_deposit = 10000
-used_percent = best_f.f_kelly # best_f.f_kelly, best_f.f_twr
-stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
-
-backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy() # 必须指定
-backtest_func=myMT5Report.backtest_with_lots_risk_percent
-kwargs = {"lots_class_case":myMT5Lots_Dy,
-          "init_deposit":init_deposit,"used_percent":used_percent,
-          "stoplosspoint":stoplosspoint}
-simulate_return, simulate_maxDD, simulate_pl_ratio = \
-    myMT5Report.simulate_backtest(seed=0,simucount=100,unit_order=unit_buyonly,
-                                  backtest_data=backtest_data, plot=True,show=True,
-                                  backtest_func=backtest_func, **kwargs)
-# maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)
-# maxDD_rightq = np.around(simulate_maxDD.quantile(q=alpha + (1 - alpha) / 2), 4)
-# ret_leftq = np.around(simulate_return.quantile(q=(1 - alpha) / 2), 4)
-# ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
-# plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
-# plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
-
-
-
+mode_lots_rist_percent1.run()
 
 
 
