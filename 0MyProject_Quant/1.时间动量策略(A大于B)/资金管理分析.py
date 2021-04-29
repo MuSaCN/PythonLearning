@@ -69,7 +69,7 @@ used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001�
 order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
 # ---固定增长量法专用参数
 init_percent = 0.1 # 0.1, f_kelly, f_twr, 利用多核来执行多个
-order_fixed_increment = 100  # 用于判断极值
+order_fixed_increment = 50  # 用于固定增长量判断极值
 
 
 #%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
