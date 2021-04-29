@@ -86,21 +86,21 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
+# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
+unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
-# ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
-unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
 
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
-text_base = result_base.to_string()
+base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+result_base = base[0]
+best_f = base[1]
+best_delta = base[2]
+text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
+
 
 #%% 测试仓位比例
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
@@ -113,7 +113,7 @@ myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
-init_deposit = 10000
+init_deposit = 5000
 
 # --- # myMT5Report
 worst = unit_buyonly["NetProfit_Base"].min()
@@ -128,8 +128,8 @@ out = pd.DataFrame()
 for delta in delta_list:
     temp_out = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None, init_deposit=init_deposit, delta=delta, init_lots=init_lots, funcmode=funcmode, plot=False, show=False, ax=None)
     out = out.append([temp_out])
-
 out.index = delta_list
+
 
 # 除去无法交易的和爆仓的，很重要
 out = out[out["count"]==len(unit_buyonly)]

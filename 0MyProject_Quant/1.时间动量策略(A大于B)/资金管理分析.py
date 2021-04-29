@@ -63,9 +63,14 @@ warnings.filterwarnings('ignore')
 
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 init_deposit = 5000
-used_percent_list = [(i + 1) / 1000 for i in range(1000)]  # 仓位百分比0.001精度
-order = 100 # 用于判断极值
-simucount = 10000 # 模拟次数
+simucount = 100 # 模拟次数
+# 仓位百分比法专用参数
+used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
+order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
+# 固定增长量法专用参数
+init_percent = 0.1 # 0.1, f_kelly, f_twr, 利用多核来执行多个
+order_fixed_increment = 100  # 用于判断极值
+
 
 #%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
 from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
@@ -74,27 +79,43 @@ mode_lots_rist_percent0.file = file
 mode_lots_rist_percent0.init_deposit = init_deposit
 mode_lots_rist_percent0.stoplosspoint = "StopLossPoint"
 mode_lots_rist_percent0.used_percent_list = used_percent_list
-mode_lots_rist_percent0.order = order
+mode_lots_rist_percent0.order = order_lots_risk_percent
 mode_lots_rist_percent0.simucount = simucount
 
-mode_lots_rist_percent0.run()
-
 #%% 以 lots_risk_percent() 的 "worst_point" 分析
-from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
 mode_lots_rist_percent1 = Mode_Lots_Rist_Percent()
 mode_lots_rist_percent1.file = file
 mode_lots_rist_percent1.init_deposit = init_deposit
 mode_lots_rist_percent1.stoplosspoint = "worst_point"
 mode_lots_rist_percent1.used_percent_list = used_percent_list
-mode_lots_rist_percent1.order = order
+mode_lots_rist_percent1.order = order_lots_risk_percent
 mode_lots_rist_percent1.simucount = simucount
 
+#%% 以 lots_FixedIncrement_SplitFund() 分析
+from MyPackage.MyProjects.资金管理分析.Fixed_Increment import Mode_Fixed_Increment
+mode_fixed_increment0 = Mode_Fixed_Increment()
+mode_fixed_increment0.file = file
+mode_fixed_increment0.init_deposit = init_deposit
+mode_fixed_increment0.init_percent = init_percent # 0.1, f_kelly, f_twr, 利用多核来执行多个
+mode_fixed_increment0.order = order_fixed_increment  # 用于判断极值
+mode_fixed_increment0.simucount = simucount  # 模拟次数
+mode_fixed_increment0.funcmode = "SplitFund" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
+
+mode_fixed_increment0.run()
+
+
+#%% 以 lots_FixedIncrement_SplitFormula() 分析
+mode_fixed_increment1 = Mode_Fixed_Increment()
+mode_fixed_increment1.file = file
+mode_fixed_increment1.init_deposit = init_deposit
+mode_fixed_increment1.init_percent = init_percent # 0.1, f_kelly, f_twr, 利用多核来执行多个
+mode_fixed_increment1.order = order_fixed_increment  # 用于判断极值
+mode_fixed_increment1.simucount = simucount  # 模拟次数
+mode_fixed_increment1.funcmode = "SplitFormula" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
+
+mode_fixed_increment1.run()
+
+
+#%%
+mode_lots_rist_percent0.run()
 mode_lots_rist_percent1.run()
-
-
-
-
-
-
-
-

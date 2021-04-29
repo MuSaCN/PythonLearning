@@ -79,7 +79,10 @@ unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_dire
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
+base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+result_base = base[0]
+best_f = base[1]
+best_delta = base[2]
 text_base = result_base.to_string()
 print(text_base)
 

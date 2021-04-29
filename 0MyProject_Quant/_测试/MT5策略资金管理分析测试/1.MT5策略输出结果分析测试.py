@@ -106,7 +106,10 @@ print("Time used:", (timeit.default_timer() - start)) # 1189.9454991000002
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_buyonly)
+base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+result_base = base[0]
+best_f = base[1]
+best_delta = base[2]
 
 text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
@@ -205,7 +208,10 @@ calmar_ratio = myDA.fin.calc_calmar_ratio(prices = p) if len(p) >= 2 else np.nan
 # ------测试"保证金占用仓位"
 def test_lots_open():
     # ---获取基准仓位的策略结果 # myMT5Report
-    result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    result_base = base[0]
+    best_f = base[1]
+    best_delta = base[2]
     text_base = result_base.to_string()
 
     backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol", "Price0"]].copy()
@@ -239,7 +245,10 @@ result = test_lots_open()
 # ------测试"凯利杠杆"
 def test_lever():
     # ---获取基准仓位的策略结果 # myMT5Report
-    result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+    result_base = base[0]
+    best_f = base[1]
+    best_delta = base[2]
     text_base = result_base.to_string()
 
     backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol", "Price0"]].copy()

@@ -66,21 +66,19 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
-
-# ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
-unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
+# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
+unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 
 # ---各项结果以及最佳仓位f
 # 数量；胜率；信号总收益率；信号最大回撤；信号恢复比；信号夏普比；基仓盈利因子；基仓盈亏比；基仓恢复因子；基仓TB；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-result_base, best_f = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
-text_base = result_base.to_string()
+base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
+result_base = base[0]
+best_f = base[1]
+best_delta = base[2]
+text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
 # print(strat_result.to_string())
 
