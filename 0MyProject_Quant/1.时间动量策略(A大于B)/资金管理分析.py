@@ -52,7 +52,10 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
+# 说明：
+'''
 
+'''
 
 #%%
 import warnings
