@@ -60,14 +60,14 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 import warnings
 warnings.filterwarnings('ignore')
-
+# 通用参数
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 init_deposit = 5000
 simucount = 100 # 模拟次数
-# 仓位百分比法专用参数
+# ---仓位百分比法专用参数
 used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
 order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
-# 固定增长量法专用参数
+# ---固定增长量法专用参数
 init_percent = 0.1 # 0.1, f_kelly, f_twr, 利用多核来执行多个
 order_fixed_increment = 100  # 用于判断极值
 
