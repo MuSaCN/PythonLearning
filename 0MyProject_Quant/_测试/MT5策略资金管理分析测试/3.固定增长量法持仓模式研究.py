@@ -116,9 +116,34 @@ myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 init_deposit = 5000
 
 # --- # myMT5Report
+# 原书建议delta值可以设置为"基仓回测系统"中：历史最大回撤数值的一半 或者 最大亏损额的倍数。
 worst = unit_buyonly["NetProfit_Base"].min()
 worst_point = myMT5Report.worst_point(unit_buyonly)
 maxDDr = myMT5Report.basic_max_down_range(unit_buyonly)
+
+# 测试初始化的仓位
+funcmode = "SplitFormula" # "SplitFund" / "SplitFormula"
+delta = maxDDr/2 # maxDDr/2
+out = pd.DataFrame()
+risk_range = np.arange(0.1, 0.3, 0.001)
+for riskpercent in risk_range:
+    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol,
+                                               riskpercent=riskpercent,stoplosspoint=worst_point,
+                                               spread=0, adjust=True)
+    temp_out = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly,
+                                                             backtest_data=None,
+                                                             init_deposit=init_deposit,
+                                                             delta=delta, init_lots=init_lots,
+                                                             funcmode=funcmode,plot=False,
+                                                             show=False, ax=None)
+    out = out.append([temp_out])
+out.index = risk_range
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"]==len(unit_buyonly)]
+out_new = out.drop(["count","winRate"],axis=1)
+out_new.plot()
+plt.show()
+out_new["maxDD"].plot()
 
 # 初始化的仓位
 init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
