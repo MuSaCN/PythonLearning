@@ -66,13 +66,8 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
-
-# ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
-unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
+# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
+unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
 
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
@@ -83,7 +78,7 @@ base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
 result_base = base[0]
 best_f = base[1]
 best_delta = base[2]
-text_base = result_base.to_string()
+text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
 
 
@@ -92,7 +87,7 @@ newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, da
 newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 
 
-#%% 测试仓位比例
+#%% 测试ATR周期
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
 tick_value = myMT5Report.symbol_df[symbol]["trade_tick_value_profit"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
@@ -137,13 +132,87 @@ out.index = atr_period_list
 
 # 除去无法交易的和爆仓的，很重要
 out = out[out["count"]==len(unit_buyonly)]
-out.drop("count",axis=1).plot() # out["deposit_sharpe"].plot()
+
+# ---对仓位优化结果做卡尔曼滤波，并且画图。其中 f_extrema 选择的判定规则为词缀"ret_maxDD"。
+suptitle = "ATR变动持仓优化：持仓模式=lots_risk_percent() 止损点='{}' used_percent={:.3f} " \
+           "ATR_multiple={}".format(stoplosspoint, used_percent, multiple)
+# f_series为各仓位和卡尔曼过滤的结果
+order = 50 # self.order
+para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, suptitle=suptitle)
+plt.show()
+
+#%% 测试仓位比例
+init_deposit = 10000
+multiple = 1.0 # ATR点数的倍数
+stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
+atr_period = 21
+used_percent_list = [i/100 for i in range(10,60+1)]
+
+out = pd.DataFrame()
+# 回测数据，必须指定
+backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol"]].copy()
+backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
+for used_percent in used_percent_list:
+    # 开始回测
+    temp_out = myMT5Report.backtest_with_lots_risk_percent(
+        lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=backtest_data,
+        init_deposit=init_deposit, used_percent=used_percent, stoplosspoint=stoplosspoint,
+        plot=False, show=False, ax=None)
+    out = out.append([temp_out])
+
+out.index = used_percent_list
+
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"] == len(unit_buyonly)]
+
+# ---对仓位优化结果做卡尔曼滤波，并且画图。其中 f_extrema 选择的判定规则为词缀"ret_maxDD"。
+suptitle = "ATR变动持仓仓位比例优化：持仓模式=lots_risk_percent() 止损点='{}' ATR_period={} " \
+           "ATR_multiple={}".format(stoplosspoint, atr_period, multiple)
+
+# f_series为各仓位和卡尔曼过滤的结果
+order = 50  # self.order
+para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, suptitle=suptitle)
+plt.show()
+
+#%% 测试 ATR倍数
+init_deposit = 10000
+stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
+atr_period = 14
+used_percent = 0.2
+multiple_list = [i/10 for i in range(1,30+1)]
+
+out = pd.DataFrame()
+# 回测数据，必须指定
+backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol"]].copy()
+for multiple in multiple_list:
+    # 开始回测
+    backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
+    temp_out = myMT5Report.backtest_with_lots_risk_percent(
+        lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=backtest_data,
+        init_deposit=init_deposit, used_percent=used_percent, stoplosspoint=stoplosspoint,
+        plot=False, show=False, ax=None)
+    out = out.append([temp_out])
+
+out.index = multiple_list
+# 除去无法交易的和爆仓的，很重要
+out = out[out["count"] == len(unit_buyonly)]
+
+# ---对仓位优化结果做卡尔曼滤波，并且画图。其中 f_extrema 选择的判定规则为词缀"ret_maxDD"。
+suptitle = "ATR变动持仓ATR倍数优化：持仓模式=lots_risk_percent() 止损点='{}' ATR_period={} " \
+           "used_percent={}".format(stoplosspoint, atr_period, used_percent)
+
+# f_series为各仓位和卡尔曼过滤的结果
+order = 50  # self.order
+para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, suptitle=suptitle)
 plt.show()
 
 
-
+#%%
 # ---单独测试
-init_deposit = 10000
+init_deposit = 5000
 used_percent = 0.1
 multiple = 1.0 # ATR点数的倍数
 atr_period = 14 # ATR的周期

@@ -66,6 +66,9 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
     ·比例不固定，无法考虑破产概率。
     ·delta资金的优化针对不同的品种而不同，内部自动判定，不做外部指定。
     ·关键的delta值为"基仓回测系统"中：历史最大回撤数值的一半 或者 最大亏损额的倍数。
+模式3：ATR止损的 lots_risk_percent() (保证金止损仓位)固定比例仓位。
+    ·可以优化的变量有：ATR的周期、ATR倍数(默认设为1，不优化)、资金百分比(考虑几个特殊值)
+    ·ATR的周期优化范围可以外部指定
 
 所有的模式都有：
     ·以 收益率/最大回撤 ret_maxDD 的1次卡尔曼过滤作为标的，进行极值判定。结果作为关键比例。
@@ -88,7 +91,11 @@ order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
 # ---固定增长量法专用参数
 init_percent = 0.1 # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
 order_fixed_increment = 50  # 用于固定增长量判断极值
-
+# ---ATR变动持仓
+used_percent_atr = "f_twr" # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+order_atr = 100  # 用于判断极值
+atr_multiple = 1.0 # ATR点数的倍数
+atr_period_list = [i for i in range(1, 150, 1)]
 
 #%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
 from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
@@ -119,7 +126,6 @@ mode_fixed_increment0.order = order_fixed_increment  # 用于判断极值
 mode_fixed_increment0.simucount = simucount  # 模拟次数
 mode_fixed_increment0.funcmode = "SplitFund" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
 
-mode_fixed_increment0.run()
 
 
 #%% 以 lots_FixedIncrement_SplitFormula() 分析
@@ -131,9 +137,22 @@ mode_fixed_increment1.order = order_fixed_increment  # 用于判断极值
 mode_fixed_increment1.simucount = simucount  # 模拟次数
 mode_fixed_increment1.funcmode = "SplitFormula" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
 
-mode_fixed_increment1.run()
+#%% 以 ATR止损点的 lots_risk_percent() 分析
+from MyPackage.MyProjects.资金管理分析.ATR_Lots import Mode_ATR_Lots
+mode_atr_lots = Mode_ATR_Lots()
+mode_atr_lots.file = file
+mode_atr_lots.init_deposit = init_deposit
+mode_atr_lots.used_percent = used_percent_atr # best_f.f_kelly best_f.f_twr
+mode_atr_lots.order = order_atr  # 用于判断极值
+mode_atr_lots.simucount = simucount  # 模拟次数
+mode_atr_lots.multiple = atr_multiple # ATR点数的倍数
+mode_atr_lots.atr_period_list = atr_period_list
+
+mode_atr_lots.run()
 
 
 #%%
 mode_lots_rist_percent0.run()
 mode_lots_rist_percent1.run()
+mode_fixed_increment0.run()
+mode_fixed_increment1.run()
