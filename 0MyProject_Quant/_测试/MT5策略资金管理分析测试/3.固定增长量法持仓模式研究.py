@@ -121,29 +121,47 @@ worst = unit_buyonly["NetProfit_Base"].min()
 worst_point = myMT5Report.worst_point(unit_buyonly)
 maxDDr = myMT5Report.basic_max_down_range(unit_buyonly)
 
+delta = maxDDr/2 # maxDDr/2
+
 # 测试初始化的仓位
 funcmode = "SplitFormula" # "SplitFund" / "SplitFormula"
-delta = maxDDr/2 # maxDDr/2
 out = pd.DataFrame()
-risk_range = np.arange(0.1, 0.3, 0.001)
+risk_range = np.arange(0.1, 0.4, 0.01)
+delta_list = [i for i in range(1, 200, 1)]
 for riskpercent in risk_range:
+    # break
     init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol,
                                                riskpercent=riskpercent,stoplosspoint=worst_point,
                                                spread=0, adjust=True)
-    temp_out = myMT5Report.backtest_with_lots_FixedIncrement(myMT5Lots_Dy, unit_order=unit_buyonly,
-                                                             backtest_data=None,
-                                                             init_deposit=init_deposit,
-                                                             delta=delta, init_lots=init_lots,
-                                                             funcmode=funcmode,plot=False,
-                                                             show=False, ax=None)
-    out = out.append([temp_out])
-out.index = risk_range
+    for delta in delta_list:
+        # break
+        temp_out = myMT5Report.backtest_with_lots_FixedIncrement(
+            myMT5Lots_Dy, unit_order=unit_buyonly,backtest_data=None,init_deposit=init_deposit,
+            delta=delta, init_lots=init_lots,funcmode=funcmode,plot=False,show=False, ax=None)
+        temp_out.loc["riskpercent"] = riskpercent
+        temp_out.loc["delta"] = delta
+        out = out.append([temp_out])
+
+# out.index = risk_range
 # 除去无法交易的和爆仓的，很重要
-out = out[out["count"]==len(unit_buyonly)]
-out_new = out.drop(["count","winRate"],axis=1)
-out_new.plot()
-plt.show()
-out_new["maxDD"].plot()
+out_new =  out[out["count"]==len(unit_buyonly)] # out.copy()
+out_new = out_new.drop(["count","winRate"],axis=1)
+out_new.reset_index(drop=True,inplace=True)
+
+myDefault.set_backend_default("tkagg")
+
+myfigpro.__init__() # riskpercent delta
+myfigpro.plot3D_grid_df(out_new, index="riskpercent", columns="delta", values="pnl_ratio",fillna_value=0)
+
+out_new.columns
+out_new1 = out_new.copy()
+out_new1 = out_new1[out_new1["maxDD"] > -0.5]
+place = out_new1["ret_maxDD"].argmax()
+out_new1.loc[place]
+
+myfigpro.__init__() # riskpercent delta
+myfigpro.plot3D_grid_df(out_new1, index="riskpercent", columns="delta", values="tb",fillna_value=0)
+
 
 # 初始化的仓位
 init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=0.1, stoplosspoint=worst_point, spread=0, adjust=True)
