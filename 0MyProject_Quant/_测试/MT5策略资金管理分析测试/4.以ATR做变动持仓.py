@@ -138,8 +138,8 @@ suptitle = "ATR变动持仓优化：持仓模式=lots_risk_percent() 止损点='
            "ATR_multiple={}".format(stoplosspoint, used_percent, multiple)
 # f_series为各仓位和卡尔曼过滤的结果
 order = 50 # self.order
-para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
-                                                 plot=True, suptitle=suptitle)
+para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, xlabel="indi_para",suptitle=suptitle)
 plt.show()
 
 #%% 测试仓位比例
@@ -172,8 +172,8 @@ suptitle = "ATR变动持仓仓位比例优化：持仓模式=lots_risk_percent()
 
 # f_series为各仓位和卡尔曼过滤的结果
 order = 50  # self.order
-para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
-                                                 plot=True, suptitle=suptitle)
+para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, xlabel="indi_para",suptitle=suptitle)
 plt.show()
 
 #%% 测试 ATR倍数
@@ -205,8 +205,8 @@ suptitle = "ATR变动持仓ATR倍数优化：持仓模式=lots_risk_percent() �
 
 # f_series为各仓位和卡尔曼过滤的结果
 order = 50  # self.order
-para_series = myMT5Report.indi_opt_result_kalman(opt_result=out, both=True, order=order,
-                                                 plot=True, suptitle=suptitle)
+para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=order,
+                                                 plot=True, xlabel="indi_para",suptitle=suptitle)
 plt.show()
 
 
