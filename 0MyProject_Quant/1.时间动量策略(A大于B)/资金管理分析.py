@@ -169,6 +169,8 @@ if __name__ == '__main__':
     multi_out = myparallel.multi_processing(multi_func, para_list, core_num=-1)
     # 输出文档
     total_best_out = pd.concat(multi_out, axis=0)
+    total_best_out = total_best_out[total_best_out["maxDD"] >= -0.5]
+    total_best_out.reset_index(drop=True, inplace=True)
     total_best_out.to_excel(pic_folder+"\\%s_best_out.xlsx"%direct)
 
 
