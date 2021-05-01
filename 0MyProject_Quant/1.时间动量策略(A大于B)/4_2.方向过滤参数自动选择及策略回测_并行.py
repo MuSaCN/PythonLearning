@@ -83,7 +83,7 @@ choo_para.core_num = -1
 #%%
 from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filter_BackTest
 rf_bt = Direct_Filter_BackTest()
-myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
+myplt.set_backend("agg")  # "agg" 后台输出图片，不占pycharm内存
 
 
 #%%

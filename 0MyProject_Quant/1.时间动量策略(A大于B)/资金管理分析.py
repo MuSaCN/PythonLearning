@@ -75,7 +75,6 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
     ·不同的方法，极值判定的order不一样。
     ·对于关键的结果，进行蒙特卡罗模拟测试 最大回撤分布、收益率分布、盈亏比分布。
 
-
 '''
 
 #%%
@@ -114,7 +113,7 @@ mode_lots_rist_percent0.order = order_lots_risk_percent
 mode_lots_rist_percent0.simucount = simucount
 mode_lots_rist_percent0.direct = direct
 mode_lots_rist_percent0.pic_folder = pic_folder
-mode_lots_rist_percent0.run()
+# mode_lots_rist_percent0.run()
 
 
 #%% 以 lots_risk_percent() 的 "worst_point" 分析
@@ -127,7 +126,7 @@ mode_lots_rist_percent1.order = order_lots_risk_percent
 mode_lots_rist_percent1.simucount = simucount
 mode_lots_rist_percent1.direct = direct
 mode_lots_rist_percent1.pic_folder = pic_folder
-mode_lots_rist_percent1.run()
+# mode_lots_rist_percent1.run()
 
 
 #%% 以 lots_FixedIncrement_SplitFund() 分析
@@ -141,7 +140,7 @@ mode_fixed_increment0.simucount = simucount  # 模拟次数
 mode_fixed_increment0.funcmode = "SplitFund" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
 mode_fixed_increment0.direct = direct
 mode_fixed_increment0.pic_folder = pic_folder
-mode_fixed_increment0.run()
+# mode_fixed_increment0.run()
 
 
 #%% 以 lots_FixedIncrement_SplitFormula() 分析
@@ -154,7 +153,7 @@ mode_fixed_increment1.simucount = simucount  # 模拟次数
 mode_fixed_increment1.funcmode = "SplitFormula" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
 mode_fixed_increment1.direct = direct
 mode_fixed_increment1.pic_folder = pic_folder
-mode_fixed_increment1.run()
+# mode_fixed_increment1.run()
 
 
 #%% 以 ATR止损点的 lots_risk_percent() 分析
@@ -169,12 +168,13 @@ mode_atr_lots.multiple = atr_multiple # ATR点数的倍数
 mode_atr_lots.atr_period_list = atr_period_list
 mode_atr_lots.direct = direct
 mode_atr_lots.pic_folder = pic_folder
-mode_atr_lots.run()
+# mode_atr_lots.run()
 
 
 #%%
-# mode_lots_rist_percent0.run()
-# mode_lots_rist_percent1.run()
-# mode_fixed_increment0.run()
-# mode_fixed_increment1.run()
-# mode_atr_lots.run()
+myDefault.set_backend_default("agg") # 后台输出，不占pycharm内存
+mode_lots_rist_percent0.run()
+mode_lots_rist_percent1.run()
+mode_fixed_increment0.run()
+mode_fixed_increment1.run()
+mode_atr_lots.run()
