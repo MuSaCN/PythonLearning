@@ -85,75 +85,46 @@ file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
 init_deposit = 5000
 simucount = 100 # 模拟次数
 direct = "BuyOnly" # 考虑的交易方向 "BuyOnly" "SellOnly"
-pic_folder = __mypath__.get_desktop_path() + "\\资金管理\\"
+pic_folder = __mypath__.get_desktop_path() + "\\资金管理\\ATR_test"
 
 # ---仓位百分比法专用参数
 used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
 order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
 
 # ---固定增长量法专用参数
-init_percent = 0.1 # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+# init_percent = 0.1 # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+# funcmode = "SplitFund"拆分资金法 / "SplitFormula"拆分公式法, 利用多核来执行多个
 order_fixed_increment = 50  # 用于固定增长量判断极值
 
 # ---ATR变动持仓
-used_percent_atr = "f_twr" # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+# used_percent_atr = "f_twr" # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
 order_atr = 100  # 用于判断极值
 atr_multiple = 1.0 # ATR点数的倍数
 atr_period_list = [i for i in range(1, 150, 1)]
 
 
-#%% 以 lots_risk_percent() 的 "StopLossPoint" 分析
+#%% 以 lots_risk_percent() 的 "StopLossPoint"/"worst_point" 分析
 from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
-mode_lots_rist_percent0 = Mode_Lots_Rist_Percent()
-mode_lots_rist_percent0.file = file
-mode_lots_rist_percent0.init_deposit = init_deposit
-mode_lots_rist_percent0.stoplosspoint = "StopLossPoint"
-mode_lots_rist_percent0.used_percent_list = used_percent_list
-mode_lots_rist_percent0.order = order_lots_risk_percent
-mode_lots_rist_percent0.simucount = simucount
-mode_lots_rist_percent0.direct = direct
-mode_lots_rist_percent0.pic_folder = pic_folder
-# mode_lots_rist_percent0.run()
+mode_lots_rist_percent = Mode_Lots_Rist_Percent()
+mode_lots_rist_percent.file = file
+mode_lots_rist_percent.init_deposit = init_deposit
+mode_lots_rist_percent.used_percent_list = used_percent_list
+mode_lots_rist_percent.order = order_lots_risk_percent
+mode_lots_rist_percent.simucount = simucount
+mode_lots_rist_percent.direct = direct
+mode_lots_rist_percent.pic_folder = pic_folder
 
 
-#%% 以 lots_risk_percent() 的 "worst_point" 分析
-mode_lots_rist_percent1 = Mode_Lots_Rist_Percent()
-mode_lots_rist_percent1.file = file
-mode_lots_rist_percent1.init_deposit = init_deposit
-mode_lots_rist_percent1.stoplosspoint = "worst_point"
-mode_lots_rist_percent1.used_percent_list = used_percent_list
-mode_lots_rist_percent1.order = order_lots_risk_percent
-mode_lots_rist_percent1.simucount = simucount
-mode_lots_rist_percent1.direct = direct
-mode_lots_rist_percent1.pic_folder = pic_folder
-# mode_lots_rist_percent1.run()
-
-
-#%% 以 lots_FixedIncrement_SplitFund() 分析
+#%% 以 lots_FixedIncrement_*() 分析 "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
 from MyPackage.MyProjects.资金管理分析.Fixed_Increment import Mode_Fixed_Increment
-mode_fixed_increment0 = Mode_Fixed_Increment()
-mode_fixed_increment0.file = file
-mode_fixed_increment0.init_deposit = init_deposit
-mode_fixed_increment0.init_percent = init_percent # 0.1, f_kelly, f_twr, 利用多核来执行多个
-mode_fixed_increment0.order = order_fixed_increment  # 用于判断极值
-mode_fixed_increment0.simucount = simucount  # 模拟次数
-mode_fixed_increment0.funcmode = "SplitFund" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
-mode_fixed_increment0.direct = direct
-mode_fixed_increment0.pic_folder = pic_folder
-# mode_fixed_increment0.run()
-
-
-#%% 以 lots_FixedIncrement_SplitFormula() 分析
-mode_fixed_increment1 = Mode_Fixed_Increment()
-mode_fixed_increment1.file = file
-mode_fixed_increment1.init_deposit = init_deposit
-mode_fixed_increment1.init_percent = init_percent # 0.1, f_kelly, f_twr, 利用多核来执行多个
-mode_fixed_increment1.order = order_fixed_increment  # 用于判断极值
-mode_fixed_increment1.simucount = simucount  # 模拟次数
-mode_fixed_increment1.funcmode = "SplitFormula" # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
-mode_fixed_increment1.direct = direct
-mode_fixed_increment1.pic_folder = pic_folder
-# mode_fixed_increment1.run()
+mode_fixed_increment = Mode_Fixed_Increment()
+mode_fixed_increment.file = file
+mode_fixed_increment.init_deposit = init_deposit
+mode_fixed_increment.order = order_fixed_increment  # 用于判断极值
+mode_fixed_increment.simucount = simucount  # 模拟次数
+mode_fixed_increment.direct = direct
+mode_fixed_increment.pic_folder = pic_folder
+# best_out1 = mode_fixed_increment0.run()
 
 
 #%% 以 ATR止损点的 lots_risk_percent() 分析
@@ -161,20 +132,43 @@ from MyPackage.MyProjects.资金管理分析.ATR_Lots import Mode_ATR_Lots
 mode_atr_lots = Mode_ATR_Lots()
 mode_atr_lots.file = file
 mode_atr_lots.init_deposit = init_deposit
-mode_atr_lots.used_percent = used_percent_atr # best_f.f_kelly best_f.f_twr
 mode_atr_lots.order = order_atr  # 用于判断极值
 mode_atr_lots.simucount = simucount  # 模拟次数
 mode_atr_lots.multiple = atr_multiple # ATR点数的倍数
 mode_atr_lots.atr_period_list = atr_period_list
 mode_atr_lots.direct = direct
 mode_atr_lots.pic_folder = pic_folder
-# mode_atr_lots.run()
+# best_out2 =mode_atr_lots.run()
 
 
 #%%
+def multi_func(para):
+    mode = para[0]
+    if mode == "risk_percent":
+        stoplosspoint = para[1]
+        return mode_lots_rist_percent.run(stoplosspoint=stoplosspoint)
+    elif mode == "FixedIncrement":
+        funcmode = para[1] # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
+        init_percent = para[2]  # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+        return mode_fixed_increment.run(funcmode=funcmode, init_percent=init_percent)
+    elif mode == "ATR_risk_percent":
+        used_percent = para[1] # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
+        return mode_atr_lots.run(used_percent=used_percent)
 myDefault.set_backend_default("agg") # 后台输出，不占pycharm内存
-mode_lots_rist_percent0.run()
-mode_lots_rist_percent1.run()
-mode_fixed_increment0.run()
-mode_fixed_increment1.run()
-mode_atr_lots.run()
+if __name__ == '__main__':
+    # 生成多核参数para
+    sl_point_list = ["StopLossPoint", "worst_point"]  # --> risk_percent
+    funcmode_list = ["SplitFund", "SplitFormula"]  # --> FixedIncrement
+    init_percent_list = [0.1, "f_kelly", "f_twr"]  # --> FixedIncrement
+    used_percent_list = [0.1, "f_kelly", "f_twr"]  # --> ATR_risk_percent
+    para0 = [("risk_percent", sl) for sl in sl_point_list]
+    para1 = [("FixedIncrement", func, init) for func in funcmode_list for init in init_percent_list]
+    para2 = [("ATR_risk_percent", used) for used in used_percent_list]
+    para_list = para0 + para1 + para2
+    # 多核执行
+    multi_out = myparallel.multi_processing(multi_func, para_list, core_num=-1)
+    # 输出文档
+    total_best_out = pd.concat(multi_out, axis=0)
+    total_best_out.to_excel(pic_folder+"\\%s_best_out.xlsx"%direct)
+
+
