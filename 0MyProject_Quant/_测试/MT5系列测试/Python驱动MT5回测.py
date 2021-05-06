@@ -49,16 +49,19 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
+myMT5run = MyMql.MyClass_RunningMT5() # Python运行MT5
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
 #%%
-file = __mypath__.get_desktop_path() + "\\MT5_common.ini"
-out_file = __mypath__.get_desktop_path() + "\\MT5_common1.ini"
+
+out_config = __mypath__.get_desktop_path() + "\\MT5_common1.ini"
+
+config_common = __mypath__.get_user_path() + r"\AppData\Roaming\MetaQuotes\Terminal\6E8A5B613BD795EE57C550F7EF90598D\config\common.ini"
 
 # ---读取默认设置，编码 utf-16 为 mt5 的格式
-myini.__init__(configfile=file, encoding="utf-16")
+myini.__init__(configfile=config_common, encoding="utf-16")
 
 # ---启动智能交易系统测试或优化
 Tester = "Tester"
@@ -69,8 +72,8 @@ myini.set(Tester,'Expert','My_Experts\简单动量策略(AB比较)_Test\EURUSD.D
 myini.set(Tester,'Deposit','5000')
 myini.set(Tester,'Leverage','100')
 myini.set(Tester,'Symbol','EURUSD')
-# 用于测试/优化的时间帧，注意输入不是 PERIOD_D1，而是 Daily
-myini.set(Tester,'Period','Daily')
+# 用于测试/优化的时间帧，注意输入不是 TIMEFRAME_D1，而是 Daily
+myini.set(Tester,'Period', myMT5run.timeframe_to_affix("TIMEFRAME_D1"))
 # 优化(0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种")。
 myini.set(Tester,'Optimization','0')
 # "分时"模式 (0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点")
@@ -112,10 +115,14 @@ myini.set(Inputs,'n_count','38||38||1||380||N')
 myini.set(Inputs,'adjust_point','120||120||1||1200||N')
 
 # ---输出结果
-myini.write(out_file)
+myini.write(out_config)
 
 #%%
-"C:\Users\i2011\Desktop\MQL5系列\M3-ALL-MT5.lnk /config:C:\Users\i2011\Desktop\MT5_common1.ini"
+command = r"C:\Users\i2011\Desktop\MQL5系列\M3-ALL-MT5.lnk /config:C:\Users\i2011\Desktop\MT5_common1.ini"
+
+import os
+# 以阻塞方式运行
+os.system(command)
 
 
 
