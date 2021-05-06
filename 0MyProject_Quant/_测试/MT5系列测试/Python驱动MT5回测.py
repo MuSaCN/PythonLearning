@@ -58,9 +58,11 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.D1\各过滤各平仓.ex5"
 fromdate = "2000.01.01"
 todate = "2020.01.01"
-reportfile = "简单动量策略(AB比较)_Test\EURUSD.D1\各过滤各平仓\opt.xml"
+reportfile = r"F:\工作---MT5策略研究\1.简单的动量策略\EURUSD.D1\ABC\opt.xml"
+myMT5run.__init__()
 myMT5run.config_Tester(expertname, "EURUSD", "TIMEFRAME_D1", fromdate=fromdate, todate=todate,
                        delays=100, optimization=1, reportfile=reportfile)
+
 
 #%% 设置参数
 myMT5run.input_set("filter_mode", "1||0||0||3||Y")
@@ -80,7 +82,6 @@ myMT5run.input_set("adjust_point", "120||120||1||1200||N")
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-
 myMT5run.run_MT5()
 
 
@@ -88,7 +89,7 @@ myMT5run.run_MT5()
 expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.D1\各过滤各平仓.ex5"
 fromdate = "2000.01.01"
 todate = "2020.01.01"
-reportfile = r"简单动量策略(AB比较)_Test\EURUSD.D1\各过滤各平仓\best_test.htm"
+reportfile = r"F:\工作---MT5策略研究\1.简单的动量策略\EURUSD.D1\best_test.xml"
 myMT5run.__init__()
 myMT5run.config_Tester(expertname, "EURUSD", "TIMEFRAME_D1", fromdate=fromdate, todate=todate,
                        delays=100, optimization=0, reportfile=reportfile)
