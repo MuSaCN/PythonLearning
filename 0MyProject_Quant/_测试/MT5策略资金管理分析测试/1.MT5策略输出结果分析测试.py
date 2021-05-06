@@ -58,9 +58,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
+file = __mypath__.get_desktop_path() + "\\best_test.xlsx" # html 转换为 xlsx
+
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
-
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
