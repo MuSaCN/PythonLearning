@@ -7,14 +7,14 @@ Mql5Path = "C:\\Users\\i2011\\AppData\\Roaming\\MetaQuotes\\Terminal\\6E8A5B613B
 myMql5 = MyClass_MqlBackups(Mql5Path,isPrint=True)
 
 # ---My_Experts, My_Include, My_Indicators, My_Scripts复制备份操作
-myMql5.dir_copy(myMql5.ExpertsPath,"My_Experts")
-time.sleep(3)
-myMql5.dir_copy(myMql5.IncludePath,"My_Include")
-time.sleep(3)
-myMql5.dir_copy(myMql5.IndicatorsPath,"My_Indicators")
-time.sleep(3)
-myMql5.dir_copy(myMql5.ScriptsPath,"My_Scripts")
-time.sleep(3)
+# myMql5.dir_copy(myMql5.ExpertsPath,"My_Experts")
+# time.sleep(3)
+# myMql5.dir_copy(myMql5.IncludePath,"My_Include")
+# time.sleep(3)
+# myMql5.dir_copy(myMql5.IndicatorsPath,"My_Indicators")
+# time.sleep(3)
+# myMql5.dir_copy(myMql5.ScriptsPath,"My_Scripts")
+# time.sleep(3)
 
 # ---Files, Logs清理操作
 myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS","Common Files"])

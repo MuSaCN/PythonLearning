@@ -8,14 +8,14 @@ Mql4Path = "C:\\Users\\i2011\\AppData\\Roaming\\MetaQuotes\\Terminal\\F7DC4A11FD
 myMql4 = MyClass_MqlBackups(Mql4Path,isPrint=True)
 
 # ---MyExperts_MQL4, MyClass_MQL4, MyIndicators_MQL4, MyScripts_MQL4的复制操作
-myMql4.dir_copy(myMql4.ExpertsPath,"MyExperts_MQL4")
-time.sleep(3)
-myMql4.dir_copy(myMql4.IncludePath,"MyClass_MQL4")
-time.sleep(3)
-myMql4.dir_copy(myMql4.IndicatorsPath,"MyIndicators_MQL4")
-time.sleep(3)
-myMql4.dir_copy(myMql4.ScriptsPath,"MyScripts_MQL4")
-time.sleep(3)
+# myMql4.dir_copy(myMql4.ExpertsPath,"MyExperts_MQL4")
+# time.sleep(3)
+# myMql4.dir_copy(myMql4.IncludePath,"MyClass_MQL4")
+# time.sleep(3)
+# myMql4.dir_copy(myMql4.IndicatorsPath,"MyIndicators_MQL4")
+# time.sleep(3)
+# myMql4.dir_copy(myMql4.ScriptsPath,"MyScripts_MQL4")
+# time.sleep(3)
 
 # ---Files, Logs的清理操作
 myMql4.dir_remove(myMql4.FilesPath,ignoreFolder=[])
