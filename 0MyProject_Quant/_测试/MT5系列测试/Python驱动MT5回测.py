@@ -72,7 +72,7 @@ myini.set(Tester,'Symbol','EURUSD')
 # 用于测试/优化的时间帧，注意输入不是 PERIOD_D1，而是 Daily
 myini.set(Tester,'Period','Daily')
 # 优化(0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种")。
-myini.set(Tester,'Optimization','1')
+myini.set(Tester,'Optimization','0')
 # "分时"模式 (0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点")
 myini.set(Tester,'Model','1')
 # 测试范围的起始和结束日期
@@ -84,18 +84,19 @@ myini.set(Tester,'ForwardMode','0')
 myini.set(Tester,'ExecutionMode','-1')
 # 优化准则(0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max)
 myini.set(Tester,'OptimizationCriterion','6')
-# 报告文件将保存在文件夹 平台_安装_目录
-myini.set(Tester,'Report','ABC\out_test.xml')
+# 报告文件将保存在文件夹 平台_安装_目录 # ABC\out_test.xml  ABC\out_test1.xlsx
+myini.set(Tester,'Report','ABC\out_test1.xlsx')
 # 如果指定报告已经存在, 它将被覆盖 (0 — 禁用, 1 — 启用)。
 myini.set(Tester,'ReplaceReport','1')
 # 设置测试/优化完成后, 平台随即自动关闭 (0 — 禁用, 1 — 启用)。
-myini.set(Tester,'ShutdownTerminal','0')
+myini.set(Tester,'ShutdownTerminal','1')
+
 
 # ---回测的参数设置
 Inputs = "TesterInputs"
 myini.add_section(Inputs)
 # 参数设置
-myini.set(Inputs,'filter_mode','1||0||0||3||Y')
+myini.set(Inputs,'filter_mode','1||0||0||3||N')
 myini.set(Inputs,'close_mode','3||0||0||5||N')
 myini.set(Inputs,'init_sl_FixedBars','1900||1900||1||19000||N')
 myini.set(Inputs,'holding','12||12||1||120||N')
@@ -115,5 +116,7 @@ myini.write(out_file)
 
 #%%
 "C:\Users\i2011\Desktop\MQL5系列\M3-ALL-MT5.lnk /config:C:\Users\i2011\Desktop\MT5_common1.ini"
+
+
 
 
