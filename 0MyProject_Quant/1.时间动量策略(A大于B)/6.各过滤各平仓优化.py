@@ -80,6 +80,7 @@ fnc.timeframe = timeframe
 
 #%% FixedBars固定K线周期 (基准)
 fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
+fnc.cache_affix = "FixedBars"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
@@ -89,6 +90,7 @@ fnc.run()
 
 #%% FixedTrailing固定移动止损
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing.xml"
+fnc.cache_affix = "FixedTrailing"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "1||0||0||5||N") # 指定为 FixedTrailing固定移动止损
@@ -98,6 +100,7 @@ fnc.run()
 
 #%% FixedTrailing_Defend防御性移动止损(MT5界面模式)
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing_Defend.xml"
+fnc.cache_affix = "FixedTrailing_Defend"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "2||0||0||5||N") # 指定为 FixedTrailing_Defend防御性移动止损
@@ -107,6 +110,7 @@ fnc.run()
 
 #%% ATR_Trailing为ATR移动止损
 fnc.reportfile = reportfolder+r"\Opt_ATR_Trailing.xml"
+fnc.cache_affix = "ATR_Trailing"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "3||0||0||5||N") # 指定为 ATR_Trailing为ATR移动止损
@@ -116,6 +120,7 @@ fnc.run()
 
 #%% SAR_Trailing为SAT移动止损
 fnc.reportfile = reportfolder+r"\Opt_SAR_Trailing.xml"
+fnc.cache_affix = "SAR_Trailing"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "4||0||0||5||N") # 指定为 SAR_Trailing为SAT移动止损
@@ -125,6 +130,7 @@ fnc.run()
 
 #%% NBar_Trailing从shift=1开始上n根K线(包括shift位置的K线)的极值做移动止损
 fnc.reportfile = reportfolder+r"\Opt_NBar_Trailing.xml"
+fnc.cache_affix = "NBar_Trailing"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "5||0||0||5||N") # 指定为 SAR_Trailing为SAT移动止损
