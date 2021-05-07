@@ -85,7 +85,7 @@ fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
 fnc.input_set("init_sl_FixedBars", "1900||0||100||3000||Y") # 下订单时的固定止损点优化
 fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
-# fnc.run()
+fnc.run()
 
 #%% FixedTrailing固定移动止损
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing.xml"
@@ -94,7 +94,7 @@ fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "1||0||0||5||N") # 指定为 FixedTrailing固定移动止损
 fnc.input_set("init_sl_FixedTrailing", "0||0||100||3000||Y") # 下订单时的固定止损点
 fnc.input_set("fixed_trailing", "0||0||100||3000||Y") # 固定的移动止损点
-# fnc.run()
+fnc.run()
 
 #%% FixedTrailing_Defend防御性移动止损(MT5界面模式)
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing_Defend.xml"
@@ -103,7 +103,7 @@ fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "2||0||0||5||N") # 指定为 FixedTrailing_Defend防御性移动止损
 fnc.input_set("init_sl_defend", "0||0||100||3000||Y") # 下订单时的固定止损点
 fnc.input_set("fixed_trailing_defend", "0||0||100||3000||Y") # 防御性移动止损点
-# fnc.run()
+fnc.run()
 
 #%% ATR_Trailing为ATR移动止损
 fnc.reportfile = reportfolder+r"\Opt_ATR_Trailing.xml"
