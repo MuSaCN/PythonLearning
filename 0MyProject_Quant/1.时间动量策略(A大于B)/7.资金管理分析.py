@@ -52,7 +52,7 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-# 说明：
+# 把MT5单独回测的结果都放在一个目录里，会批量依次执行资金管理分析。仓位管理逻辑说明：
 '''
 仓位管理逻辑：
 模式1：lots_risk_percent() (保证金止损仓位)固定比例仓位。
@@ -80,81 +80,61 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #%%
 import warnings
 warnings.filterwarnings('ignore')
-# 通用参数
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+
+# ---MT5回测文档所在的文件夹，用于批量分析
+folder = r"F:\工作---资金管理\1.简单的动量策略\EURUSD.D1"
+
+# ---通用参数
 init_deposit = 5000
-simucount = 100 # 模拟次数
-direct = "BuyOnly" # 考虑的交易方向 "BuyOnly" "SellOnly"
-pic_folder = __mypath__.get_desktop_path() + "\\资金管理\\ATR_test"
+simucount = 10000  # 10000 模拟次数
+direct = "BuyOnly"  # 考虑的交易方向 "BuyOnly" "SellOnly"
 
 # ---仓位百分比法专用参数
-used_percent_list = [(i + 1) / 100 for i in range(100)]  # 仓位百分比0.001精度
-order_lots_risk_percent = 100 # 用于仓位百分比法判断极值
+used_percent_list = [(i + 1) / 1000 for i in range(1000)]  # 1000 仓位百分比0.001精度
+order_lots_risk_percent = 100  # 用于仓位百分比法判断极值
 
 # ---固定增长量法专用参数
 # init_percent = 0.1 # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
 # funcmode = "SplitFund"拆分资金法 / "SplitFormula"拆分公式法, 利用多核来执行多个
 order_fixed_increment = 50  # 用于固定增长量判断极值
 
-# ---ATR变动持仓
+# ---ATR变动持仓专用参数
 # used_percent_atr = "f_twr" # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
 order_atr = 100  # 用于判断极值
-atr_multiple = 1.0 # ATR点数的倍数
-atr_period_list = [i for i in range(1, 150, 1)]
+atr_multiple = 1.0  # ATR点数的倍数
+atr_period_list = [i for i in range(1, 150, 1)] # [i for i in range(1, 150, 1)]
 
-
-#%% 以 lots_risk_percent() 的 "StopLossPoint"/"worst_point" 分析
-from MyPackage.MyProjects.资金管理分析.Lots_Risk_Percent import Mode_Lots_Rist_Percent
-mode_lots_rist_percent = Mode_Lots_Rist_Percent()
-mode_lots_rist_percent.file = file
-mode_lots_rist_percent.init_deposit = init_deposit
-mode_lots_rist_percent.used_percent_list = used_percent_list
-mode_lots_rist_percent.order = order_lots_risk_percent
-mode_lots_rist_percent.simucount = simucount
-mode_lots_rist_percent.direct = direct
-mode_lots_rist_percent.pic_folder = pic_folder
-
-
-#%% 以 lots_FixedIncrement_*() 分析 "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
-from MyPackage.MyProjects.资金管理分析.Fixed_Increment import Mode_Fixed_Increment
-mode_fixed_increment = Mode_Fixed_Increment()
-mode_fixed_increment.file = file
-mode_fixed_increment.init_deposit = init_deposit
-mode_fixed_increment.order = order_fixed_increment  # 用于判断极值
-mode_fixed_increment.simucount = simucount  # 模拟次数
-mode_fixed_increment.direct = direct
-mode_fixed_increment.pic_folder = pic_folder
-# best_out1 = mode_fixed_increment0.run()
-
-
-#%% 以 ATR止损点的 lots_risk_percent() 分析
-from MyPackage.MyProjects.资金管理分析.ATR_Lots import Mode_ATR_Lots
-mode_atr_lots = Mode_ATR_Lots()
-mode_atr_lots.file = file
-mode_atr_lots.init_deposit = init_deposit
-mode_atr_lots.order = order_atr  # 用于判断极值
-mode_atr_lots.simucount = simucount  # 模拟次数
-mode_atr_lots.multiple = atr_multiple # ATR点数的倍数
-mode_atr_lots.atr_period_list = atr_period_list
-mode_atr_lots.direct = direct
-mode_atr_lots.pic_folder = pic_folder
-# best_out2 =mode_atr_lots.run()
-
+#%% 加载批量资金管理分析类
+from MyPackage.MyProjects.资金管理分析.Batch_Analysis import Lots_Batch_Analysis
+listdir = __mypath__.listdir(folder)
+listdir = [i for i in listdir if ".xlsx" in i] # 排除非xlxs文件
+batch_analysis_list = [] # 存放 批量分析类
+for name in listdir: # name = listdir[0]
+    file = folder + "\\" + name
+    batch_analysis = Lots_Batch_Analysis(file=file)
+    # ---外部参数赋值
+    # 通用参数
+    batch_analysis.file = file
+    batch_analysis.init_deposit = init_deposit
+    batch_analysis.simucount = simucount
+    batch_analysis.direct = direct
+    # 仓位百分比法专用参数
+    batch_analysis.used_percent_list = used_percent_list
+    batch_analysis.order_lots_risk_percent = order_lots_risk_percent
+    # 固定增长量法专用参数
+    batch_analysis.order_fixed_increment = order_fixed_increment
+    # ATR变动持仓专用参数
+    batch_analysis.order_atr = order_atr
+    batch_analysis.atr_multiple = atr_multiple
+    batch_analysis.atr_period_list = atr_period_list
+    # ---配置各个分析类(必须要执行)
+    batch_analysis.config_analysis()
+    # 存储到list中
+    batch_analysis_list.append(batch_analysis)
 
 #%%
-def multi_func(para):
-    mode = para[0]
-    if mode == "risk_percent":
-        stoplosspoint = para[1]
-        return mode_lots_rist_percent.run(stoplosspoint=stoplosspoint)
-    elif mode == "FixedIncrement":
-        funcmode = para[1] # "SplitFund"拆分资金法 / "SplitFormula"拆分公式法
-        init_percent = para[2]  # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
-        return mode_fixed_increment.run(funcmode=funcmode, init_percent=init_percent)
-    elif mode == "ATR_risk_percent":
-        used_percent = para[1] # 0.1, "f_kelly", "f_twr", 利用多核来执行多个
-        return mode_atr_lots.run(used_percent=used_percent)
-myDefault.set_backend_default("agg") # 后台输出，不占pycharm内存
+# 后台输出，不占pycharm内存
+myDefault.set_backend_default("agg")
 if __name__ == '__main__':
     # 生成多核参数para
     sl_point_list = ["StopLossPoint", "worst_point"]  # --> risk_percent
@@ -165,12 +145,12 @@ if __name__ == '__main__':
     para1 = [("FixedIncrement", func, init) for func in funcmode_list for init in init_percent_list]
     para2 = [("ATR_risk_percent", used) for used in used_percent_list]
     para_list = para0 + para1 + para2
-    # 多核执行
-    multi_out = myparallel.multi_processing(multi_func, para_list, core_num=-1)
-    # 输出文档
-    total_best_out = pd.concat(multi_out, axis=0)
-    total_best_out = total_best_out[total_best_out["maxDD"] >= -0.5]
-    total_best_out.reset_index(drop=True, inplace=True)
-    total_best_out.to_excel(pic_folder+"\\%s_best_out.xlsx"%direct)
+    # 每个策略文档，依次进行多核执行
+    for i in range(len(batch_analysis_list)):
+        batch_analysis_list[i].multi_process(para_list)
+    print("finished all!!!")
+    __mypath__.open_folder(folder)
+
+
 
 
