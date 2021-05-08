@@ -109,6 +109,7 @@ def get_atr_point(multiple, atr_period):
     atr_1 = atr_1.loc[newtime_buyonly["Time0"]].reset_index(drop=True)
     return (atr_1 * multiple / point).map(lambda x:int(x))
 
+#%%
 # ---
 init_deposit = 10000
 used_percent = 0.1
@@ -117,15 +118,12 @@ stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
 atr_period_list = [i for i in range(3,50,1)]
 
 out = pd.DataFrame()
-for atr_period in atr_period_list: # atr_period = atr_period_list[0]
+for atr_period in atr_period_list: # atr_period = 21
     # 回测数据，必须指定
     backtest_data = unit_buyonly[["NetProfit_Base", "StopLossPoint", "Symbol"]].copy()
     backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
     # 开始回测
-    temp_out = myMT5Report.backtest_with_lots_risk_percent(
-        lots_class_case=myMT5Lots_Dy,unit_order=unit_buyonly, backtest_data=backtest_data,
-        init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint,
-        plot=False,show=False, ax=None)
+    temp_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy,unit_order=unit_buyonly, backtest_data=backtest_data,init_deposit=init_deposit,used_percent=used_percent,stoplosspoint=stoplosspoint,plot=False,show=False, ax=None) # 73.1 ms ± 307 µs
     out = out.append([temp_out])
 
 out.index = atr_period_list
@@ -138,8 +136,7 @@ suptitle = "ATR变动持仓优化：持仓模式=lots_risk_percent() 止损点='
            "ATR_multiple={}".format(stoplosspoint, used_percent, multiple)
 # f_series为各仓位和卡尔曼过滤的结果
 order = 50 # self.order
-para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=order,
-                                                 plot=True, xlabel="indi_para",suptitle=suptitle)
+para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=order, plot=True, xlabel="indi_para",suptitle=suptitle)
 plt.show()
 
 #%% 测试仓位比例
@@ -240,14 +237,11 @@ backtest_data = unit_buyonly[["NetProfit_Base","StopLossPoint","Symbol"]].copy()
 backtest_data["ATR_Point"] = get_atr_point(multiple, atr_period)
 
 backtest_func=myMT5Report.backtest_with_lots_risk_percent
-kwargs = {"lots_class_case":myMT5Lots_Dy,
-          "init_deposit":init_deposit,"used_percent":used_percent,
-          "stoplosspoint":stoplosspoint,"text_base":text_base}
-simulate_return, simulate_maxDD, simulate_pl_ratio = \
-    myMT5Report.simulate_backtest(seed=0,simucount=1000,
-                                  backtest_data=backtest_data,
-                                  plot=True,suptitle=stoplosspoint,show=True,
-                                  backtest_func=backtest_func, **kwargs)
+
+kwargs = {"lots_class_case": myMT5Lots_Dy,
+          "init_deposit": init_deposit, "used_percent": used_percent,
+          "stoplosspoint": stoplosspoint}
+simulate_result_df = myMT5Report.simulate_backtest(seed=0, simucount=1000, unit_order=unit_buyonly,backtest_data=backtest_data, plot=False,suptitle="", show=False, savefig=None, batch=True,backtest_func=backtest_func, **kwargs)
 
 
 # maxDD_leftq = np.around(simulate_maxDD.quantile(q=(1 - alpha) / 2), 4)

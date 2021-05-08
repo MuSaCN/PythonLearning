@@ -76,18 +76,21 @@ df1*df2
 #unstack表示Series-->DataFrame方向。当DataFrame的行索引都变成列索引时，系统会自动把列索引转成行索引，索引*.unstack().unstack()...能无限。
 
 
-# Pandas高效率迭代:
-# 用 for i in range(len(df)) --> 低效率
+# ---Pandas高效率迭代:
+# --> 用 for i in range(len(df)) --> 低效率
 # --> 效率比循环高
     # for i,row in df.iterrows(): --> 按行遍历。可修改df中的值
     # for row in df.itertuples(): --> 按行遍历。不可修改其值，返回对象。
     # for index, column in df.iteritems(): --> 按列遍历
-# --> 更高效率以apply形式
+# --> series 更高效率以map形式，对series每个元素遍历
+# --> dataframe 更高效率以apply形式，对df每个行或列遍历。如果函数f涉及到外部变量赋值，可以用列表。
     #         def f(row):
     #             print(row)
     #             return 1
     #         out = df.apply(f, axis=1) --> 按行遍历，且进行apply
     #         out = df.apply(f, axis=0) --> 按列遍历，且进行apply
+# --> dataframe 用 applymap形式，对df每个元素遍历
+
 
 # rolling的使用
 # df.rolling(..) --> 会对df中的每个列的Series进行rolling

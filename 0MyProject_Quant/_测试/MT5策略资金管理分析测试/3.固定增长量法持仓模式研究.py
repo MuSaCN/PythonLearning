@@ -90,7 +90,7 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
 
-#%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
+# 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
@@ -123,21 +123,19 @@ maxDDr = myMT5Report.basic_max_down_range(unit_buyonly)
 
 delta = maxDDr/2 # maxDDr/2
 
+#%%
+
 # 测试初始化的仓位
 funcmode = "SplitFormula" # "SplitFund" / "SplitFormula"
 out = pd.DataFrame()
 risk_range = np.arange(0.1, 0.4, 0.01)
 delta_list = [i for i in range(1, 200, 1)]
-for riskpercent in risk_range:
+for riskpercent in risk_range: # riskpercent = 0.2
     # break
-    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol,
-                                               riskpercent=riskpercent,stoplosspoint=worst_point,
-                                               spread=0, adjust=True)
-    for delta in delta_list:
+    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=init_deposit, symbol=symbol, riskpercent=riskpercent,stoplosspoint=worst_point, spread=0, adjust=True)
+    for delta in delta_list: # delta = 50
         # break
-        temp_out = myMT5Report.backtest_with_lots_FixedIncrement(
-            myMT5Lots_Dy, unit_order=unit_buyonly,backtest_data=None,init_deposit=init_deposit,
-            delta=delta, init_lots=init_lots,funcmode=funcmode,plot=False,show=False, ax=None)
+        temp_out = myMT5Report.backtest_with_lots_FixedIncrement( myMT5Lots_Dy, unit_order=unit_buyonly,backtest_data=None,init_deposit=init_deposit, delta=delta, init_lots=init_lots,funcmode=funcmode,plot=False,show=False, ax=None) # 78.5 ms ± 6.19 ms
         temp_out.loc["riskpercent"] = riskpercent
         temp_out.loc["delta"] = delta
         out = out.append([temp_out])
