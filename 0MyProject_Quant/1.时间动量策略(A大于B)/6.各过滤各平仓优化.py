@@ -77,16 +77,6 @@ fnc.todate = todate
 fnc.symbol = symbol
 fnc.timeframe = timeframe
 
-#%% test
-fnc.reportfile = reportfolder+r"\Opt_TEST.xml"
-fnc.cache_affix = "TEST"
-fnc.first_default()
-fnc.input_set("filter_mode", "0||0||0||3||N") # 各过滤优化
-fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
-fnc.input_set("holding", "1||1||1||12||Y") # 固定周期平仓优化
-fnc.run()
-
-
 
 #%% FixedBars固定K线周期 (基准)
 fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
