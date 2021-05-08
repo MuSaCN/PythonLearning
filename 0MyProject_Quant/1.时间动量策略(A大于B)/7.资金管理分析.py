@@ -140,12 +140,12 @@ if __name__ == '__main__':
     sl_point_list = ["StopLossPoint", "worst_point"]  # --> risk_percent
     funcmode_list = ["SplitFund", "SplitFormula"]  # --> FixedIncrement
     init_percent_list = [0.1, "f_kelly", "f_twr"]  # --> FixedIncrement
-    used_percent_list = [0.1, "f_kelly", "f_twr"]  # --> ATR_risk_percent
+    risk_percent_list = [0.1, "f_kelly", "f_twr"]  # --> ATR_risk_percent
     para0 = [("risk_percent", sl) for sl in sl_point_list]
     para1 = [("FixedIncrement", func, init) for func in funcmode_list for init in init_percent_list]
-    para2 = [("ATR_risk_percent", used) for used in used_percent_list]
+    para2 = [("ATR_risk_percent", used) for used in risk_percent_list]
     para_list = para0 + para1 + para2
-    # 每个策略文档，依次进行多核执行
+    # 每个策略文档，依次进行多核执行 # batch_analysis
     for i in range(len(batch_analysis_list)):
         batch_analysis_list[i].multi_process(para_list)
     print("finished all!!!")
