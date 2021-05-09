@@ -83,7 +83,9 @@ df1*df2
     # for row in df.itertuples(): --> 按行遍历。不可修改其值，返回对象。
     # for index, column in df.iteritems(): --> 按列遍历
 # --> series 更高效率以map形式，对series每个元素遍历
-# --> dataframe 更高效率以apply形式，对df每个行或列遍历。如果函数f涉及到外部变量赋值，可以用列表。
+# --> dataframe 更高效率以apply形式，对df每个行或列遍历。
+    # 有时候apply会用到索引，索引可以添加到df中。
+    # 如果函数f涉及到外部变量赋值，可以用列表。
     #         def f(row):
     #             print(row)
     #             return 1
