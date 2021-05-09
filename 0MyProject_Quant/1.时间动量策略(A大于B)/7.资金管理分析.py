@@ -107,7 +107,7 @@ atr_period_list = [i for i in range(1, 150, 1)] # [i for i in range(1, 150, 1)]
 #%% 加载批量资金管理分析类
 from MyPackage.MyProjects.资金管理分析.Batch_Analysis import Lots_Batch_Analysis
 listdir = __mypath__.listdir(folder)
-listdir = [i for i in listdir if ".xlsx" in i] # 排除非xlxs文件
+listdir = [i for i in listdir if ".xlsx" in i] # 排除非 xlxs 文件
 batch_analysis_list = [] # 存放 批量分析类
 for name in listdir: # name = listdir[0]
     file = folder + "\\" + name
@@ -147,7 +147,17 @@ if __name__ == '__main__':
     para_list = para0 + para1 + para2
     # 每个策略文档，依次进行多核执行 # batch_analysis
     for i in range(len(batch_analysis_list)):
+        # ---进度
+        finished_basename = [] # 完成的文件名称，不是完整路径。
+        basename = __mypath__.basename(batch_analysis_list[i].file)
+        if basename in finished_basename:
+            print("finished: ", basename)
+            continue
+        # ---
         batch_analysis_list[i].multi_process(para_list)
+        finished_basename.append(basename)
+        print("finished_basename: ", finished_basename)
+    # ---
     print("finished all!!!")
     __mypath__.open_folder(folder)
 
