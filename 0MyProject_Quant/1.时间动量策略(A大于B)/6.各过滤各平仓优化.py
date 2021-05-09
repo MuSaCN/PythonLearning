@@ -66,7 +66,7 @@ fromdate = "2000.01.01"
 todate = "2020.01.01"
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_D1"
-reportfolder = r"F:\工作---MT5策略研究\1.简单的动量策略\EURUSD.D1" # 细节要单独指定
+reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.D1" # 细节要单独指定
 
 
 from MyPackage.MyProjects.止损与移动止损.各过滤各平仓 import MT5_filter_and_close

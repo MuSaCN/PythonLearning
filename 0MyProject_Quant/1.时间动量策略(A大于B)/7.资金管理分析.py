@@ -82,7 +82,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # ---MT5回测文档所在的文件夹，用于批量分析
-folder = r"F:\工作---资金管理\1.简单的动量策略\EURUSD.D1"
+folder = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUSD.D1"
 
 # ---通用参数
 init_deposit = 5000
