@@ -145,10 +145,10 @@ if __name__ == '__main__':
     para1 = [("FixedIncrement", func, init) for func in funcmode_list for init in init_percent_list]
     para2 = [("ATR_risk_percent", used) for used in risk_percent_list]
     para_list = para0 + para1 + para2
-    # 每个策略文档，依次进行多核执行 # batch_analysis
+    # 每个策略文档，依次进行多核执行 # batch_analysis # i=0
     for i in range(len(batch_analysis_list)):
         # ---进度
-        finished_basename = [] # 完成的文件名称，不是完整路径。
+        finished_basename = ["filter=0 atr=2 mul=1.1.xlsx","filter=1 atr=1 mul=1.1.xlsx","filter=1 atr=17 mul=0.7.xlsx"] # 完成的文件名称，不是完整路径。
         basename = __mypath__.basename(batch_analysis_list[i].file)
         if basename in finished_basename:
             print("finished: ", basename)
