@@ -77,12 +77,18 @@ df1*df2
 
 
 # ---Pandas高效率迭代:
+### Series 循环效率最高
+# --> for items in series.iteritems(): --> 遍历包含索引标签和系列中相应值的元组。
+    # 效率不一定高于循环
+# --> series 更高效率以 map 或 apply 形式，对 series 每个元素遍历
+    # 效率不一定高于循环
+
+### DataFrame: apply > iter > 循环
 # --> 用 for i in range(len(df)) --> 低效率
 # --> 效率比循环高
     # for i,row in df.iterrows(): --> 按行遍历。可修改df中的值
     # for row in df.itertuples(): --> 按行遍历。不可修改其值，返回对象。
     # for index, column in df.iteritems(): --> 按列遍历
-# --> series 更高效率以map形式，对series每个元素遍历
 # --> dataframe 更高效率以apply形式，对df每个行或列遍历。
     # 有时候apply会用到索引，索引可以添加到df中。
     # 如果函数f涉及到外部变量赋值，可以用列表。
