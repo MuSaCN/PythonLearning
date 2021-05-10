@@ -76,7 +76,7 @@ data_train, data_test = myMT5Pro.get_train_test(data=data_total, train_scale=0.8
 train_x0 = data_train.index[0]
 train_x1 = data_train.index[-1]
 # # 把训练集的时间进行左右扩展
-bound_left, bound_right = myMT5Pro.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0)
+bound_left, bound_right = myMT5Pro.extend_train_time(train_t0=train_x0, train_t1=train_x1, extend_scale=0.3)
 # 再次重新加载下全部的数据
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, bound_left, bound_right, index_time=True, col_capitalize=True)
 
