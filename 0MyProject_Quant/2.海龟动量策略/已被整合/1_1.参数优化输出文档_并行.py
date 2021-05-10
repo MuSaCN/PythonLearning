@@ -97,7 +97,10 @@ opt.stratgy_signal = stratgy_signal
 #%% ******修改函数******
 # 获取策略参数范围(direct、timeframe、symbol参数必须设置在-3、-2、-1的位置)
 def get_strat_para_scope(direct, timeframe, symbol):
-    return [(n, holding, lag_trade, direct, timeframe, symbol) for n in range(2, opt.para1_end + 1) for holding in range(1, opt.holding_end + 1) for lag_trade in range(1, opt.lag_trade_end + 1)]
+    return [(n, holding, lag_trade, direct, timeframe, symbol)
+            for n in range(2, opt.para1_end + 1)
+            for holding in range(1, opt.holding_end + 1)
+            for lag_trade in range(1, opt.lag_trade_end + 1)]
 opt.get_strat_para_scope = get_strat_para_scope
 
 # 策略退出条件，strat_para = (k, holding, lag_trade)。
