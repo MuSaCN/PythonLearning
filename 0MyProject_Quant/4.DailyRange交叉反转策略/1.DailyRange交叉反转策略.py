@@ -186,7 +186,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 ""
 # ---非策略设置
 core_num = -1
-total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究"
+total_folder = "F:\\工作---Python策略研究\\4.DailyRange交叉策略\\_交叉反转研究"
 filename_prefix = "DailyRange交叉反转"
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 direct_para = ["BuyOnly", "SellOnly"] # 方向词缀 ["BuyOnly", "SellOnly", "All"]
