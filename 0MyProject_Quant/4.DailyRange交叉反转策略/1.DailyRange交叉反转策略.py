@@ -261,7 +261,7 @@ choose_opt.core_num = core_num # -1表示留1个进程不执行运算。
 from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Sum_Auto_Choose
 sum_choo = Sum_Auto_Choose()
 
-sum_choo.strat_para_name = strategy_para_names # list(choose_opt.para_fixed_list[0].keys())
+sum_choo.strategy_para_names = strategy_para_names # list(choose_opt.para_fixed_list[0].keys())
 sum_choo.all_folder = total_folder
 sum_choo.symbol_list = symbol_list
 sum_choo.outfile_suffix = ".original" # 输出的文档加后缀
@@ -272,7 +272,7 @@ sum_choo.core_num = core_num
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Auto_More_Holding
 more_h = Auto_More_Holding()
 
-more_h.strategy_para_name = strategy_para_names
+more_h.strategy_para_names = strategy_para_names
 more_h.symbol_list = symbol_list
 more_h.total_folder = total_folder
 more_h.readfile_suffix = sum_choo.outfile_suffix # 输入的文档加后缀
@@ -287,7 +287,7 @@ from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Bac
 strat_bt = Strategy_BackTest()
 
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析)
-strat_bt.para_name = strategy_para_names
+strat_bt.strategy_para_names = strategy_para_names
 strat_bt.symbol_list = symbol_list
 strat_bt.total_folder = total_folder
 strat_bt.readfile_suffix = more_h.outfile_suffix # ".holdingtest" # 输入的文档加后缀
@@ -299,7 +299,7 @@ strat_bt.stratgy_signal = stratgy_signal # 策略信号
 from MyPackage.MyProjects.向量化策略测试.More_Holding import Strategy_Better
 s_better = Strategy_Better()
 
-s_better.strategy_para_name = strategy_para_names
+s_better.strategy_para_names = strategy_para_names
 s_better.symbol_list = symbol_list
 s_better.total_folder = total_folder
 s_better.readfile_suffix = more_h.outfile_suffix # 输入的文档加后缀 .holdingtest
@@ -312,7 +312,7 @@ s_better.stratgy_signal = stratgy_signal
 from MyPackage.MyProjects.向量化策略测试.Range_Filter import Range_Filter_Output
 rf_out = Range_Filter_Output()
 
-rf_out.strategy_para_name = strategy_para_names
+rf_out.strategy_para_names = strategy_para_names
 rf_out.symbol_list = symbol_list
 rf_out.total_folder = total_folder
 rf_out.readfile_suffix = s_better.outfile_suffix
@@ -343,7 +343,7 @@ from MyPackage.MyProjects.向量化策略测试.Direct_Filter import Direct_Filt
 df_out = Direct_Filter_Output()
 
 # 策略参数名称，用于文档中解析参数
-df_out.strategy_para_name = strategy_para_names
+df_out.strategy_para_names = strategy_para_names
 df_out.symbol_list = symbol_list
 df_out.total_folder = total_folder
 df_out.readfile_suffix = s_better.outfile_suffix
@@ -374,7 +374,7 @@ df_bt.stratgy_signal = stratgy_signal
 from MyPackage.MyProjects.向量化策略测试.Strategy_Param_Opt import Strat_Pool_Integration
 strat_pool = Strat_Pool_Integration()
 
-strat_pool.strategy_para_name = strategy_para_names
+strat_pool.strategy_para_names = strategy_para_names
 strat_pool.symbol_list = symbol_list
 strat_pool.total_folder = total_folder
 strat_pool.readfile_suffix = s_better.outfile_suffix
