@@ -86,7 +86,7 @@ folder = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUS
 
 # ---通用参数
 init_deposit = 5000
-simucount = 10000  # 10000 模拟次数
+simucount = 5000  # 5000 模拟次数
 direct = "BuyOnly"  # 考虑的交易方向 "BuyOnly" "SellOnly"
 
 # ---仓位百分比法专用参数
@@ -136,7 +136,8 @@ for name in listdir: # name = listdir[0]
 # 后台输出，不占pycharm内存
 myDefault.set_backend_default("agg")
 if __name__ == '__main__':
-    # 生成多核参数para
+    # ---生成多核参数para
+    # 外部指定的参数，但总参数不限于此，内部会自动分析添加新参数。
     sl_point_list = ["StopLossPoint", "worst_point"]  # --> risk_percent
     funcmode_list = ["SplitFund", "SplitFormula"]  # --> FixedIncrement
     init_percent_list = [0.1, "f_kelly", "f_twr"]  # --> FixedIncrement
