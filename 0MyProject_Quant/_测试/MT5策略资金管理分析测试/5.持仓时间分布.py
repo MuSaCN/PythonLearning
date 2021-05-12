@@ -123,17 +123,17 @@ myfigpro.histplot(dataarray=diff_point, x="Diff_Point",hue="p_or_l",bins=50)
 
 #%%
 # 分组单笔盈亏比
-pnl = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"])/unit_buyonly["StopLossPoint"])
-pnl.columns=["pnl"]
+pnl_r = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"])/unit_buyonly["StopLossPoint"])
+pnl_r.columns=["pnl_r"]
 index_p = unit_buyonly["NetProfit_Base"] > 0
 index_l = unit_buyonly["NetProfit_Base"] <= 0
-pnl["p_or_l"] = 0
-pnl["p_or_l"][index_p] = "Profit"
-pnl["p_or_l"][index_l] = "Loss"
+pnl_r["p_or_l"] = 0
+pnl_r["p_or_l"][index_p] = "Profit"
+pnl_r["p_or_l"][index_l] = "Loss"
 
 # 单变量多分组分布图
 myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=pnl, x="pnl",hue="p_or_l",bins=100)
+myfigpro.histplot(dataarray=pnl_r, x="pnl_r",hue="p_or_l",bins=50)
 
 
 
