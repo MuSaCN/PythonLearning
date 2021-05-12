@@ -152,10 +152,14 @@ if __name__ == '__main__':
     # 每个策略文档，依次进行多核执行 # batch_analysis # i=0
     # ---进度
     finished_basename = []  # 完成的文件名称，不是完整路径。
+    want_basename = [] # 需要进行的文件名称，与上方逻辑相反，不用要清空
     for i in range(len(batch_analysis_list)):
         basename = __mypath__.basename(batch_analysis_list[i].file)
         if basename in finished_basename:
             print("finished: ", basename)
+            continue
+        if len(want_basename) > 0 and basename not in want_basename:
+            print("not want: ", basename)
             continue
         # ---
         batch_analysis_list[i].multi_process(para_list)
