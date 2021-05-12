@@ -67,8 +67,6 @@ strat_setting, strat_result, order_content, deal_content = myMT5Report.read_repo
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
-# 获取数据，当前时间框或降低级别
-data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_H4",timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
 unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
@@ -85,6 +83,9 @@ best_delta = base[2]
 text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
 
+# 获取数据，当前时间框或降低级别
+timebar_timeframe =  "TIMEFRAME_H4"
+data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。 # "TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1.
 # %timeit 236 ms ± 7.43 m
@@ -95,24 +96,47 @@ newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 timebar = pd.DataFrame(newtime_buyonly["TimeBar"])
 index_p = unit_buyonly["NetProfit_Base"] > 0
 index_l = unit_buyonly["NetProfit_Base"] <= 0
-timebar["pl"] = 0
-timebar["pl"][index_p] = "Profit"
-timebar["pl"][index_l] = "Loss"
+timebar["p_or_l"] = 0
+timebar["p_or_l"][index_p] = "Profit"
+timebar["p_or_l"][index_l] = "Loss"
 
 # 单变量多分组分布图
 myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=timebar, x="TimeBar",hue="pl",bins=200)
+myfigpro.histplot(dataarray=timebar, x="TimeBar",hue="p_or_l",bins=50,axesindex=0,show=False)
+myfigpro.axeslist[0].set_xlabel("TimeBar: %s"%timebar_timeframe)
+myfigpro.show()
+
 
 #%%
 # 分组价格波动点数
 diff_point = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"].astype(np.int32)))
 index_p = unit_buyonly["NetProfit_Base"] > 0
 index_l = unit_buyonly["NetProfit_Base"] <= 0
-diff_point["pl"] = 0
-diff_point["pl"][index_p] = "Profit"
-diff_point["pl"][index_l] = "Loss"
+diff_point["p_or_l"] = 0
+diff_point["p_or_l"][index_p] = "Profit"
+diff_point["p_or_l"][index_l] = "Loss"
 
 # 单变量多分组分布图
 myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=diff_point, x="Diff_Point",hue="pl",bins=50)
+myfigpro.histplot(dataarray=diff_point, x="Diff_Point",hue="p_or_l",bins=50)
+
+
+#%%
+# 分组单笔盈亏比
+pnl = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"])/unit_buyonly["StopLossPoint"])
+pnl.columns=["pnl"]
+index_p = unit_buyonly["NetProfit_Base"] > 0
+index_l = unit_buyonly["NetProfit_Base"] <= 0
+pnl["p_or_l"] = 0
+pnl["p_or_l"][index_p] = "Profit"
+pnl["p_or_l"][index_l] = "Loss"
+
+# 单变量多分组分布图
+myfigpro.__init__(AddFigure=True)
+myfigpro.histplot(dataarray=pnl, x="pnl",hue="p_or_l",bins=100)
+
+
+
+
+
 
