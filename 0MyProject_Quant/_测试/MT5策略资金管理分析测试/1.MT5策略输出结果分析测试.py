@@ -57,8 +57,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
-file = __mypath__.get_desktop_path() + "\\best_test.xlsx" # html 转换为 xlsx
+file = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUSD.D1\filter=1 atr=1 mul=1.1.xlsx" # ATR_test ATR_test_M5 ATR_test_M30
+# file = __mypath__.get_desktop_path() + "\\best_test.xlsx" # html 转换为 xlsx
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
@@ -70,25 +70,7 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-order_buyonly, order_sellonly, deal_buyonly, deal_sellonly = myMT5Report.order_deal_split_buyonly_sellonly(order_content=order_content, deal_content=deal_content)
-
-# ---从 deal_direct, order_direct 中获取交易单元(根据out获取in)(整体算法)，生成交易in和out匹配单元信息df.
-# %timeit myMT5Report.get_unit_order1(deal_buyonly,order_buyonly)
-# 2.96 s ± 71.4 ms 2min 25s ± 2.16 s
-# %timeit myMT5Report.get_unit_order(deal_buyonly,order_buyonly)
-# 2.23 s ± 37.5 ms 43.8 s ± 476 ms
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-# unit_buyonly.set_index(keys="Time0", drop=False, inplace=True)
-unit_sellonly = myMT5Report.get_unit_order(deal_direct=deal_sellonly, order_direct=order_sellonly)
-
-import timeit
-start = timeit.default_timer()
-unit_buyonly = myMT5Report.get_unit_order(deal_direct=deal_buyonly, order_direct=order_buyonly)
-print("Time used:", (timeit.default_timer() - start)) # 657.0548607000001
-start = timeit.default_timer()
-unit_buyonly = myMT5Report.get_unit_order1(deal_direct=deal_buyonly, order_direct=order_buyonly)
-print("Time used:", (timeit.default_timer() - start)) # 1189.9454991000002
-
+unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
 
 # ---符合MT5实际的资金曲线计算。
 # unit_buyonly["Balance_Base"].plot()
@@ -101,6 +83,56 @@ print("Time used:", (timeit.default_timer() - start)) # 1189.9454991000002
 # plt.show()
 # unit_buyonly["Profit_Base"].cumsum().plot()
 # plt.show()
+
+
+#%% #############################
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_H4",timefrom, timeto,index_time=True, col_capitalize=True)
+
+# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。
+newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
+newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
+
+
+
+#%% #############################
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_H4",timefrom, timeto,index_time=True, col_capitalize=True)
+
+# 把 unit_order 订单按 data 的时间框拆分为多个子订单块。用于对原订单进行分阶段仓位管理，比如加减仓。
+'''
+### 未拆分的一单基仓利润 = (block["DiffProfit_Base"] + block["JumpProfit_Base"]).sum()
+### 拆单无法整合进 Profit_Base。连续持仓情况下 Profit_Base = DiffProfit_Base + JumpProfit_Base。但是要注意：新仓要减去所在的跳空利润
+### MT5手续费在一个单子的开仓和平仓都收。且计算一次就行了。拆单无法整合进手续费
+### 隔夜仓费Swap_Base要单独算，因为时间跳会有不同结果。拆单无法整合进隔夜仓费。
+### 思考：
+    # 拆分情况下，可以同时存在多个单。算仓位百分比时是否需要利润兑现，才能考虑？
+    # 加仓后，一直保持状态。还是加仓后，条件外再减仓，条件内再重新加仓？
+'''
+all_block_buyonly = myMT5Report.parse_unit_to_ticket_block(unit_order=unit_buyonly, data=data)
+all_block_sellonly = myMT5Report.parse_unit_to_ticket_block(unit_sellonly, data)
+all_block_buyonly["Cum_PL_Ratio"].plot()
+plt.show()
+block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == 2]
+
+
+
+#%%
+i=1
+t0 = unit_buyonly.iloc[i]["Time0"]
+t1 = unit_buyonly.iloc[i]["Time1"]
+unit_buyonly.iloc[i]["Swap_Base"]
+myMT5Report.swap_base(t0,t1,symbol,"long")
+
+t0 = pd.Timestamp('2001-01-04 00:00:00')
+t1 = pd.Timestamp('2001-01-04 23:59:59')
+t2 = pd.Timestamp('2001-01-05 00:00:00')
+t3 = pd.Timestamp('2001-01-05 23:59:59')
+myMT5Report.swap_base(t0,t1,symbol,"long") # 0
+myMT5Report.swap_base(t2,t3,symbol,"long") # 0
+myMT5Report.swap_base(t0,t3,symbol,"long") # -0.07 时间跳
+
+
 
 #%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 
@@ -118,9 +150,9 @@ print(text_base)
 # ---破产风险分析
 # 假设盈亏比限定为2时，且 胜率 > 1/3 时，破产概率为：
 # 破产风险，error=None：f为资金百分比；reward_rate报酬率(盈亏比) = 2或1 (不能为其他值)；报酬率为1时，win_rate要大于0.5，报酬率为2时，win_rate要大于 1/3 ；
-myMoneyM.bankrupt_risk(win_rate, f_kelly, reward_rate=2) # f_kelly, f_twr
+myMoneyM.bankrupt_risk(result_base.winRate, best_f.f_kelly, reward_rate=2) # f_kelly, f_twr
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
-f_limit_bankrupt = myMoneyM.f_limit_bankrupt(win_rate, bankrupt_risk=0.1, reward_rate=2)
+f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=0.1, reward_rate=2)
 
 
 #%% ############
@@ -164,10 +196,6 @@ simulate_return, simulate_maxDD, simulate_pl_ratio = \
 
 
 
-#%% #############################
-# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。
-newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
-newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
 
 #%% 计算下各方向下的各种指标。注意这里与向量化回测中的计算有所不同，向量化回测是以1单位算累计收益率。
 # myBTV.__returns_result__()

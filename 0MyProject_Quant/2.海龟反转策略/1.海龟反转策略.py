@@ -428,13 +428,13 @@ if __name__ == '__main__':
     # rf_bt.main_func(logger=logger)
 
     # ---4_1.指标方向过滤输出文档
-    print("4_1. 开始指标方向过滤输出文档")
-    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_1.指标方向过滤输出文档.log")
-    df_out.main_func(logger=logger)
+    # print("4_1. 开始指标方向过滤输出文档")
+    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_1.指标方向过滤输出文档.log")
+    # df_out.main_func(logger=logger)
     # ---4_2.方向过滤参数自动选择及策略回测
     # 4_2_1 方向过滤参数自动选择
-    print("4_2_1. 开始方向过滤参数自动选择：")
-    df_choo_para.main_func()
+    # print("4_2_1. 开始方向过滤参数自动选择：")
+    # df_choo_para.main_func()
     # 4_2_2 方向过滤策略回测
     print("4_2_2. 开始方向过滤策略回测：")
     logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")

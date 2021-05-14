@@ -102,3 +102,31 @@ def onlycall(x):
 # %timeit a = sr.apply(onlycall) # 1.9 ms ± 35.7 µs
 # %timeit a = sr.map(onlycall) # 1.88 ms ± 26.8 µs
 
+
+#%%
+data = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_H1",[2000,1,1], [2020,1,1],index_time=True, col_capitalize=True)
+# 以迭代进行纯访问测试
+def test1():
+    for i in range(len(data)): # i=0
+        data.iloc[i]["Time"]
+#%timeit test1()
+def test2():
+    for index, row in data.iterrows():
+        row["Time"]
+#%timeit test2()
+def test3():
+    def func(x):
+        x["Time"]
+    data.apply(func,axis=1)
+#%timeit test3()
+import timeit
+start = timeit.default_timer()
+test1()
+print("test1() Time used:", (timeit.default_timer() - start)) # 23.7911667999997
+start = timeit.default_timer()
+test2()
+print("test2() Time used:", (timeit.default_timer() - start)) # 8.885708599999816
+start = timeit.default_timer()
+test3()
+print("test3() Time used:", (timeit.default_timer() - start)) # 1.5251791999999114
+
