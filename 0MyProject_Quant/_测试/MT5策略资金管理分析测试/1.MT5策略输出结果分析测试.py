@@ -118,11 +118,14 @@ block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == 2]
 
 
 #%%
+# 注意3倍隔夜费的星期几的数量，若3倍隔夜费是周三，表示周三到周四隔夜仓会收取3倍隔夜费。
 i=1
 t0 = unit_buyonly.iloc[i]["Time0"]
 t1 = unit_buyonly.iloc[i]["Time1"]
 unit_buyonly.iloc[i]["Swap_Base"]
-myMT5Report.swap_base(t0,t1,symbol,"long")
+myMT5Report.swap_base(t0,t1,symbol,long_or_short="long")
+
+
 
 t0 = pd.Timestamp('2001-01-04 00:00:00')
 t1 = pd.Timestamp('2001-01-04 23:59:59')
