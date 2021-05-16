@@ -102,7 +102,7 @@ myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
 
 # ---
-init_deposit = 10000
+init_deposit = 5000
 used_percent_list = [(i+1)/100 for i in range(100)]
 stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
 
@@ -138,7 +138,7 @@ result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lo
 # 以浮动杠杆来分析。
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 myMT5Lots_Fix.__init__(connect=True,symbol=symbol)
-init_deposit = 10000
+init_deposit = 5000
 used_percent = best_f.f_kelly # best_f.f_kelly, best_f.f_twr
 stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
 

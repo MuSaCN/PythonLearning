@@ -98,10 +98,9 @@ data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_ti
     # 拆分情况下，可以同时存在多个单。算仓位百分比时是否需要利润兑现，才能考虑？
     # 加仓后，一直保持状态。还是加仓后，条件外再减仓，条件内再重新加仓？
 '''
-all_block_buyonly = myMT5Report.parse_unit_to_ticket_block(unit_order=unit_buyonly, data=data)
-all_block_sellonly = myMT5Report.parse_unit_to_ticket_block(unit_sellonly, data)
-all_block_buyonly["Cum_PL_Ratio"].plot()
-plt.show()
+all_block_buyonly, newtime_buy = myMT5Report.parse_unit_to_ticket_block(unit_order=unit_buyonly, data=data)
+all_block_sellonly,newtime_sell = myMT5Report.parse_unit_to_ticket_block(unit_sellonly, data)
+
 block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == 2]
 
 
@@ -112,16 +111,19 @@ t1 = unit_buyonly.iloc[i]["Time1"]
 unit_buyonly.iloc[i]["Swap_Base"]
 myMT5Report.swap_base(t0,t1,symbol,long_or_short="long")
 
-#%% 子订单累计为 unit 模式
-order0 = unit_buyonly["Order0"]
-for order in order0: # order = 2
-    block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == order]
 
-    pass
+#%% 子订单一步步模式：以时间结构加仓，注意原策略是移动止损，所以一定存在尾部回撤。加仓结果并不好。
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+init_deposit = 5000
+init_percent = 0.1
+add_percent = 0.2
+add_index = 20
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+volume_min = myMT5Lots_Dy.symbol_df[symbol]["volume_min"]
 
-
-
-#%% 子订单一步步模式
+result_netprofit = []  # 记录每次模拟的净利润数组
+result_deposit_rate = []  # 记录资金波动率
+current_deposit = init_deposit
 lastorder = -1
 for i, row in all_block_buyonly.iterrows():
     # 新的unit，初始化
@@ -129,4 +131,58 @@ for i, row in all_block_buyonly.iterrows():
         pass
     # 非新的
     pass
+# 处理净利润结果 # myMT5Report
+out = myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate, init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
 
+#%%
+# ---用于比较
+result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=init_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
+result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=add_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
+
+
+
+
+
+
+
+
+
+
+#%% 子订单累计为 unit 模式：以时间结构加仓，注意原策略是移动止损，所以一定存在尾部回撤。加仓结果并不好。
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+init_deposit = 5000
+init_percent = 0.1
+add_percent = 0.2
+add_index = 20
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+volume_min = myMT5Lots_Dy.symbol_df[symbol]["volume_min"]
+
+# 函数，用于获取block的利润
+def block_profit(lots, block, i, j):
+    if len(block) <= i:
+        return 0
+    profit_base = (block["DiffProfit_Base"][i:j] + block["JumpProfit_Base"][i:j]).sum() - block["JumpProfit_Base"][i]
+    profit = profit_base * lots / volume_min
+    return profit
+
+result_netprofit = []  # 记录每次模拟的净利润数组
+result_deposit_rate = []  # 记录资金波动率
+current_deposit = init_deposit
+# 以每个block为单位进行计算
+for order in unit_buyonly["Order0"]: # order = 4
+    block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == order]
+    slpoint = block.iloc[0]["StopLossPoint"]
+    #---初始化仓位，占全部 unit，i=0, j=None
+    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=init_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+    init_profit = block_profit(lots=init_lots, block=block, i=0, j=None)
+    # ---以时间结构加仓，以20来算
+    add_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=init_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+    add_profit = block_profit(lots=add_lots, block=block, i=20, j=None)
+    # ---
+    cur_netprofit = init_profit + add_profit
+    result_netprofit.append(cur_netprofit)
+    deposit_rate = cur_netprofit / current_deposit  # current_deposit
+    result_deposit_rate.append(deposit_rate)
+    current_deposit = current_deposit + cur_netprofit
+# 处理净利润结果 # myMT5Report
+out = myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate, init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
