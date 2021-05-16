@@ -99,7 +99,8 @@ df1*df2
     #         out = df.apply(f, axis=0) --> 按列遍历，且进行apply
 # --> dataframe 用 applymap形式，对df每个元素遍历
 
+### dataframe 的 groupby.apply 速度要慢于 df.apply
 
-# rolling的使用
+### rolling的使用
 # df.rolling(..) --> 会对df中的每个列的Series进行rolling
 
