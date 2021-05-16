@@ -54,8 +54,6 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 
-
-
 #%%
 import warnings
 warnings.filterwarnings('ignore')
@@ -83,7 +81,7 @@ text_base = result_base.to_string(float_format="%0.4f")
 print(text_base)
 
 
-# #############################
+#%% #############################
 # 获取数据，当前时间框或降低级别
 timebar_timeframe =  "TIMEFRAME_H4"
 data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
@@ -101,9 +99,7 @@ data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_ti
 all_block_buyonly, newtime_buy = myMT5Report.parse_unit_to_ticket_block(unit_order=unit_buyonly, data=data)
 all_block_sellonly,newtime_sell = myMT5Report.parse_unit_to_ticket_block(unit_sellonly, data)
 
-block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == 10]
-# (block["Diff_Point"] + block["Jump_Point"]).plot()
-# plt.show()
+block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == 2]
 
 def print_order(df, order):
     if df["SplitOrder0"].iloc[0] == order:
@@ -117,88 +113,70 @@ t1 = unit_buyonly.iloc[i]["Time1"]
 unit_buyonly.iloc[i]["Swap_Base"]
 myMT5Report.swap_base(t0,t1,symbol,long_or_short="long")
 
-ticket = myMT5Report.ticket()
 
-
-#%% 子订单以一步步迭代模式：以时间结构加仓，注意原策略是移动止损，所以一定存在尾部回撤。加仓结果并不好。
+#%% (淘汰)(向量化的方式，灵活性太差) 子订单累计为 unit 模式：以时间结构加仓，注意原策略是移动止损，所以一定存在尾部回撤。加仓结果并不好。
 myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
 init_deposit = 5000
 init_percent = 0.1
-add_percent = 0.1
+add_percent = 0
 add_index = 20
 stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
-volume_min = myMT5Lots_Dy.symbol_df[symbol]["volume_min"] # 注意别忘记要除以它
+volume_min = myMT5Lots_Dy.symbol_df[symbol]["volume_min"]
 commission_base = unit_buyonly["Commission_Base"][0] # 开仓和平仓时才收取，这里以block考虑，初始计算一次就行。
+unit_buyonly["NetProfit_Base"]
 
+# 函数，用于获取block的利润。向量化的方式，灵活性太差。淘汰
+def block_profit(lots, block, i, j):
+    if len(block) <= i:
+        return 0
+    block1 = block.set_index(keys="index")[i:j]
+    profit_base = (block1["DiffProfit_Base"] + block1["JumpProfit_Base"]).sum() - block1["JumpProfit_Base"].iloc[0]
+    t0 = block1["SplitTime0"].iloc[0]
+    t1 = block1["SplitTime1"].iloc[-1]
+    swap_base = myMT5Report.swap_base(t0,t1,symbol,long_or_short="long")
+    profit = (profit_base + commission_base + swap_base) * (lots / volume_min)
+    return profit
+# block_profit1不考虑手续费和隔夜费
+def block_profit1(lots, block, i, j):
+    if len(block) <= i:
+        return 0
+    block1 = block.set_index(keys="index")[i:j]
+    profit_base = (block1["DiffProfit_Base"] + block1["JumpProfit_Base"]).sum() - block1["JumpProfit_Base"].iloc[0]
+    # t0 = block1["SplitTime0"].iloc[0]
+    # t1 = block1["SplitTime1"].iloc[-1]
+    # swap_base = myMT5Report.swap_base(t0,t1,symbol,long_or_short="long")
+    # profit = (profit_base + commission_base + swap_base) * (lots / volume_min)
+    profit = (profit_base) * (lots / volume_min)
+    return profit
 
+block_func = block_profit # block_profit block_profit1
 result_netprofit = []  # 记录每次模拟的净利润数组
 result_deposit_rate = []  # 记录资金波动率
-current_deposit = [init_deposit] # 用于apply传输数据
-
-ticket = [None, None]
-def split_block_backtest(row): # row = all_block_buyonly.iloc[0] row = block.iloc[0]
-    # break
-    index = row["index"]
-    # ---初始开仓订单处理
-    if index == 0:  # 开仓不考虑跳空利润。要考虑手续费，这里以block考虑，初始计算一次就行。
-        # ---清空 ticket，必须。否则，重复增加swap
-        for i in range(len(ticket)):
-            ticket[i] = None
-        # ---
-        init_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit[0], symbol=symbol, riskpercent=init_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
-        ticket[0] = myMT5Report.ticket() # 开仓时建立类实例
-        ticket[0].set_lots(init_lots)
-        ticket[0].set_time_open(row) # 记录开仓时间
-        # 要考虑手续费，这里以block考虑，初始计算一次就行。
-        profit = ticket[0].lots * (row["DiffProfit_Base"] + commission_base) / volume_min
-        ticket[0].add_profit(profit)
-    elif index > 0:
-        profit = ticket[0].lots * (row["DiffProfit_Base"] + row["JumpProfit_Base"]) / volume_min
-        ticket[0].add_profit(profit)
-    # ---加仓订单处理
-    if index == add_index:  # 开仓 不考虑跳空利润
-        add_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit[0], symbol=symbol, riskpercent=add_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
-        ticket[1] = myMT5Report.ticket()  # 开仓时建立类实例
-        ticket[1].set_lots(add_lots)
-        ticket[1].set_time_open(row)  # 记录开仓时间
-        # 要考虑手续费，这里以block考虑，初始计算一次就行。
-        profit = ticket[1].lots * (row["DiffProfit_Base"] + commission_base) / volume_min
-        ticket[1].add_profit(profit)
-    elif index > add_index:
-        profit = ticket[1].lots * (row["DiffProfit_Base"] + row["JumpProfit_Base"]) / volume_min
-        ticket[1].add_profit(profit)
-
-    # ---达到平仓bar，上面利润已经添加过了
-    if index == row["SplitCount"] - 1:
-        block_profit = 0
-        for t in ticket: # t=ticket[0]
-            if t is not None:
-                t.set_time_close(row) # 设置平仓时间
-                t.add_swap(volume_min, symbol, long_or_short="long") # 计算隔夜费用
-                block_profit += t.profit
-        # ---
-        result_netprofit.append(block_profit)
-        deposit_rate = block_profit / current_deposit[0]  # current_deposit
-        result_deposit_rate.append(deposit_rate)
-        current_deposit[0] = current_deposit[0] + block_profit
-# _ = block.apply(split_block_backtest, axis=1)
-_ = all_block_buyonly.apply(split_block_backtest, axis=1) # 253 ms ± 9.74 ms
-
-# result_netprofit[0] = 1140.8000000000038
+current_deposit = init_deposit
+# 以每个block为单位进行计算
+for order in unit_buyonly["Order0"]: # order = 4
+    block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == order]
+    slpoint = block.iloc[0]["StopLossPoint"]
+    #---初始化仓位，占全部 block，i=0, j=None # init_lots = 0.4  0.16
+    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=init_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+    init_profit = block_func(lots=init_lots, block=block, i=0, j=None) # 801.6000000000001
+    # ---以时间结构加仓，以20来算
+    add_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=add_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+    add_profit = block_func(lots=add_lots, block=block, i=add_index, j=None)
+    # ---
+    cur_netprofit = init_profit + add_profit
+    result_netprofit.append(cur_netprofit)
+    deposit_rate = cur_netprofit / current_deposit  # current_deposit
+    result_deposit_rate.append(deposit_rate)
+    current_deposit = current_deposit + cur_netprofit # 5801.6
 # 处理净利润结果 # myMT5Report
 out = myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate, init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
+
+result_netprofit[:10]
+
 
 
 #%%
 # ---用于比较(有精度误差)
 result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=0.1,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
 result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=0.2,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
-
-
-
-
-
-
-
-
-

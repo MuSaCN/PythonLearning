@@ -56,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+file = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUSD.D1\filter=1 atr=1 mul=1.1.xlsx" # ATR_test test
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
@@ -69,7 +69,7 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 # 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
 unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
-#%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
+# 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 
 # ---各项结果以及最佳仓位f
 # 数量；胜率；信号总收益率；信号最大回撤；信号恢复比；信号夏普比；基仓盈利因子；基仓盈亏比；基仓恢复因子；基仓TB；
@@ -88,6 +88,15 @@ print(text_base)
 myMoneyM.bankrupt_risk(result_base.winRate, best_f.f_twr, reward_rate=2) # f_kelly, f_twr
 # 限定破产风险为指定值，得出最大的仓位比例f，error=None。
 f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=0.1, reward_rate=2)
+
+
+#%%
+myMT5Lots_Dy.__init__(connect=True,symbol=symbol,broker="FXTM",sets="FX Majors")
+init_deposit = 5000
+init_percent = 0.1
+stoplosspoint = "StopLossPoint" # "StopLossPoint" "worst_point"
+
+result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lots_Dy, unit_order=unit_buyonly, backtest_data=None,init_deposit=init_deposit,used_percent=init_percent,stoplosspoint=stoplosspoint, plot=True, show=True, ax=None)
 
 
 #%% 测试仓位比例 ###### 完善 ##############################
@@ -157,8 +166,6 @@ simulate_return, simulate_maxDD, simulate_pl_ratio = \
 # ret_rightq = np.around(simulate_return.quantile(q=alpha + (1 - alpha) / 2), 4)
 # plr_leftq = np.around(simulate_pl_ratio.quantile(q=(1 - alpha) / 2), 4)
 # plr_rightq = np.around(simulate_pl_ratio.quantile(q=alpha + (1 - alpha) / 2), 4)
-
-
 
 
 
