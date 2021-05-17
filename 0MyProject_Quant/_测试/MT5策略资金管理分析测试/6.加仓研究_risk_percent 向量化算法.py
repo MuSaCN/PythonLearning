@@ -152,23 +152,27 @@ def block_profit1(lots, block, i, j):
 block_func = block_profit # block_profit block_profit1
 result_netprofit = []  # 记录每次模拟的净利润数组
 result_deposit_rate = []  # 记录资金波动率
-current_deposit = init_deposit
+current_deposit = [init_deposit]
 # 以每个block为单位进行计算
-for order in unit_buyonly["Order0"]: # order = 4
-    block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == order]
-    slpoint = block.iloc[0]["StopLossPoint"]
-    #---初始化仓位，占全部 block，i=0, j=None # init_lots = 0.4  0.16
-    init_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=init_percent,stoplosspoint=slpoint, spread=0, adjust=True)
-    init_profit = block_func(lots=init_lots, block=block, i=0, j=None) # 801.6000000000001
-    # ---以时间结构加仓，以20来算
-    add_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit, symbol=symbol, riskpercent=add_percent,stoplosspoint=slpoint, spread=0, adjust=True)
-    add_profit = block_func(lots=add_lots, block=block, i=add_index, j=None)
-    # ---
-    cur_netprofit = init_profit + add_profit
-    result_netprofit.append(cur_netprofit)
-    deposit_rate = cur_netprofit / current_deposit  # current_deposit
-    result_deposit_rate.append(deposit_rate)
-    current_deposit = current_deposit + cur_netprofit # 5801.6
+def test():
+    for order in unit_buyonly["Order0"]: # order = 4
+        block = all_block_buyonly[all_block_buyonly["SplitOrder0"] == order]
+        slpoint = block.iloc[0]["StopLossPoint"]
+        #---初始化仓位，占全部 block，i=0, j=None # init_lots = 0.4  0.16
+        init_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit[0], symbol=symbol, riskpercent=init_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+        init_profit = block_func(lots=init_lots, block=block, i=0, j=None) # 801.6000000000001
+        # ---以时间结构加仓，以20来算
+        add_lots = myMT5Lots_Dy.lots_risk_percent(fund=current_deposit[0], symbol=symbol, riskpercent=add_percent,stoplosspoint=slpoint, spread=0, adjust=True)
+        add_profit = block_func(lots=add_lots, block=block, i=add_index, j=None)
+        # ---
+        cur_netprofit = init_profit + add_profit
+        result_netprofit.append(cur_netprofit)
+        deposit_rate = cur_netprofit / current_deposit[0]  # current_deposit
+        result_deposit_rate.append(deposit_rate)
+        current_deposit[0] = current_deposit[0] + cur_netprofit # 5801.6
+
+test() # 845 ms ± 7.22 ms
+
 # 处理净利润结果 # myMT5Report
 out = myMT5Report.__process_result__(result_netprofit=result_netprofit, result_deposit_rate=result_deposit_rate, init_deposit=init_deposit, plot=True, show=True, ax=None, text_base=text_base)
 
