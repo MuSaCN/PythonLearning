@@ -56,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ATR_test.xlsx" # ATR_test test
+file = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUSD.D1\filter=0 atr=2 mul=1.1.xlsx"
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, deal_standard=False)
 
@@ -111,11 +111,11 @@ def get_atr_point(multiple, atr_period):
 
 #%%
 # ---
-init_deposit = 10000
+init_deposit = 5000
 used_percent = 0.1
-multiple = 1.0 # ATR点数的倍数
+multiple = 3.0 # ATR点数的倍数
 stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
-atr_period_list = [i for i in range(3,50,1)]
+atr_period_list = [i for i in range(1,150,1)]
 
 out = pd.DataFrame()
 for atr_period in atr_period_list: # atr_period = 21
@@ -130,6 +130,8 @@ out.index = atr_period_list
 
 # 除去无法交易的和爆仓的，很重要
 out = out[out["count"]==len(unit_buyonly)]
+out["maxDD"].plot()
+plt.show()
 
 # ---对仓位优化结果做卡尔曼滤波，并且画图。其中 f_extrema 选择的判定规则为词缀"ret_maxDD"。
 suptitle = "ATR变动持仓优化：持仓模式=lots_risk_percent() 止损点='{}' used_percent={:.3f} " \
