@@ -131,19 +131,23 @@ commission_base = unit_buyonly["Commission_Base"][0] # 开仓和平仓时才收�
 
 mySplit_BT = myMT5Report.get_Split_Ticket_BT(ticketcount=2, symbol=symbol, long_or_short="long", commission_base=commission_base, init_deposit=init_deposit)
 
-@mySplit_BT.block_decorator
 def split_block_backtest(row): # row = all_block_buyonly.iloc[0] row = block.iloc[0]
-    # break
+    # ---持仓所有的子订单，计算当前row的利润.
+    mySplit_BT.hold_all_ticket(row=row)
+
     index = row["index"]
     # ---初始仓位
-    if index == 0:  # 开仓不考虑跳空利润。要考虑手续费，这里以block考虑，初始计算一次就行。
+    if index == 0:  # 开仓不考虑跳空利润。考虑手续费，这里以block考虑，初始计算一次就行。
         init_lots = myMT5Lots_Dy.lots_risk_percent(fund=mySplit_BT.current_deposit, symbol=symbol, riskpercent=init_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
-        mySplit_BT.open_one_ticket(ticket_i=0, lots=init_lots, row=row)
+        mySplit_BT.open_one_ticket(ticket_i=0, lots=init_lots, row=row) # 开仓计算当前row的利润。
 
     # ---加仓订单处理
-    if index == add_index:  # 开仓 不考虑跳空利润
+    if index == add_index:  # 开仓不考虑跳空利润。考虑手续费，这里以block考虑，初始计算一次就行。
         add_lots = myMT5Lots_Dy.lots_risk_percent(fund=mySplit_BT.current_deposit, symbol=symbol, riskpercent=add_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
-        mySplit_BT.open_one_ticket(ticket_i=1, lots=add_lots, row=row)
+        mySplit_BT.open_one_ticket(ticket_i=1, lots=add_lots, row=row) # 开仓计算当前row的利润。
+
+    # ---处理block声明周期末尾，所有订单平仓。计算隔夜费.
+    mySplit_BT.close_all_end_block(index=index, row=row)
 
 
 _ = all_block_buyonly.apply(split_block_backtest, axis=1) # 253 ms ± 9.74 ms
@@ -169,30 +173,38 @@ block = all_block_buyonly[all_block_buyonly["SplitOrder0"]==6]
 # block["Cum_Profit_Point"].plot()
 # plt.show()
 
-last_cum_profitpoint = [0] # 记录上一个累计利润点
-# ---整体回测函数
-@mySplit_BT.block_decorator
+last_cum_profitpoint = [0, 0] # 记录上两个累计利润点，记录两个用于信号确认。
+# ---整体回测函数，以 价格波动点数 加仓订单处理
 def split_block_backtest(row): # row = all_block_buyonly.iloc[0] row = block.iloc[0]
-    # break
     index = row["index"]
+    if index == 0: # 每个block必须重置下记录
+        last_cum_profitpoint[0], last_cum_profitpoint[1] = 0, 0
+
+    # ---加仓平仓，下突破平仓。放到持仓之前，表示开盘就平仓；放到持仓之后，表示以收盘平仓。
+    if last_cum_profitpoint[0] >= add_diffp and last_cum_profitpoint[1] < add_diffp:
+        mySplit_BT.close_one_ticket(ticket_i=1, row=row) # 平仓一个子订单。计算隔夜费.
+
+    # ---持仓所有的子订单，计算当前row的利润.
+    mySplit_BT.hold_all_ticket(row=row)
+
     # ---初始仓位
     if index == 0:  # 开仓不考虑跳空利润。要考虑手续费，这里以block考虑，初始计算一次就行。
         init_lots = myMT5Lots_Dy.lots_risk_percent(fund=mySplit_BT.current_deposit, symbol=symbol,riskpercent=init_percent, stoplosspoint=row["StopLossPoint"],spread=0, adjust=True)
+        # 开仓，计算当前row的利润。
         mySplit_BT.open_one_ticket(ticket_i=0, lots=init_lots, row=row)
 
-    # ---以 价格波动点数 加仓订单处理
-    cur_cum_profitpoint = row["Cum_Profit_Point"]
-    # 上突破开仓，开仓不考虑跳空利润
-    if last_cum_profitpoint[0] < add_diffp and cur_cum_profitpoint >= add_diffp:
+    # ---加仓开仓，上突破开仓，开仓不考虑跳空利润
+    if last_cum_profitpoint[0] < add_diffp and last_cum_profitpoint[1] >= add_diffp:
         add_lots = myMT5Lots_Dy.lots_risk_percent(fund=mySplit_BT.current_deposit, symbol=symbol, riskpercent=add_percent, stoplosspoint=row["StopLossPoint"], spread=0, adjust=True)
+        # 开仓，计算当前row的利润。
         mySplit_BT.open_one_ticket(ticket_i=1, lots=add_lots, row=row)
-    # 下突破平仓
-    if last_cum_profitpoint[0] >= add_diffp and cur_cum_profitpoint < add_diffp:
-        mySplit_BT.close_one_ticket(ticket_i=1, row=row)
 
-    # ---记录下上一个点数
-    last_cum_profitpoint[0] = row["Cum_Profit_Point"]
+    # ---处理block声明周期末尾，所有订单平仓。计算隔夜费.
+    mySplit_BT.close_all_end_block(index=index, row=row)
 
+    # ---记录下上两个点数
+    last_cum_profitpoint[0] = last_cum_profitpoint[1]
+    last_cum_profitpoint[1] = row["Cum_Profit_Point"]
 
 
 # ---
