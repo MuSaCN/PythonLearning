@@ -70,7 +70,7 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
 
 
-#%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
+# 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
 # ---各项结果以及最佳仓位f
 # 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
 # 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
@@ -109,7 +109,7 @@ def get_atr_point(multiple, atr_period):
     atr_1 = atr_1.loc[newtime_buyonly["Time0"]].reset_index(drop=True)
     return (atr_1 * multiple / point).map(lambda x:int(x))
 
-#%%
+#%% 测试ATR周期
 # ---
 init_deposit = 5000
 used_percent = 0.1
@@ -176,10 +176,10 @@ para_series = myMT5Report.opt_result_kalman(opt_result=out, both=True, order=ord
 plt.show()
 
 #%% 测试 ATR倍数
-init_deposit = 10000
+init_deposit = 5000
 stoplosspoint = "ATR_Point"  # "ATR_Point" "StopLossPoint" "worst_point"
-atr_period = 14
-used_percent = 0.2
+atr_period = 1
+used_percent = 0.1
 multiple_list = [i/10 for i in range(1,30+1)]
 
 out = pd.DataFrame()
