@@ -97,6 +97,7 @@ data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_ti
 # 思考：
     # 拆分情况下，可以同时存在多个单。算仓位百分比时是否需要利润兑现，才能考虑？
     # 加仓后，一直保持状态。还是加仓后，条件外再减仓，条件内再重新加仓？
+    # 不同的单，不同的移动止损？
 '''
 all_block_buyonly, newtime_buyonly = myMT5Report.parse_unit_to_ticket_block(unit_order=unit_buyonly, data=data)
 all_block_sellonly,newtime_sellonly = myMT5Report.parse_unit_to_ticket_block(unit_sellonly, data)
