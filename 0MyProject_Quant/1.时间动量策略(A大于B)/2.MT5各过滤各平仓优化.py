@@ -61,7 +61,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 参数优化
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H1\各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H1\E.H1.各过滤各平仓.ex5"
 fromdate = "2000.01.01"
 todate = "2020.01.01"
 symbol = "EURUSD"
