@@ -61,12 +61,12 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 参数优化
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.D1\各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H1\各过滤各平仓.ex5"
 fromdate = "2000.01.01"
 todate = "2020.01.01"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_D1"
-reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.D1" # 细节要单独指定
+timeframe = "TIMEFRAME_H1"
+reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H1" # 细节要单独指定
 
 
 from MyPackage.MyProjects.止损与移动止损.各过滤各平仓 import MT5_filter_and_close
@@ -84,7 +84,7 @@ fnc.cache_affix = "FixedBars"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
-fnc.input_set("init_sl_FixedBars", "1900||0||100||3000||Y") # 下订单时的固定止损点优化
+fnc.input_set("init_sl_FixedBars", "0||0||100||3000||Y") # 下订单时的固定止损点优化
 fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
 fnc.run()
 
