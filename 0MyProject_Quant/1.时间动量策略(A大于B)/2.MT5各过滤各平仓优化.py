@@ -57,23 +57,21 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 # 本项目是通过 Python 驱动 MT5
 # 为通用的模式"各过滤各平仓"，对各个过滤模式下、不同的止损模式，作不同的优化。
+# 测试时间根据timeframe自动获取，进行了时间左移。
 '''
 
 
 #%% 参数优化
 expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H1\E.H1.各过滤各平仓.ex5"
-fromdate = "2000.01.01"
-todate = "2020.01.01"
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_H1"
 reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H1" # 细节要单独指定
 
 
+#%%
 from MyPackage.MyProjects.止损与移动止损.各过滤各平仓 import MT5_filter_and_close
 fnc = MT5_filter_and_close()
 fnc.expertname = expertname
-fnc.fromdate = fromdate
-fnc.todate = todate
 fnc.symbol = symbol
 fnc.timeframe = timeframe
 
