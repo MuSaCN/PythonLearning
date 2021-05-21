@@ -62,10 +62,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 参数优化
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H2\E.H2.各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H6\E.H6.S.各过滤各平仓.ex5"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H2"
-reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H2" # 细节要单独指定
+timeframe = "TIMEFRAME_H6"
+reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H6\SellOnly" # 细节要单独指定
 
 
 #%%
