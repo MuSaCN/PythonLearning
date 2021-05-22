@@ -61,90 +61,9 @@ in_folder0 = r"F:\工作---Python策略研究\1.简单的动量反转\_动量研
 out_folder = myMT5code.experts_folder + r"\My_Experts\简单动量策略(AB比较)_Test"
 strategy_signal = "Momentum"
 
-#%%
-# ---
-def autocode():
-    # 判断是否存在，不存在则返回
-    if __mypath__.path_exists(in_folder0) == False:
-        return
-    folder0_dir = __mypath__.listdir(in_folder0)
-    for foldname in folder0_dir:  # foldname = folder0_dir[0] # foldname = "EURUSD"
-        # 如果是文件，不是文件夹，则跳过
-        if __mypath__.is_folder_or_file(in_folder0 + "\\" + foldname, check_folder=False):
-            continue
-        symbol = foldname
-        in_folder1 = in_folder0 + "\\" + foldname
-        if __mypath__.path_exists(in_folder1) == False:
-            continue
-        in_file = in_folder1 + "\\{}_strategy_pool.xlsx".format(symbol)
-        if __mypath__.path_exists(in_file) == False:
-            continue
-        # 读取策略池整合的xlsx文件
-        filecontent = pd.read_excel(in_file, header=[0,1])
-        # 原内容因为 d_mode 所以每两行是一样。
-        sameindex = filecontent["original"].duplicated()
-        content1 = filecontent[~sameindex]
-        content2 = filecontent[sameindex]
-        # ---解析，显然没有内容则直接跳过
-        for i in range(len(content1)):  # i=0
-            # ---获取各个参数
-            timeframe = content1.iloc[i]["original", "timeframe"]
-            direct = content1.iloc[i]["original", "direct"]
-            length0 = content1.iloc[i]["original", strat_para_name0]
-            # 范围过滤参数
-            rindi_name = content1.iloc[i]["range_filter_only", "indi_name"]
-            rindi_para0 = content1.iloc[i]["range_filter_only", "indi_para0"]
-            rindi_left = content1.iloc[i]["range_filter_only", "indi_start"]
-            rindi_right = content1.iloc[i]["range_filter_only", "indi_end"]
-            # 方向过滤参数
-            def func_d_mode(content, d_mode_value):
-                d_mode = content.iloc[i]["direct_filter_only", "d_mode"]
-                dindi_name = content.iloc[i]["direct_filter_only", "indi_name"] if d_mode == d_mode_value else "None"
-                dindi_para0 = content.iloc[i]["direct_filter_only", "indi_para0"] if d_mode == d_mode_value else 0
-                # "MA"指标要根据方法调整下
-                if dindi_name == "MA":
-                    if content.iloc[i]["direct_filter_only", "indi_para2"] == "MODE_SMMA":
-                        dindi_name = "SMMA"
-                    elif content.iloc[i]["direct_filter_only", "indi_para2"] == "MODE_SMA":
-                        dindi_name = "SMA"
-                return dindi_name, dindi_para0
-            dindi1_name, dindi1_para0 = func_d_mode(content1, 1)
-            dindi2_name, dindi2_para0 = func_d_mode(content2, 2)
 
-            # ---各过滤各平仓模式
-            # 声明为各过滤各平仓模式，要显示的对各变量赋值
-            myMT5code.__init__()
-            myMT5code.declare_mode_filter_close()
+from MyPackage.MyProjects.止损与移动止损.各过滤各平仓 import MT5_code_filter_and_close
+code_filter_and_close = MT5_code_filter_and_close()
+# ---策略参数的首个名称，策略信号词缀，输入目录，输出目录
+code_filter_and_close.autocode(strat_para_name0=strat_para_name0, strategy_signal=strategy_signal, in_folder0=in_folder0, out_folder=out_folder)
 
-            # ---变量复制
-            # ***(需修改)策略参数***
-            myMT5code.length0 = length0
-            myMT5code.symbol0 = myMT5code.to_mql5string(symbol)
-            myMT5code.timeframe0 = myMT5code.timeframe_to_mql5(timeframe) # "PERIOD_D1"
-            myMT5code.direct0 = myMT5code.to_mql5string(direct) # "BuyOnly"
-            # ***(需修改)范围过滤参数***
-            myMT5code.rindi_name = myMT5code.to_mql5string(rindi_name) # "WPR"
-            myMT5code.rindi_para0 = rindi_para0
-            myMT5code.rindi_left = rindi_left
-            myMT5code.rindi_right = rindi_right
-            # ***(需修改)方向过滤模式1参数***
-            myMT5code.dindi1_name = myMT5code.to_mql5string(dindi1_name) # "TEMA"
-            myMT5code.dindi1_para0 = dindi1_para0
-            # ***(需修改)方向过滤模式2参数***
-            myMT5code.dindi2_name = myMT5code.to_mql5string(dindi2_name) # "VIDYA"
-            myMT5code.dindi2_para0 = dindi2_para0
-
-            # ---设置信号策略：
-            myMT5code.set_signal_strategy(strat=strategy_signal)
-
-            # ---生成各过滤各平仓模式代码
-            myMT5code.code_mode_filter_close()
-
-            # ---输出mq5文件
-            filename = symbol + "." + myMT5code.timeframe_to_affix(timeframe) + "." \
-                       + myMT5code.direct_to_affix(direct) + "." + "各过滤各平仓.mq5"
-            mq5file = out_folder + r"\{}\{}".format(symbol, filename)
-            # 会智能化命名，不覆盖存在的。
-            myMT5code.write_mq5(mq5file=mq5file, autoname=True)
-# ---
-autocode()
