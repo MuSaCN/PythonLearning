@@ -62,10 +62,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 参数优化
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H4\E.H4.S.各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H6\E.H6.S.各过滤各平仓.ex5"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H4"
-reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H4\SellOnly" # 细节要单独指定
+timeframe = "TIMEFRAME_H6"
+reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H6\SellOnly" # 细节要单独指定
 
 
 #%%
@@ -122,8 +122,8 @@ fnc.cache_affix = "SAR_Trailing"
 fnc.first_default()
 fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
 fnc.input_set("close_mode", "4||0||0||5||N") # 指定为 SAR_Trailing为SAT移动止损
-fnc.input_set("SAR_Step", "0.02||0.01||0.002||0.08||Y") # SAR步长
-fnc.input_set("SAR_Max", "0.2||0.14||0.02||0.24||Y") # SAR最大值
+fnc.input_set("SAR_Step", "0.02||0.01||0.001||0.1||Y") # SAR步长
+fnc.input_set("SAR_Max", "0.2||0.14||0.02||0.26||Y") # SAR最大值
 fnc.run()
 
 #%% NBar_Trailing从shift=1开始上n根K线(包括shift位置的K线)的极值做移动止损
