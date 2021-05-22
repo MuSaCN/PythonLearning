@@ -89,6 +89,6 @@ myMT5code.set_signal_strategy(strat=strategy_signal)
 myMT5code.code_mode_filter_close()
 
 # ---输出mq5文件
-mq5file = __mypath__.get_desktop_path() + "\\test.mq5" # 会智能化命名，不覆盖存在的。
+mq5file = __mypath__.get_desktop_path() + "\\abc\\test.mq5" # 会智能化命名，不覆盖存在的。
 myMT5code.write_mq5(mq5file=mq5file, autoname=True)
 
