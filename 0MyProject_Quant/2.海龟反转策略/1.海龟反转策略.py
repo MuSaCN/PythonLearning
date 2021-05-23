@@ -436,9 +436,9 @@ if __name__ == '__main__':
     # print("4_2_1. 开始方向过滤参数自动选择：")
     # df_choo_para.main_func()
     # 4_2_2 方向过滤策略回测
-    print("4_2_2. 开始方向过滤策略回测：")
-    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")
-    df_bt.main_func(logger=logger)
+    # print("4_2_2. 开始方向过滤策略回测：")
+    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")
+    # df_bt.main_func(logger=logger)
 
     # ---5.策略池整合
     print("5. 策略池整合")
