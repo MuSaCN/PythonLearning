@@ -62,7 +62,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 
-#%% 参数优化
+#%% ******参数优化******
 expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD\EURUSD.H8.B.各过滤各平仓.ex5"
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_H8"
