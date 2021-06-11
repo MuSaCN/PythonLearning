@@ -80,14 +80,14 @@ fnc.timeframe = timeframe
 
 
 #%% FixedBars固定K线周期 (基准)
-fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
-fnc.cache_affix = "FixedBars"
-fnc.first_default()
-fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
-fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
-fnc.input_set("init_sl_FixedBars", "0||0||100||3000||Y") # 下订单时的固定止损点优化
-fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
-fnc.run()
+# fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
+# fnc.cache_affix = "FixedBars"
+# fnc.first_default()
+# fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
+# fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
+# fnc.input_set("init_sl_FixedBars", "0||0||100||3000||Y") # 下订单时的固定止损点优化
+# fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
+# fnc.run()
 
 #%% FixedTrailing固定移动止损
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing.xml"
