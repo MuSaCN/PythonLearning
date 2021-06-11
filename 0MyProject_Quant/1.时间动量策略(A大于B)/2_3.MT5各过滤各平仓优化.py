@@ -50,6 +50,7 @@ myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
+myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
@@ -62,10 +63,12 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% 参数优化
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD.H6\E.H6.S.各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD\EURUSD.H8.B.各过滤各平仓.ex5"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H6"
-reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\EURUSD.H6\SellOnly" # 细节要单独指定
+timeframe = "TIMEFRAME_H8"
+direct = "BuyOnly"
+
+reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\{}.{}\{}".format(symbol, myMT5code.timeframe_to_affix(timeframe), direct)
 
 
 #%%
