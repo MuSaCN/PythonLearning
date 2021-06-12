@@ -63,9 +63,9 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%% ******参数优化******
-expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD\EURUSD.H8.S.各过滤各平仓.ex5"
+expertname = "My_Experts\简单动量策略(AB比较)_Test\EURUSD\EURUSD.M10.S.各过滤各平仓.ex5"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H8"
+timeframe = "TIMEFRAME_M10"
 direct = "SellOnly"
 
 reportfolder = r"F:\工作(同步)\工作---MT5策略研究\1.简单的动量策略\{}.{}\{}".format(symbol, myMT5code.timeframe_to_affix(timeframe), direct)
@@ -80,14 +80,14 @@ fnc.timeframe = timeframe
 
 
 #%% FixedBars固定K线周期 (基准)
-# fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
-# fnc.cache_affix = "FixedBars"
-# fnc.first_default()
-# fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
-# fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
-# fnc.input_set("init_sl_FixedBars", "0||0||100||3000||Y") # 下订单时的固定止损点优化
-# fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
-# fnc.run()
+fnc.reportfile = reportfolder+r"\Opt_FixedBars.xml"
+fnc.cache_affix = "FixedBars"
+fnc.first_default()
+fnc.input_set("filter_mode", "0||0||0||3||Y") # 各过滤优化
+fnc.input_set("close_mode", "0||0||0||5||N") # 指定为 FixedBars固定K线周期
+fnc.input_set("init_sl_FixedBars", "0||0||100||3000||Y") # 下订单时的固定止损点优化
+fnc.input_set("holding", "12||1||1||30||Y") # 固定周期平仓优化
+fnc.run()
 
 #%% FixedTrailing固定移动止损
 fnc.reportfile = reportfolder+r"\Opt_FixedTrailing.xml"
