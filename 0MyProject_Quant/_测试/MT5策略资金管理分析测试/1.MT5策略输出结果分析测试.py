@@ -52,6 +52,8 @@ myMoneyM = MyTrade.MyClass_MoneyManage() # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
+baseprofit = pd.Series([-100, -50, 0, 50, 100, 150, 120, -130, -110, 200, 110])
+myMoneyM.terminal_wealth_relative(profit_series=baseprofit, bounds=(0,1))
 
 #%%
 import warnings
