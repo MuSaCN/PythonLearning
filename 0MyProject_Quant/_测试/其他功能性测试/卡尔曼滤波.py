@@ -47,6 +47,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 #------------------------------------------------------------
 
 
+test_data = np.arange(0,20,1)
+myDA.kalman_1D(test_data, damping=1, restore_nan=False, fill_value=0)
+
+
 #%%
 symbol = "AUDNZD"
 timeframe = "TIMEFRAME_H6"
