@@ -61,6 +61,7 @@ https://www.mql5.com/zh/articles/8642
 '''
 myMT5Pro.__init__(connect=True)
 
+
 #%% 准备数据
 # 导入所需的 Python 模块：
 import MetaTrader5 as mt5
@@ -155,6 +156,7 @@ plt.show()
 
 
 #%% 训练 CatBoost 模型
+
 #splitting on train and validation subsets
 X = pr[pr.columns[1:-1]]
 y = pr[pr.columns[-1]]
@@ -227,7 +229,7 @@ def export_model_to_MQL_code(model):
     return 1.0/(1.0+MathPow(M_E,-result));\n\
     }'
 
-    file = open('C:/Users/dmitrievsky/AppData/Roaming/MetaQuotes/Terminal/D0E8209F77C8CF37AD8BF550E51FF075/MQL5/Include/' + 'cat_model' + '.mqh', "w")
+    file = open('cat_model' + '.mqh', "w")
     file.write(code)
     file.close()
     print('The file ' + 'cat_model' + '.mqh ' + 'has been written to disc')
@@ -235,6 +237,6 @@ def export_model_to_MQL_code(model):
 # 经过训练的模型对象被输入到函数中，然后以C++格式保存对象：
 model.save_model('catmodel.h', format="cpp", export_parameters=None, pool=None)
 
-
+export_model_to_MQL_code(model)
 
 
