@@ -63,15 +63,35 @@ from pyhht.visualization import plot_imfs
 myMT5Pro.__init__(connect=True)
 eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",date_from=[2015, 1, 1, 0, 0, 0], date_to= [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=False)
 data = eurusd["open"] # len = 1296
+data.mean()
 data.plot()
 plt.show()
 #EMD经验模态分解
 decomposer = EMD(data)
 imfs = decomposer.decompose()
 #绘制分解图
+imfs.shape
 plot_imfs(data,imfs,data.index)
 # 最后一个为残差
 out = pd.DataFrame(imfs.T)
 out[7].plot()
 plt.show()
+# 反向相加
+reout = out.sum(axis=1)
+reout.index = data.index
+reout.plot()
+plt.show()
 
+
+###读取MT5输出的csv文件
+emd_mt5 = myfile.read_pd(__mypath__.get_desktop_path()+"\\EMD_data.csv",sep=";",header=None,encoding="UTF-16")
+
+# 不需要索引为0的
+emd_data = emd_mt5.drop(columns=0)
+re_emd_data = emd_data.sum(axis=1)+data.mean()
+re_emd_data.index = data.index
+re_emd_data.plot()
+plt.show()
+
+emd_data = emd_data.values.T
+plot_imfs(data,emd_data,data.index)
