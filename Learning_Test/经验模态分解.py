@@ -70,6 +70,7 @@ decomposer = EMD(data)
 imfs = decomposer.decompose()
 #绘制分解图
 plot_imfs(data,imfs,data.index)
+# 最后一个为残差
 out = pd.DataFrame(imfs.T)
 out[7].plot()
 plt.show()
