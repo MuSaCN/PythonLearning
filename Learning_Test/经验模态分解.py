@@ -84,11 +84,16 @@ plt.show()
 
 
 ###读取MT5输出的csv文件
+mean = data.mean()
 emd_mt5 = myfile.read_pd(__mypath__.get_desktop_path()+"\\EMD_data.csv",sep=";",header=None,encoding="UTF-16")
+emd_mt5_re = emd_mt5[0] + mean
+emd_mt5_re.index = data.index
+emd_mt5_re.plot()
+plt.show()
 
 # 不需要索引为0的
 emd_data = emd_mt5.drop(columns=0)
-re_emd_data = emd_data.sum(axis=1)+data.mean()
+re_emd_data = emd_data.sum(axis=1)+mean
 re_emd_data.index = data.index
 re_emd_data.plot()
 plt.show()
