@@ -52,8 +52,8 @@ mypd.__init__(0,None)
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,12,4,0,0,0],[2020,12,5,0,0,0],index_time=True, col_capitalize=True)
-eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2020,11,27,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,12,4,0,0,0],[2022,12,5,0,0,0],index_time=True, col_capitalize=True)
+eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2022,11,27,0,0,0],index_time=True, col_capitalize=True)
 
 
 #%%
