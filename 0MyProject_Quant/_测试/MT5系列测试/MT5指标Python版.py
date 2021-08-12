@@ -289,7 +289,7 @@ tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
 tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"TEMA",14,0,"PRICE_CLOSE")
 
-# VIDYA 变量指数动态平均数指标(Trend类-主图)(效率不高)，Variable Index Dynamic Average，返回Series。
+# VIDYA 变量指数动态平均数指标(Trend类-主图)(有@，需要前置数据)(效率不高)，Variable Index Dynamic Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 # 2020-12-04 1.192259   2020-11-19 1.176575   2000-12-19 0.895600   2000-12-04 0.884500
 # %timeit vidya = myMT5Indi.VIDYA(eurusd,price_arug,9,12,0,"PRICE_CLOSE") # 746 ms ± 59.4 ms
