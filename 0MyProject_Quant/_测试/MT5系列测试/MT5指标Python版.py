@@ -245,7 +245,7 @@ ma = myMT5Indi.MA(eurusd,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
 ma1 = myMT5Indi.MA(eurusd1,price_arug,13,"PRICE_CLOSE","MODE_SMMA")
 myMT5Indi.get_trend(eurusd,"MA",13,"PRICE_CLOSE","MODE_EMA")
 
-# @DEMA 双指数移动平均线指标(Trend类-主图)，Double Exponential Moving Average，返回Series。
+# DEMA 双指数移动平均线指标(Trend类-主图)(算法有双EMA，要一定数据后才相同，有@)，Double Exponential Moving Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 dema = myMT5Indi.DEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
 dema1 = myMT5Indi.DEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
