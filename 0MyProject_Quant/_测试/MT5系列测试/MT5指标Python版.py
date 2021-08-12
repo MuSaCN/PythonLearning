@@ -283,7 +283,7 @@ stdde = myMT5Indi.StdDev(eurusd,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
 stdde1 = myMT5Indi.StdDev(eurusd1,price_arug,20,0,"MODE_SMA", "PRICE_CLOSE")
 myMT5Indi.get_trend(eurusd,"StdDev",20,0,"MODE_SMA","PRICE_CLOSE")
 
-# TEMA 三倍指数移动平均指标(Trend类-主图)，Triple Exponential Moving Average，返回Series。
+# TEMA 三倍指数移动平均指标(Trend类-主图)(有@，需要前置数据)，Triple Exponential Moving Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 tema = myMT5Indi.TEMA(eurusd,price_arug,14,0,"PRICE_CLOSE")
 tema1 = myMT5Indi.TEMA(eurusd1,price_arug,14,0,"PRICE_CLOSE")
