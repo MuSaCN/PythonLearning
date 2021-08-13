@@ -162,7 +162,7 @@ force = myMT5Indi.Force_Index(eurusd,price_arug,13,"MODE_SMA","PRICE_CLOSE")
 force1 = myMT5Indi.Force_Index(eurusd1,price_arug,13,"MODE_SMA","PRICE_CLOSE")
 myMT5Indi.get_oscillators(eurusd,"Force_Index",13,"MODE_SMA","PRICE_CLOSE")
 
-# MACD 移动平均数聚/散指标(Oscillators类-幅图)，MACD，返回df：MACD, Signal.
+# MACD 移动平均数聚/散指标(有@)(Oscillators类-幅图)(有EMA算法，需要一定数据)，MACD，返回df：MACD, Signal.
 price_arug = ["Open", "High", "Low", "Close"]
 df = myMT5Indi.MACD(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
 df1 = myMT5Indi.MACD(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
@@ -174,13 +174,13 @@ momentum = myMT5Indi.Momentum(eurusd,price_arug,14,"PRICE_CLOSE")
 momentum1 = myMT5Indi.Momentum(eurusd1,price_arug,14,"PRICE_CLOSE")
 myMT5Indi.get_oscillators(eurusd,"Momentum",14,"PRICE_CLOSE")
 
-# OsMA 移动平均震荡指标(Oscillators类-幅图)，Moving Average of Oscillator，返回Series.
+# OsMA 移动平均震荡指标(Oscillators类-幅图)(有@OsMA)(有EMA算法，需要一定数据)，Moving Average of Oscillator，返回Series.
 price_arug = ["Open", "High", "Low", "Close"]
 osma = myMT5Indi.OsMA(eurusd,price_arug,12,26,9,"PRICE_CLOSE")
 osma1 = myMT5Indi.OsMA(eurusd1,price_arug,12,26,9,"PRICE_CLOSE")
 myMT5Indi.get_oscillators(eurusd,"OsMA",12,26,9,"PRICE_CLOSE")
 
-# RSI 相对强弱指数(Oscillators类-幅图)，Relative Strength Index，返回Series。
+# RSI 相对强弱指数(Oscillators类-幅图)(有@RSI)(有迭代，需要一定数据)，Relative Strength Index，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 rsi = myMT5Indi.RSI(eurusd,price_arug,14,"PRICE_CLOSE")
 rsi1 = myMT5Indi.RSI(eurusd1,price_arug,14,"PRICE_CLOSE")
@@ -198,7 +198,7 @@ stochastic = myMT5Indi.Stochastic(eurusd,price_arug,5,3,3)
 stochastic1 = myMT5Indi.Stochastic(eurusd1,price_arug,5,3,3)
 myMT5Indi.get_oscillators(eurusd,"Stochastic",5,3,3)
 
-# TRIX 三倍指数移动平均数振荡指标(Oscillators类-幅图)，Triple Exponential Average，返回Series。
+# TRIX 三倍指数移动平均数振荡指标(Oscillators类-幅图)(有@TRIX)(有EMA算法，需要一定数据)，Triple Exponential Average，返回Series。
 price_arug = ["Open", "High", "Low", "Close"]
 trix = myMT5Indi.TRIX(eurusd,price_arug,14,"PRICE_CLOSE")
 trix1 = myMT5Indi.TRIX(eurusd1,price_arug,14,"PRICE_CLOSE")
