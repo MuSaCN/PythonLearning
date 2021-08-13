@@ -22,5 +22,5 @@ IndicatorName = ["MT5","MT4"]
 
 myIMql.__init__(filepath)
 myIMql.screen_shot()
-myIMql.logo(IndicatorName,y=160,size=30)
+myIMql.logo(indicatorName=IndicatorName,y=70,size=30)
 
