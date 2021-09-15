@@ -73,6 +73,7 @@ data_ols.corr() # 0.977729
 
 ### 模式拟合程度很好
 model = myDA.ols("price ~ sma", data_ols)
+# model = myDA.ols("sma ~ price", data_ols)
 model.summary()             # 摘要
 model.fittedvalues          # 拟合值
 model.resid                 # 残差
