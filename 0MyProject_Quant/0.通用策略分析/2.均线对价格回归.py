@@ -86,4 +86,6 @@ np.corrcoef(sma, price) # 0.97772927
 np.corrcoef(model.resid, price) # 0.20987012
 np.corrcoef(model.resid, sma) # -1.66235719e-14
 
-
+### 残差 model.resid 的布林带化
+import talib
+upperband, middleband, lowerband = talib.BBANDS(model.resid, timeperiod=500, nbdevup=1.5, nbdevdn=1.5, matype=0)
