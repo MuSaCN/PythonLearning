@@ -56,7 +56,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 
 myMT5Pro.__init__(connect=True)
-data = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",col_capitalize=True)
+data = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",date_from=[2010, 1, 1, 0, 0, 0], date_to= [2021, 9, 14, 0, 0, 0], col_capitalize=True)
 price_all = data["Close"]
 sma_all = myMT5Indi.MA(data, timeperiod=20, price_mode="PRICE_CLOSE", ma_mode="MODE_SMA")
 ### 数据取片
