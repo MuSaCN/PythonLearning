@@ -59,6 +59,8 @@ myMT5Pro.__init__(connect=True)
 data = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",date_from=[2010, 1, 1, 0, 0, 0], date_to= [2021, 9, 14, 0, 0, 0], col_capitalize=True)
 price_all = data["Close"]
 sma_all = myMT5Indi.MA(data, timeperiod=20, price_mode="PRICE_CLOSE", ma_mode="MODE_SMA")
+
+sma_all = sma_all.shift(1) # 与下一期的匹配，当期的ma与明天的close匹配
 ### 数据取片
 size = 500
 price = price_all[-size:]
