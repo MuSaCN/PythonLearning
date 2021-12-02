@@ -54,12 +54,14 @@ myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
+
+
+#%%
 # 弹出窗显示必须加上：%matplotlib auto
 # 控制台显示必须加上：%matplotlib inline
 # %matplotlib inline
 import warnings
 warnings.filterwarnings('ignore')
-
 
 ''' 分析结论：
 # 自相关性的周期为D1.
@@ -74,10 +76,6 @@ warnings.filterwarnings('ignore')
 '''
 
 #%%
-data = mynp.get_random(1, 100, mode="random", shape=[100,1])
-data
-myplt.plot(data)
-
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
