@@ -106,7 +106,10 @@ data_vola = data_total["Range"]
 # Range有交替性
 plt.plot(data_vola[-100:-1].tolist())
 plt.show()
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
 
+# ---Range增长率
+data_vola = data_total["Range"]/data_total["Low"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
 
 # ---Range乘数
