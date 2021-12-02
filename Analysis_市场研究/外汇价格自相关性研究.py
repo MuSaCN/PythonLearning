@@ -64,14 +64,17 @@ import warnings
 warnings.filterwarnings('ignore')
 
 ''' 分析结论：
-# 自相关性的周期为D1的倍数.
-# 自相关性特征：
+# Range自相关性的周期为D1.
+# Range自相关性特征：
     ## D1时间框下各期都明显；
     ## H12时间框下在2、4、6等2的倍数时明显；
     ## H1时间框下在24、48等24的倍数时明显；
     ## 以上说明自相关性是以 日 为单位的。且在D1以下的时间框中，数据要滞后以日为单位的时间段才有明显的自相关性。
-# 以 Close-Open、(High-Low)^2 计算的自相关性均小于以 High-Low 的自相关性。
-# range算多期平均后，没有自相关性。所以不能用平均来平滑range值。
+# Range自相关性的扩展：
+    ## Range的乘数、平方、N期平均都能发现自相关性。
+    ## 1期的ATR能发现自相关性。
+    ## 以 Close-Open、Rate、LogRate 计算的自相关性不显著。
+    ## 以上说明自相关性要考虑到极值。
 # 主要品种的各品种都符合上述规律。
 '''
 
@@ -83,11 +86,9 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H4"
+timeframe = "TIMEFRAME_H1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
-data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
-
 
 
 #%%
@@ -108,6 +109,12 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range*0.8")
 data_vola = data_total["Range^2"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range^2")
 
+# ---RangeN期平均
+averageN = 2
+data_vola = data_total["Range"]
+data_vola = data_vola.rolling(averageN).mean().dropna()
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="RangeN期平均")
+
 # ---1期ATR
 atrperiod = 1
 data_vola = myMT5Indi.ATR(data_total, InpAtrPeriod=atrperiod)[atrperiod:] # 除去首位的na
@@ -117,8 +124,34 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="1期ATR")
 data_vola = data_total["Close"] - data_total["Open"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Close-Open")
 
+# ---Rate
+data_vola = data_total["Rate"].dropna()
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Rate")
+
+# ---LogRate
+data_vola = data_total["LogRate"].dropna()
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="LogRate")
 
 
+#%%
+### 数据相同时间采样的自相关性研究
+symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
+timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
+                  "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
+                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
+                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
+                  "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
+symbol = "EURUSD"
+timeframe = "TIMEFRAME_H1"
+date_from, date_to = myMT5Pro.get_date_range(timeframe)
+data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+
+# ---以指定时间框的时间进行数据切片。以指定时间框的时间数据获取指定数量个数据，比如以日度时间框获取1H时间框前2个数据。# 此模式以起点对应的，不符合则跳过。比如日度时间2010.08.02 00:00:00，而1H时间是以 2010.08.02 01:00:00 开始，则跳过。
+boxtimeframe = "TIMEFRAME_D1"
+data_box = myMT5Pro.getsymboldata(symbol, boxtimeframe, date_from, date_to, index_time=True, col_capitalize=True)
+data_choose = myMT5Pro.slice_by_timeframe(data_total, data_box.index, 2)
+
+# ---以指定的时间词缀进行数据切片。
 
 
 
