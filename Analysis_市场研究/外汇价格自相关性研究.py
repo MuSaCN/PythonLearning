@@ -75,6 +75,8 @@ warnings.filterwarnings('ignore')
     ## 1期的ATR能发现自相关性。
     ## 以 Close-Open、Rate、LogRate 计算的自相关性不显著。
     ## 以上说明自相关性要考虑到极值。
+# 数据切片的自相关性研究：
+    ## 存在周期为W1的自相关性。
 # 主要品种的各品种都符合上述规律。
 '''
 
@@ -134,7 +136,7 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="LogRate")
 
 
 #%%
-### 数据相同时间采样的自相关性研究
+### 数据切片的自相关性研究
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
@@ -150,8 +152,26 @@ data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index
 boxtimeframe = "TIMEFRAME_D1"
 data_box = myMT5Pro.getsymboldata(symbol, boxtimeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_choose = myMT5Pro.slice_by_timeframe(data_total, data_box.index, 2)
+data_vola = data_choose["Range"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="boxtimeframe")
 
-# ---以指定的时间词缀进行数据切片。
+# ---以指定的时间词缀进行数据切片。# mode = "minute"/"hour"/"day"/"day_of_week"/"days_in_month"/"month"/"quarter"# limited 选择限制于里面的元素。
+limited_i=0
+data_choose = myMT5Pro.slice_by_timeaffix(data_total, mode="hour", limited = [limited_i])
+data_vola = data_choose["Range"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
+
+data_vola = data_choose["Close"].diff(2).dropna() # 因为数据有意义包含，分析不恰当！
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
+
+data_vola = data_choose["Rate"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
+
+data_vola = data_choose["LogRate"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
+
+
+# ---以指定时间框的时间段位置进行数据切片。
 
 
 

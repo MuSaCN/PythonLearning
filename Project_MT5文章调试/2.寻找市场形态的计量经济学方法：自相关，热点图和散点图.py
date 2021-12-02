@@ -75,7 +75,7 @@ standard_autocorrelation(symbol='EURUSD', lag=50)
 plt.show()
 
 # 排除了时段的价格增量相关性图表
-def seasonal_autocorrelation(symbol, lag, hour1, hour2):
+def seasonal_autocorrelation(symbol, lag=1, hour1=1, hour2=1):
     rates = myMT5Pro.getsymboldata(symbol, "TIMEFRAME_H1", [2019, 1, 1], [2021, 1, 1], index_time=False)
     rates = rates[["time", "close"]].set_index('time')
     rates.index = pd.to_datetime(rates.index, unit='s')
@@ -84,7 +84,8 @@ def seasonal_autocorrelation(symbol, lag, hour1, hour2):
     plt.figure(figsize=(10, 5))
     autocorrelation_plot(rates)
 seasonal_autocorrelation("EURUSD", 25, 1, 1)  # （仅剩每天的第一小时）
-'''这意味着当天的第一小时增量与前一天的第一小时增量紧密相关，依此类推。'''
+'''这意味着当天的第一小时与lag天之前的第一小时的差值增量紧密相关，依此类推。'''
+'''注意：此处思路有问题'''
 
 # 现在，我们查看相邻时段之间是否存在相关性。
 seasonal_autocorrelation('EURUSD', 50, 1, 2)
