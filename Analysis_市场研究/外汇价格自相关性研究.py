@@ -64,6 +64,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 ''' 分析结论：
+# 汇率的Range之所以有较强的自相关性，是因为其价格没有跳空，H-L有较大的重叠。所以汇率有自相关性仅仅是价格走势的结果。通过检测其他有跳空的品种，比如AUS200可以发现这一点。
+# Range自相关性分析的价值在于其曲线的交替变化反应出周期性。这周期性的影响体现在日度、周度上较为显著。
 # Range自相关性的周期为D1.
 # Range自相关性特征：
     ## D1时间框下各期都明显；
@@ -88,7 +90,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_H1"
+timeframe = "TIMEFRAME_D1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 
@@ -101,6 +103,10 @@ data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index
 
 # ---Range分析
 data_vola = data_total["Range"]
+# Range有交替性
+plt.plot(data_vola[-100:-1].tolist())
+plt.show()
+
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
 
 # ---Range乘数
@@ -164,10 +170,10 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 data_vola = data_choose["Close"].diff(2).dropna() # 因为数据有意义包含，分析不恰当！
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 
-data_vola = data_choose["Rate"]
+data_vola = data_choose["Rate"].dropna()
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 
-data_vola = data_choose["LogRate"]
+data_vola = data_choose["LogRate"].dropna()
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 
 
