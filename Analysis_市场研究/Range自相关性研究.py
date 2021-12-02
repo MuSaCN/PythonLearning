@@ -64,7 +64,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 ''' 分析结论：
-# 自相关性的周期为D1.
+# 自相关性的周期为D1的倍数.
 # 自相关性特征：
     ## D1时间框下各期都明显；
     ## H12时间框下在2、4、6等2的倍数时明显；
@@ -83,7 +83,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_D1"
+timeframe = "TIMEFRAME_H4"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
@@ -91,38 +91,35 @@ data_train, data_test = myMT5Pro.get_train_test(data_total, train_scale=0.8)
 
 
 #%%
-# ---波动率分析
-data_vola = data_total["Range"] # 只有range波动才有自相关性，且周期为D1
-# data_vola = myMT5Indi.ATR(data_total, InpAtrPeriod=1)
-# data_vola = data_total["Close"] - data_total["Open"]
-# data_vola = np.power(data_vola,2)
-# 自相关性分析
-# myDA.tsa_auto_test(data_range)
-# acf = myDA.tsa.tsa_acf(data_range, nlags=60)
-myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True)
+### 自相关性分析
+# myDA.tsa_auto_test(data_vola)
+# acf = myDA.tsa.tsa_acf(data_vola, nlags=100)
+# myDA.tsa.plot_selfcorrelation(data_vola, count=100) # 1期波动与其滞后的相关系数曲线
 
-# 偏相关性
-# myDA.tsa.tsa_pacf(data_vola,nlags=100,plot=True)
+# ---Range分析
+data_vola = data_total["Range"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
 
-# ---序列自相关系数分析：1期波动与其滞后的相关系数曲线
-# myDA.tsa.plot_selfcorrelation(data_vola,count=100)
+# ---Range乘数
+data_vola = data_total["Range"]*0.8
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range*0.8")
 
-#%%
-# 测试速度：数据长，重采样更耗时。数据短，重采样速度更快。下载更有优势
-# data_total = myMT5Pro.getsymboldata("EURUSD", "TIMEFRAME_M1", [2010, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=True)
-# %timeit dailydata = myMT5Pro.resample_up(data_total,rule="1D") # 244 ms ± 4.66 ms
-# %timeit dailydata = myMT5Pro.getsymboldata(symbol, "TIMEFRAME_D1", [2010, 1, 1, 0, 0, 0], [2020, 1, 1, 0, 0, 0], index_time=True, col_capitalize=True) # 33 ms ± 284 µs
+# ---Range^2
+data_vola = data_total["Range^2"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range^2")
 
-# ---指标获取，open +- lastrange
-dailyrange = myMT5Indi.DailyRange(data_total, n=1)
+# ---1期ATR
+atrperiod = 1
+data_vola = myMT5Indi.ATR(data_total, InpAtrPeriod=atrperiod)[atrperiod:] # 除去首位的na
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="1期ATR")
 
-# ---测试交叉动量策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
-cross_momentum = myBTV.stra.dailyrange_cross_momentum(data_total,n=1)
-cross_momentum[cross_momentum["All"]==-1]
+# ---Close-Open，不具备显著自相关性
+data_vola = data_total["Close"] - data_total["Open"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Close-Open")
 
-# ---测试交叉反转策略。PS: 注意该策略排除了下面的情况：金叉的触发是因为指标轨道在日线切换时下跳；死叉的触发是因为指标轨道在日线切换时上跳。本策略排除上下轨在日线切换时跳动触发交叉信号的情况。
-cross_reverse = myBTV.stra.dailyrange_break_cross_reverse(data_total,n=1)
-cross_reverse[cross_reverse["All"]==-1]
+
+
+
 
 
 
