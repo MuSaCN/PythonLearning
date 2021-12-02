@@ -46,7 +46,7 @@ myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
-myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
+myMT5Report = MyMql.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
@@ -54,9 +54,15 @@ myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
+# 弹出窗显示必须加上：%matplotlib auto
+# 控制台显示必须加上：%matplotlib inline
+# %matplotlib inline
+import warnings
+warnings.filterwarnings('ignore')
+
 
 ''' 分析结论：
-# 只有D1时间框以下的range才有明显的自相关性；
+# 自相关性的周期为D1.
 # 自相关性特征：
     ## D1时间框下各期都明显；
     ## H12时间框下在2、4、6等2的倍数时明显；
@@ -68,6 +74,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 
 #%%
+data = mynp.get_random(1, 100, mode="random", shape=[100,1])
+data
+myplt.plot(data)
+
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
