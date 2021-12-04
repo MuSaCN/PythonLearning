@@ -64,9 +64,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 ''' 分析结论：
-# 汇率的Range之所以有较强的自相关性，是因为其价格没有跳空，H-L有较大的重叠。所以汇率有自相关性仅仅是价格走势的结果。通过检测其他有跳空的品种，比如AUS200可以发现这一点。
 # Range自相关性分析的价值在于其曲线的交替变化反应出周期性。这周期性的影响体现在日度、周度上较为显著。
-# Range自相关性的周期为D1.
+# Range自相关性的周期为D1。
 # Range自相关性特征：
     ## D1时间框下各期都明显；
     ## H12时间框下在2、4、6等2的倍数时明显；
@@ -80,10 +79,11 @@ warnings.filterwarnings('ignore')
 # 数据切片的自相关性研究：
     ## 存在周期为W1的自相关性。
     ## 以日为跨度的自相关性显著。
-# 主要品种的各品种都符合上述规律。
+# 主要品种的各品种都符合上述规律，汇率的Range自相关性是特有的。
 '''
 
 #%%
+###
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
 timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
@@ -94,6 +94,25 @@ symbol = "EURUSD"
 timeframe = "TIMEFRAME_D1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
+
+
+#%%
+### 随机模拟汇率价格(收盘=下一期开盘)，测试自相关性
+# (结论错误！)汇率的Range之所以有较强的自相关性，是因为其价格没有跳空，H-L有较大的重叠。所以汇率有自相关性仅仅是价格走势的结果。通过检测其他有跳空的品种，比如AUS200可以发现这一点。
+# 汇率的Range自相关性是特有的。
+simulate = pd.DataFrame(None, index=data_total.index, columns=["Open","High" , "Low" ,"Close"])
+np.random.seed(123456)
+lastclose = 0
+for i,row in simulate.iterrows():
+    row.Open = lastclose
+    rnd = np.random.normal(0, 1, 3)
+    row.High = row.Open + rnd.max()
+    row.Low = row.Open + rnd.min()
+    row.Close = row.Open + rnd[-1]
+    lastclose = row.Close
+simulate["Range"] = simulate["High"] - simulate["Low"]
+myDA.tsa.tsa_acf(simulate["Range"], nlags=100, plot=True, plottitle="simulate")
+
 
 
 #%%
