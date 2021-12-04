@@ -146,27 +146,23 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="LogRate")
 
 #%%
 ### 数据切片的自相关性研究
-symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
-timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
-                  "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
-                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
-                  "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_H1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 
+#%%
 # ---以指定时间框的时间进行数据切片。以指定时间框的时间数据获取指定数量个数据，比如以日度时间框获取1H时间框前2个数据。# 此模式以起点对应的，不符合则跳过。比如日度时间2010.08.02 00:00:00，而1H时间是以 2010.08.02 01:00:00 开始，则跳过。
 boxtimeframe = "TIMEFRAME_D1"
 data_box = myMT5Pro.getsymboldata(symbol, boxtimeframe, date_from, date_to, index_time=True, col_capitalize=True)
-data_choose = myMT5Pro.slice_by_timeframe(data_total, data_box.index, 2)
+data_choose = myMT5Pro.slice_by_tftime(data=data_total,boxindex= data_box.index,count_left= 2)
 data_vola = data_choose["Range"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="boxtimeframe")
 
+#%%
 # ---以指定的时间词缀进行数据切片。# mode = "minute"/"hour"/"day"/"day_of_week"/"days_in_month"/"month"/"quarter"# limited 选择限制于里面的元素。
-limited_i=0
-data_choose = myMT5Pro.slice_by_timeaffix(data_total, mode="hour", limited = [limited_i])
+limited_i=[0,1]
+data_choose = myMT5Pro.slice_by_timeaffix(data_total, mode="hour", limited = limited_i)
 data_vola = data_choose["Range"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 
@@ -179,8 +175,14 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 data_vola = data_choose["LogRate"].dropna()
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 
-
+#%%
 # ---以指定时间框的时间段位置进行数据切片。
+boxtimeframe = "TIMEFRAME_D1"
+data_box = myMT5Pro.getsymboldata(symbol, boxtimeframe, date_from, date_to, index_time=True, col_capitalize=True)
+data_choose = myMT5Pro.slice_by_timeshift(data_total, data_box.index, count_left=2)
+
+data_vola = data_choose["Range"]
+myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
 
 
 
