@@ -199,7 +199,7 @@ myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="hour=%s"%limited_i)
 # ---以指定时间框的时间段位置进行数据切片。
 boxtimeframe = "TIMEFRAME_D1"
 data_box = myMT5Pro.getsymboldata(symbol, boxtimeframe, date_from, date_to, index_time=True, col_capitalize=True)
-data_choose = myMT5Pro.slice_by_timeshift(data_total, data_box.index, count_left=2)
+data_choose = myMT5Pro.slice_by_timeshift(data_total, data_box.index, fromindex=0, limitedcount=1)
 
 data_vola = data_choose["Range"]
 myDA.tsa.tsa_acf(data_vola, nlags=100, plot=True, plottitle="Range")
