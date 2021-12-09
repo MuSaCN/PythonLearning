@@ -87,13 +87,13 @@ def slice_statistic(affix = "Range"):
     return df_out
 
 # 画统计图
-def plot_statistic(df_out):
+def plot_statistic(df_out, affix = "Range"):
     myfig.__init__(1,1, figsize=[1280,720])
     mean = df_out.loc["mean"].reset_index(drop=True)
     std = df_out.loc["std"].reset_index(drop=True)
     myfig.plot_line(mean, axesindex=0, show=False)
     myfig.plot_line(std, axesindex=0, show=False, color="red",twinXY="X")
-    myfig.suptitle("mean+std")
+    myfig.suptitle(affix+ ": mean+std")
     myfig.show()
     #---
     myfig.__init__(1, 1, figsize=[1280, 720], sharex=True)
@@ -101,34 +101,34 @@ def plot_statistic(df_out):
     kurt = df_out.loc["kurt峰度"].reset_index(drop=True)
     myfig.plot_line(skew, axesindex=0, show=False)
     myfig.plot_line(kurt, axesindex=0, show=False, color="red", twinXY="X")
-    myfig.suptitle("skew+kurt")
+    myfig.suptitle(affix+ ": skew+kurt")
     myfig.show()
 
 
 #%%
 df_out = slice_statistic(affix = "Range")
 df_out
-plot_statistic(df_out)
+plot_statistic(df_out, affix = "Range")
 
 #%%
 df_out = slice_statistic(affix = "Rate")
 df_out
-plot_statistic(df_out)
+plot_statistic(df_out, affix = "Rate")
 
 #%%
 df_out = slice_statistic(affix = "RateInt")
 df_out
-plot_statistic(df_out)
+plot_statistic(df_out, affix = "RateInt")
 
 #%%
 df_out = slice_statistic(affix = "LogRate")
 df_out
-plot_statistic(df_out)
+plot_statistic(df_out, affix = "LogRate")
 
 #%%
 df_out = slice_statistic(affix = "C-O")
 df_out
-plot_statistic(df_out)
+plot_statistic(df_out, affix = "C-O")
 
 
 
