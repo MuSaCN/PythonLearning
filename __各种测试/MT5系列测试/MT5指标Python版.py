@@ -47,7 +47,7 @@ myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 #------------------------------------------------------------
 
-mypd.__init__(0,None)
+mypd.__init__(None,None)
 #%%
 import warnings
 warnings.filterwarnings('ignore')
