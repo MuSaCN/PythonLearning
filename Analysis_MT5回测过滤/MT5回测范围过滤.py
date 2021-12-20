@@ -56,8 +56,11 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
+'''
+MT5上回测策略必须要求可重复持仓
+'''
 
-# %%
+# %% ############ MT5上回测策略必须要求可重复持仓 ############
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -108,6 +111,7 @@ indi_start_buy, indi_end_buy = myMT5Report.report_range_filter(new_unit=new_unit
 indi_start_sell, indi_end_sell = myMT5Report.report_range_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
 
 
+# ---两侧过滤
 
 
 
