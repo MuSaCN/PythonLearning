@@ -46,97 +46,61 @@ myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
-myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
+myMT5Report = MyMql.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
+myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
-
-
-
-#%%
+# Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
+# %matplotlib inline
 import warnings
 warnings.filterwarnings('ignore')
 
-file = r"F:\工作(同步)\工作---资金管理\1.简单的动量策略\EURUSD.D1\filter=1 atr=1 mul=1.1.xlsx" # ATR_test test
+# %%
+file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
+
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content, deal_content)
+# 分析 orders、deals，拆分为 BuyOnly、SellOnly。
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
+unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
 
 
-#%% # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
-# ---各项结果以及最佳仓位f
-# 胜率；单位1满仓时的最大回撤；单位1满仓时的总收益率；基仓盈亏比；
-# 凯利公式"保证金止损仓位"百分比；凯利公式"保证金占用仓位"杠杆；用历史回报法资金百分比；
-base = myMT5Report.cal_result_no_money_manage(unit_order=unit_buyonly)
-result_base = base[0]
-best_f = base[1]
-best_delta = base[2]
-text_base = result_base.to_string(float_format="%0.4f")
-print(text_base)
+# ---符合MT5实际的资金曲线计算。注意order和deal有区别，order是以整体单来算，deal才是实际情况。
+unit_buyonly["Balance_Base"].plot()
+plt.show()
+unit_sellonly["Balance_Base"].plot()
+plt.show()
+unit_total["Balance_Base"].plot()
+plt.show()
+deal_content["Balance"][1:-1].plot()
+plt.show()
 
-# 获取数据，当前时间框或降低级别
-timebar_timeframe =  "TIMEFRAME_H4"
-data = myMT5Pro.getsymboldata(symbol,timebar_timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
+# ---回测框架以单位1为基准单位，算收益率
+myDA.fin.r_to_price(unit_total["Rate"]).plot()
+plt.show()
+unit_total["Profit_Base"].cumsum().plot()
+plt.show()
 
-# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。 # "TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1.
-# %timeit 236 ms ± 7.43 m
+
+
+
+#%% #############################
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_D1",timefrom, timeto,index_time=True, col_capitalize=True)
+
+# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。结果中"TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1。BarIndex0  BarIndex1 为 Time0和Time1 在 data 时间索引中的序号。
 newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
 newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
-
-#%% 分析TimeBar
-timebar = pd.DataFrame(newtime_buyonly["TimeBar"])
-index_p = unit_buyonly["NetProfit_Base"] > 0
-index_l = unit_buyonly["NetProfit_Base"] <= 0
-timebar["p_or_l"] = 0
-timebar["p_or_l"][index_p] = "Profit"
-timebar["p_or_l"][index_l] = "Loss"
-
-# 单变量多分组分布图
-myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=timebar, x="TimeBar",hue="p_or_l",bins=50,axesindex=0,show=False)
-myfigpro.axeslist[0].set_xlabel("TimeBar: %s"%timebar_timeframe)
-myfigpro.show()
-
-
-#%%
-# 分组价格波动点数
-diff_point = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"].astype(np.int32)))
-index_p = unit_buyonly["NetProfit_Base"] > 0
-index_l = unit_buyonly["NetProfit_Base"] <= 0
-diff_point["p_or_l"] = 0
-diff_point["p_or_l"][index_p] = "Profit"
-diff_point["p_or_l"][index_l] = "Loss"
-
-# 单变量多分组分布图
-myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=diff_point, x="Diff_Point",hue="p_or_l",bins=50)
-
-
-#%%
-# 分组单笔盈亏比
-pnl_r = pd.DataFrame(np.abs(unit_buyonly["Diff_Point"])/unit_buyonly["StopLossPoint"])
-pnl_r.columns=["pnl_r"]
-index_p = unit_buyonly["NetProfit_Base"] > 0
-index_l = unit_buyonly["NetProfit_Base"] <= 0
-pnl_r["p_or_l"] = 0
-pnl_r["p_or_l"][index_p] = "Profit"
-pnl_r["p_or_l"][index_l] = "Loss"
-
-# 单变量多分组分布图
-myfigpro.__init__(AddFigure=True)
-myfigpro.histplot(dataarray=pnl_r, x="pnl_r",hue="p_or_l",bins=50)
-
-
-
-
 
 

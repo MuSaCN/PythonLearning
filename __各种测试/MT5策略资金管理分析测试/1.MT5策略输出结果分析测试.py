@@ -72,7 +72,7 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析 orders、deals，先拆分为 BuyOnly、SellOnly，要分开分析。
-unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
 
 # ---符合MT5实际的资金曲线计算。
 # unit_buyonly["Balance_Base"].plot()

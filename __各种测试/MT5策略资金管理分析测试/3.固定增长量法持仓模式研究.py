@@ -87,7 +87,7 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 把 order_content 和 deal_content 解析成 unit_order。返回 unit_buyonly, unit_sellonly。
-unit_buyonly, unit_sellonly = myMT5Report.content_to_unit_order(order_content, deal_content)
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content, deal_content)
 
 
 # 不考虑仓位管理时的信息，以 收益率 或 基准仓位 算各项结果 以及 最佳仓位 f
