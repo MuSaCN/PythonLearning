@@ -71,14 +71,13 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析 orders、deals，拆分为 BuyOnly、SellOnly。
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
+# 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
 
 
-# ---符合MT5实际的资金曲线计算。注意order和deal有区别，order是以整体单来算，deal才是实际情况。
+# ---符合MT5实际的资金曲线计算。注意order和deal有区别，order是以整体单来算，deal是实际情况。
 unit_buyonly["Balance_Base"].plot()
-plt.show()
 unit_sellonly["Balance_Base"].plot()
 plt.show()
 unit_total["Balance_Base"].plot()
@@ -91,8 +90,6 @@ myDA.fin.r_to_price(unit_total["Rate"]).plot()
 plt.show()
 unit_total["Profit_Base"].cumsum().plot()
 plt.show()
-
-
 
 
 #%% #############################
