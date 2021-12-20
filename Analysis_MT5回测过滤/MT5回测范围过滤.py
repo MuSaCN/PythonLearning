@@ -56,10 +56,11 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
+
+# %%
 import warnings
 warnings.filterwarnings('ignore')
 
-# %%
 file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
@@ -72,7 +73,6 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
 unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
-
 
 # ---符合MT5实际的资金曲线计算。注意order和deal有区别，order是以整体单来算，deal是实际情况。
 unit_buyonly["Balance_Base"].plot()
@@ -92,13 +92,22 @@ plt.show()
 
 #%% #############################
 #---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
+data = myMT5Pro.getsymboldata(symbol, timeframe, timefrom, timeto,index_time=True, col_capitalize=True)
 tf_indi = "TIMEFRAME_H1"
-indicator = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, "@RSI", 55)
-indicator.reset_index(drop=True, inplace=True)
-unit_total["indicator"] = indicator
+indiname = "@RSI"
+
+new_unit_total = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, 55)
+new_unit_buy = myMT5Report.indi_matching_unit(unit_buyonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, 55)
+new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, 55)
+
 
 #%% #############################
-#---交易报告的过滤
+# ---获取范围指标针对报告的最优区间，返回
+indi_start, indi_end = myMT5Report.report_range_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
+indi_start_buy, indi_end_buy = myMT5Report.report_range_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
+indi_start_sell, indi_end_sell = myMT5Report.report_range_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
+
+
 
 
 
