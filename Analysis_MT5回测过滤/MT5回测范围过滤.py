@@ -68,8 +68,6 @@ strat_setting, strat_result, order_content, deal_content = myMT5Report.read_repo
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
-# 获取数据
-data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
@@ -93,8 +91,15 @@ plt.show()
 
 
 #%% #############################
-# 注意指标是用 15M框架或1H框架 去匹配报告的15M框架。
-data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_D1",timefrom, timeto,index_time=True, col_capitalize=True)
+#---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
+tf_indi = "TIMEFRAME_H1"
+indicator = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, "@RSI", 55)
+indicator.reset_index(drop=True, inplace=True)
+unit_total["indicator"] = indicator
+
+#%% #############################
+#---交易报告的过滤
+
 
 
 
