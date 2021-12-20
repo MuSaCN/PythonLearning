@@ -96,11 +96,9 @@ plt.show()
 
 
 #%% #############################
-# 获取数据
+# 注意指标是用 15M框架或1H框架 去匹配报告的15M框架。
 data = myMT5Pro.getsymboldata(symbol,"TIMEFRAME_D1",timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。结果中"TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1。BarIndex0  BarIndex1 为 Time0和Time1 在 data 时间索引中的序号。
-newtime_buyonly = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly, data=data)
-newtime_sellonly = myMT5Report.parse_unit_to_timenorm(unit_sellonly, data)
+
 
 
