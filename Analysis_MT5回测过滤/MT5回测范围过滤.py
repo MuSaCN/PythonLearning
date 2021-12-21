@@ -110,8 +110,11 @@ indi_start, indi_end = myMT5Report.report_range_filter(new_unit=new_unit_total, 
 indi_start_buy, indi_end_buy = myMT5Report.report_range_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
 indi_start_sell, indi_end_sell = myMT5Report.report_range_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
 
-
-# ---两侧过滤
+#%% #############################
+# ---获取指标两侧过滤针对报告的最优区间，返回 indi_end, indi_start
+indi_end, indi_start = myMT5Report.report_2side_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
+indi_end_buy, indi_start_buy= myMT5Report.report_2side_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
+indi_end_sell, indi_start_sell = myMT5Report.report_2side_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
 
 
 
