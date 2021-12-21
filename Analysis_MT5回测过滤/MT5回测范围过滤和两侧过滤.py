@@ -72,6 +72,8 @@ strat_setting, strat_result, order_content, deal_content = myMT5Report.read_repo
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
+# 获取数据
+data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
@@ -86,16 +88,9 @@ plt.show()
 deal_content["Balance"][1:-1].plot()
 plt.show()
 
-# ---回测框架以单位1为基准单位，算收益率
-myDA.fin.r_to_price(unit_total["Rate"]).plot()
-plt.show()
-unit_total["Profit_Base"].cumsum().plot()
-plt.show()
-
 
 #%% #############################
 #---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
-data = myMT5Pro.getsymboldata(symbol, timeframe, timefrom, timeto,index_time=True, col_capitalize=True)
 tf_indi = "TIMEFRAME_H1"
 indiname = "@RSI"
 
@@ -105,12 +100,25 @@ new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, 
 
 
 #%% #############################
+# ======范围过滤======
 # ---获取范围指标针对报告的最优区间，返回
 indi_start, indi_end = myMT5Report.report_range_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
 indi_start_buy, indi_end_buy = myMT5Report.report_range_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
 indi_start_sell, indi_end_sell = myMT5Report.report_range_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
 
+# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
+myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="range",savefig=None, batch=False)
 
 
+
+#%% #############################
+# ======两侧过滤======
+# ---获取指标两侧过滤针对报告的最优区间，返回 indi_end, indi_start
+indi_end, indi_start = myMT5Report.report_2side_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
+indi_end_buy, indi_start_buy= myMT5Report.report_2side_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
+indi_end_sell, indi_start_sell = myMT5Report.report_2side_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
+
+# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
+myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="2side",savefig=None, batch=False)
 
 
