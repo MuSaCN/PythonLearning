@@ -91,8 +91,8 @@ plt.show()
 #%% #############################
 #---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
 tf_indi = "TIMEFRAME_H1"
-indiname = "@RSI"
-para = (55,)
+indiname = "@ADXW"
+para = [22]
 
 new_unit_total = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
 new_unit_buy = myMT5Report.indi_matching_unit(unit_buyonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
