@@ -103,7 +103,7 @@ new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, 
 # ======范围过滤======
 # ---得到报告过滤的策略结果
 result
-result_filter = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="range")[0]
+result_filter, indi_start, indi_end = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="range")
 
 # ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
 myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="range",savefig=None, batch=False)
@@ -113,7 +113,7 @@ myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode
 # ======两侧过滤======
 result
 # ---得到报告过滤的策略结果
-result_filter = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="2side")[0]
+result_filter, indi_end, indi_start = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="2side")
 
 # ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
 myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="2side",savefig=None, batch=False)

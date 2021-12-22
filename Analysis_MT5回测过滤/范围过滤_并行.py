@@ -72,32 +72,17 @@ c_report_filter = MT5_Report_Filter()
 c_report_filter.file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 c_report_filter.direct = "All"  # 方向 "All","BuyOnly","SellOnly"
 c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
-
-tf_indi="TIMEFRAME_H1"
+c_report_filter.tf_indi="TIMEFRAME_H1" # 指标的时间框，可以与报告的不同
 
 
 #%%
 myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须放到类下面.
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
-    # ---读取报告，设定各种变量
-    c_report_filter.load_report()
-    # ---
-    indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
-    params_dict = myBTV.indiMT5.indi_params_scale1D(indi_name_list)
-    # ---
-    multi_params = []
-    for indi_name in indi_name_list:  # indi_name = indi_name_list[0]
-        params = params_dict[indi_name]
-        params["tf_indi"] = tf_indi
-        params = params[[params.columns[-1]] + params.columns[0:-1].tolist()] # 列排序重置下
-        multi_params = multi_params + params.values.tolist()
-    # ---开始多核执行
-    xlsxname = "过滤结果_{0}_{1}.xlsx".format(c_report_filter.direct, c_report_filter.filtermode)
-    myBTV.muiltcore.run_concat_dataframe(c_report_filter.run_filter, multi_params,
-                                         filepath=c_report_filter.savefolder+"\\"+xlsxname,
-                                         core_num=-1)
-    print("过滤结束.")
+    # ---并行运算，输出过滤的文本文档
+    c_report_filter.main_filter_and_xlsx()
+
+
 
 
 
