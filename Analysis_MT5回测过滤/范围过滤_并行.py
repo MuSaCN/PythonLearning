@@ -106,7 +106,7 @@ if __name__ == '__main__':
     xlsxname = "过滤结果_{0}_{1}.xlsx".format(c_report_filter.direct, c_report_filter.filtermode)
     myBTV.muiltcore.run_concat_dataframe(c_report_filter.run_filter, multi_params,
                                          filepath=c_report_filter.savefolder+"\\"+xlsxname,
-                                         core_num=1)
+                                         core_num=-1)
     print("过滤结束.")
 
 
