@@ -101,35 +101,19 @@ new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, 
 
 #%% #############################
 # ======范围过滤======
-# ---获取范围指标针对报告的最优区间，返回
-indi_start, indi_end = myMT5Report.report_range_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
-indi_start_buy, indi_end_buy = myMT5Report.report_range_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
-indi_start_sell, indi_end_sell = myMT5Report.report_range_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
-
-# ---策略结果
-filter_unit_total = new_unit_total[(indi_start <= new_unit_total[indiname]) & (new_unit_total[indiname] <= indi_end)]
-filter_unit_total.reset_index(inplace=True)
 result = myMT5Report.cal_result_no_money_manage(unit_order=new_unit_total)[0]
-result_filter = myMT5Report.cal_result_no_money_manage(unit_order=filter_unit_total)[0]
+# ---得到报告过滤的策略结果
+get_report_filter_result = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="range")[0]
 
 # ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
 myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="range",savefig=None, batch=False)
 
 
-
-
 #%% #############################
 # ======两侧过滤======
-# ---获取指标两侧过滤针对报告的最优区间，返回 indi_end, indi_start
-indi_end, indi_start = myMT5Report.report_2side_filter(new_unit=new_unit_total, x_name=indiname+"(55)", show=True) # 多空在一起
-indi_end_buy, indi_start_buy= myMT5Report.report_2side_filter(new_unit=new_unit_buy, x_name=indiname+"(55)", show=True) # 仅多
-indi_end_sell, indi_start_sell = myMT5Report.report_2side_filter(new_unit=new_unit_sell, x_name=indiname+"(55)", show=True) # 仅空
-
-# ---策略结果
-filter_unit_total = new_unit_total[(new_unit_total[indiname]<=indi_end) | (new_unit_total[indiname] >= indi_start)]
-filter_unit_total.reset_index(inplace=True)
 result = myMT5Report.cal_result_no_money_manage(unit_order=new_unit_total)[0]
-result_filter = myMT5Report.cal_result_no_money_manage(unit_order=filter_unit_total)[0]
+# ---得到报告过滤的策略结果
+get_report_filter_result = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="2side")[0]
 
 # ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
 myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="2side",savefig=None, batch=False)
