@@ -73,6 +73,7 @@ c_report_filter.file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 c_report_filter.direct = "All"  # 方向 "All","BuyOnly","SellOnly"
 c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
 
+tf_indi="TIMEFRAME_H1"
 
 #%%
 # ---设置图片输出方式
@@ -82,11 +83,10 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 c_report_filter.load_report()
 
 # ---(用于并行)执行过滤，且输出过滤后的结果series.
-tf_indi="TIMEFRAME_H1"
-indiname="@RSI"
-para = [55]
-paralist = [tf_indi, indiname, *para]
-c_report_filter.run_filter(paralist)
+# indiname="@RSI"
+# para = [55]
+# paralist = [tf_indi, indiname, *para]
+# c_report_filter.run_filter(paralist)
 
 
 #%%
@@ -96,6 +96,7 @@ if __name__ == '__main__':
     params_dict = myBTV.indiMT5.indi_params_scale1D(indi_name_list)
     # ---
     multi_params = []
+    indi_name_list = [indi_name_list[0]]
     for indi_name in indi_name_list:  # indi_name = indi_name_list[0]
         params = params_dict[indi_name]
         params["tf_indi"] = tf_indi
@@ -105,7 +106,7 @@ if __name__ == '__main__':
     myBTV.muiltcore.run_concat_dataframe(c_report_filter.run_filter, multi_params,
                                          filepath=c_report_filter.savefolder+"\\过滤结果.xlsx",
                                          core_num=-1)
-    print("过滤结束:")
+    print("过滤结束.")
 
 
 
