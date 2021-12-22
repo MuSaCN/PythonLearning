@@ -103,8 +103,9 @@ if __name__ == '__main__':
         params = params[[params.columns[-1]] + params.columns[0:-1].tolist()] # 列排序重置下
         multi_params = multi_params + params.values.tolist()
     # ---开始多核执行
+    xlsxname = "过滤结果_{0}_{1}.xlsx".format(c_report_filter.direct, c_report_filter.filtermode)
     myBTV.muiltcore.run_concat_dataframe(c_report_filter.run_filter, multi_params,
-                                         filepath=c_report_filter.savefolder+"\\过滤结果.xlsx",
+                                         filepath=c_report_filter.savefolder+"\\"+xlsxname,
                                          core_num=-1)
     print("过滤结束.")
 
