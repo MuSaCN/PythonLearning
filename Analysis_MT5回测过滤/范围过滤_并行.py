@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+import warnings
+warnings.filterwarnings('ignore')
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -56,67 +59,56 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # ------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
-'''
-MT5上回测策略必须要求可重复持仓
-'''
 
-# %% ############ MT5上回测策略必须要求可重复持仓 ############
+
+# %%
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
+from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
+c_report_filter = MT5_Report_Filter()
 
-# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
-
-# 解析下词缀
-symbol = strat_setting.loc["Symbol:"][0]
-timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
-# 获取数据
-data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
-
-# 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
-unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
-
-result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
-
-# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
-myMT5Report.plot_report_balance(unit_total, unit_buyonly, unit_sellonly, savefig=None, show=True)
-deal_content["Balance"][1:-1].plot()
-plt.show()
+# ---外部赋值
+c_report_filter.file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
+c_report_filter.direct = "All"  # 方向 "All","BuyOnly","SellOnly"
+c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
 
 
+#%%
+# ---设置图片输出方式
+myDefault.set_backend_default("agg") # 这句必须放到类下面
 
-#%% #############################
-#---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
-tf_indi = "TIMEFRAME_H1"
-indiname = "@RSI"
-para = (55,)
+# ---读取报告，设定各种变量
+c_report_filter.load_report()
 
-new_unit_total = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
-new_unit_buy = myMT5Report.indi_matching_unit(unit_buyonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
-new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
-
-
-#%% #############################
-# ======范围过滤======
-# ---得到报告过滤的策略结果
-result
-result_filter = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="range")[0]
-
-# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
-myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="range",savefig=None, batch=False)
+# ---(用于并行)执行过滤，且输出过滤后的结果series.
+tf_indi="TIMEFRAME_H1"
+indiname="@RSI"
+para = [55]
+paralist = [tf_indi, indiname, *para]
+c_report_filter.run_filter(paralist)
 
 
-#%% #############################
-# ======两侧过滤======
-result
-# ---得到报告过滤的策略结果
-result_filter = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="2side")[0]
+#%%
+# ---多进程必须要在这里执行
+if __name__ == '__main__':
+    indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
+    params_dict = myBTV.indiMT5.indi_params_scale1D(indi_name_list)
+    # ---
+    multi_params = []
+    for indi_name in indi_name_list:  # indi_name = indi_name_list[0]
+        params = params_dict[indi_name]
+        params["tf_indi"] = tf_indi
+        params = params[[params.columns[-1]] + params.columns[0:-1].tolist()] # 列排序重置下
+        multi_params = multi_params + params.values.tolist()
+    # ---开始多核执行
+    myBTV.muiltcore.run_concat_dataframe(c_report_filter.run_filter, multi_params,
+                                         filepath=c_report_filter.savefolder+"\\过滤结果.xlsx",
+                                         core_num=-1)
+    print("过滤结束:")
 
-# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
-myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="2side",savefig=None, batch=False)
+
+
 
 
 
