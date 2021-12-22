@@ -75,28 +75,18 @@ c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
 
 tf_indi="TIMEFRAME_H1"
 
-#%%
-# ---设置图片输出方式
-myDefault.set_backend_default("agg") # 这句必须放到类下面
-
-# ---读取报告，设定各种变量
-c_report_filter.load_report()
-
-# ---(用于并行)执行过滤，且输出过滤后的结果series.
-# indiname="@RSI"
-# para = [55]
-# paralist = [tf_indi, indiname, *para]
-# c_report_filter.run_filter(paralist)
-
 
 #%%
+myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须放到类下面.
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
+    # ---读取报告，设定各种变量
+    c_report_filter.load_report()
+    # ---
     indi_name_list = myBTV.indiMT5.indi_name_rangefilter()
     params_dict = myBTV.indiMT5.indi_params_scale1D(indi_name_list)
     # ---
     multi_params = []
-    indi_name_list = [indi_name_list[0]]
     for indi_name in indi_name_list:  # indi_name = indi_name_list[0]
         params = params_dict[indi_name]
         params["tf_indi"] = tf_indi
