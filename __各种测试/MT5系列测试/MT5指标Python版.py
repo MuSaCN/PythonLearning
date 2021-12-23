@@ -52,7 +52,7 @@ mypd.__init__(None,None)
 import warnings
 warnings.filterwarnings('ignore')
 # ---获取数据
-eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2000,12,4,0,0,0],[2022,12,5,0,0,0],index_time=True, col_capitalize=True)
+eurusd = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2010,1,1,0,0,0],[2022,12,5,0,0,0],index_time=True, col_capitalize=True)
 eurusd1 = myMT5Pro.getsymboldata("EURUSD","TIMEFRAME_D1",[2019,1,1,0,0,0],[2022,11,27,0,0,0],index_time=True, col_capitalize=True)
 
 
@@ -73,7 +73,7 @@ df = myMT5Indi.Donachian_Channel(eurusd, price_arug=price_arug, timeperiod=20)
 
 
 #%% 基础运算测试 %timeit
-lwma =  myMT5Indi.LinearWeightedMA(eurusd.Close, timeperiod=20) # 567 ms ± 6.27 ms
+lwma =  myMT5Indi.LinearWeightedMA(series=eurusd.Close, timeperiod=20) # 298 ms ± 8.34 ms
 # 1.196566 1.180928
 smooma = myMT5Indi.SmoothedMA(eurusd.Close, timeperiod=20)
 ema = myMT5Indi.ExponentialMA(eurusd.Close, timeperiod=20)
