@@ -74,9 +74,9 @@ c_report_filter.direct = "All"  # 方向 "All","BuyOnly","SellOnly"
 c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
 c_report_filter.tf_indi="TIMEFRAME_H1" # 指标的时间框，可以与报告的不同
 
-myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须放到类下面.
 
 #%%
+myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须放到类下面.
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     # ---读取报告，设定各种变量
@@ -85,6 +85,8 @@ if __name__ == '__main__':
     c_report_filter.main_filter_and_xlsx()
     # ---参数过滤自动选择，且画图、输出xlsx。
     c_report_filter.main_auto_kalman_choose()
+    # ---并行运算，卡尔曼选择后策略回测
+    c_report_filter.main_auto_kalman_stratgy_test()
 
 
 
