@@ -17,7 +17,7 @@ myMql5 = MyClass_MqlBackups(Mql5Path,isPrint=True)
 # time.sleep(3)
 
 # ---Files, Logs清理操作
-myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS","Common Files"])
+myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS","Common Files","IndiRecord"])
 time.sleep(3)
 myMql5.dir_remove(myMql5.LogsPath,ignoreFolder=[])
 time.sleep(3)
