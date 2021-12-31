@@ -18,9 +18,9 @@ myMql4 = MyClass_MqlBackups(Mql4Path,isPrint=True)
 # time.sleep(3)
 
 # ---Files, Logs的清理操作
-myMql4.dir_remove(myMql4.FilesPath,ignoreFolder=[])
+myMql4.dir_remove(myMql4.FilesPath,ignoreFolder=[], ignoreFiles=[])
 time.sleep(3)
-myMql4.dir_remove(myMql4.LogsPath,ignoreFolder=[])
+myMql4.dir_remove(myMql4.LogsPath,ignoreFolder=[], ignoreFiles=[])
 time.sleep(3)
 
 # ---MQL4文件夹备份

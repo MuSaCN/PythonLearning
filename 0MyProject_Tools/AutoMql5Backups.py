@@ -17,9 +17,9 @@ myMql5 = MyClass_MqlBackups(Mql5Path,isPrint=True)
 # time.sleep(3)
 
 # ---Files, Logs清理操作
-myMql5.dir_remove(myMql5.FilesPath,ignoreFolder=["SPSS","Common Files","IndiRecord"])
+myMql5.dir_remove(Path=myMql5.FilesPath,ignoreFolder=["SPSS", "IndiRecord"], ignoreFiles=["Common Files.lnk"])
 time.sleep(3)
-myMql5.dir_remove(myMql5.LogsPath,ignoreFolder=[])
+myMql5.dir_remove(myMql5.LogsPath,ignoreFolder=[], ignoreFiles=[])
 time.sleep(3)
 
 # ---MQL5文件夹备份到OneDrive的Work-Python备份文件夹
