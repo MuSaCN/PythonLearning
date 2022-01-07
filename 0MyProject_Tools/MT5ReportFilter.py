@@ -55,11 +55,10 @@ myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位�
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
 myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
-myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
+# myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
-
 
 # %%
 import warnings
@@ -80,6 +79,7 @@ elif filtermode == "1":
     filtermode = "2side"
 tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1")
 tf_indi = "TIMEFRAME_H1" if tf_indi=="" else tf_indi
+
 
 # ---外部赋值
 c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
