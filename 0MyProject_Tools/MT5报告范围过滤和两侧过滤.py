@@ -68,12 +68,24 @@ warnings.filterwarnings('ignore')
 from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
 c_report_filter = MT5_Report_Filter()
 
+# ---外部输入
+file = input("输入桌面上的文件名，默认：ReportTester.xlsx")
+file = "ReportTester.xlsx" if file=="" else file
+direct = input("输入交易方向，默认：All")
+direct = "All" if direct=="" else direct
+filtermode = input("输入过滤模式：0-range, 1-2side. 默认：0")
+if filtermode == "" or filtermode == "0":
+    filtermode = "range"
+elif filtermode == "1":
+    filtermode = "2side"
+tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1")
+tf_indi = "TIMEFRAME_H1" if tf_indi=="" else tf_indi
 
 # ---外部赋值
-c_report_filter.file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
-c_report_filter.direct = "All"  # 方向 "All","BuyOnly","SellOnly"
-c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
-c_report_filter.tf_indi="TIMEFRAME_H1" # 指标的时间框，可以与报告的不同
+c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
+c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
+c_report_filter.filtermode = filtermode  # 过滤模式 "range","2side"
+c_report_filter.tf_indi= tf_indi # 指标的时间框，可以与报告的不同
 
 
 #%%
