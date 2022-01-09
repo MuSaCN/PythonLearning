@@ -85,13 +85,44 @@ myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly
 deal_content["Balance"][0:-1].plot()
 plt.show()
 
-#%% ======策略报告除去加仓行为======
+#%% ======策略报告除去加仓行为(覆盖算法)======
+
+
+
+# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
+
 
 
 
 
 #%% ======基仓无加仓情况下固定bar持仓走势研究======
 
+
+
+
+# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
+
+
+
+
+
+#%% ======策略报告除去重复持仓行为======
+
+
+
+
+
+# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
+
+
+
+
+#%% ======基仓无加仓无重复持仓固定bar持仓走势研究======
+
+
+
+
+# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 
 
 
