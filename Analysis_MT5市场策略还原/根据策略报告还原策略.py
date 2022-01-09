@@ -46,21 +46,20 @@ myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
-myMT5Report = MyMql.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
+myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
 myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
-# ------------------------------------------------------------
+#------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
-'''
-MT5上回测策略必须要求可重复持仓
-'''
+# import warnings
+# warnings.filterwarnings('ignore')
 
-# %% ############ MT5上回测策略必须要求可重复持仓 ############
+#%%
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -75,48 +74,22 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
+# 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
 unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
 
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
-myMT5Report.plot_report_balance(unit_total, unit_buyonly, unit_sellonly, savefig=None, show=True)
-deal_content["Balance"][1:-1].plot()
+myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True)
+deal_content["Balance"][0:-1].plot()
 plt.show()
 
 
 
-#%% #############################
-#---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
-tf_indi = "TIMEFRAME_H1"
-indiname = "@ADXW"
-para = [22]
-
-new_unit_total = myMT5Report.indi_matching_unit(unit_total, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
-new_unit_buy = myMT5Report.indi_matching_unit(unit_buyonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
-new_unit_sell = myMT5Report.indi_matching_unit(unit_sellonly, symbol, timefrom, timeto, timeframe, tf_indi, 1, indiname, *para)
 
 
-#%% #############################
-# ======范围过滤======
-# ---得到报告过滤的策略结果
-result
-result_filter, indi_start, indi_end = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="range")
 
-# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
-myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="range",savefig=None, batch=False)
-
-
-#%% #############################
-# ======两侧过滤======
-result
-# ---得到报告过滤的策略结果
-result_filter, indi_end, indi_start = myMT5Report.get_report_filter_result(new_unit=new_unit_total, mode="2side")
-
-# ---画报告过滤的结果。参数中 new_unit 为 indi_matching_unit() 的输出结果。data为报告对应的原数据；mode="range"范围过滤；"2side"两侧过滤；
-myMT5Report.plot_report_filter_analysis(data=data, new_unit=new_unit_total, mode="2side",savefig=None, batch=False)
 
 
 
