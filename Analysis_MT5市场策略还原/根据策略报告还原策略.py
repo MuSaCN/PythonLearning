@@ -85,6 +85,8 @@ myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly
 deal_content["Balance"][0:-1].plot()
 plt.show()
 
+#%% ======策略报告除去加仓行为======
+
 
 
 
