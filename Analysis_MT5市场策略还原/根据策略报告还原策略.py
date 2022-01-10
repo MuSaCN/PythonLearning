@@ -84,32 +84,19 @@ plt.show()
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
-myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True)
+myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 deal_content["Balance"][0:-1].plot()
 plt.show()
 
 
 #%% ======策略报告除去加仓行为(覆盖算法)======
-# 重新测试下 ！！！！
-unit_buyonly_noadd = myMT5Report.kill_adding_positions(unit_direct=unit_buyonly)
-unit_sellonly_noadd = myMT5Report.kill_adding_positions(unit_direct=unit_sellonly)
-
-
-# 组合成total，不考虑Old_Index
-
+# ---获取无加仓的交易单元，返回 unit_total_noadd, unit_buyonly_noadd, unit_sellonly_noadd.
+unit_total_noadd, unit_buyonly_noadd, unit_sellonly_noadd = myMT5Report.get_noadd_unit(unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, sortby="Order0")
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
-myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True)
+myMT5Report.plot_report_balance(unit_total=unit_total_noadd, unit_buyonly=unit_buyonly_noadd, unit_sellonly=unit_sellonly_noadd, savefig=None, show=True, title="策略基仓+无加仓走势")
 
-
-
-
-#%% ======基仓无加仓情况下固定bar持仓走势研究======
-
-
-
-
-# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
+# ---基仓无加仓情况下固定bar持仓走势研究
 
 
 
@@ -120,18 +107,15 @@ myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly
 
 
 
-
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 
 
 
 
-#%% ======基仓无加仓无重复持仓固定bar持仓走势研究======
+# ---基仓无加仓无重复持仓固定bar持仓走势研究
 
 
 
-
-# ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 
 
 
