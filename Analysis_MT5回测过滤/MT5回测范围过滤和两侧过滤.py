@@ -73,11 +73,11 @@ strat_setting, strat_result, order_content, deal_content = myMT5Report.read_repo
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
-data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
+data = myMT5Pro.getsymboldata(symbol, timeframe, timefrom, timeto, index_time=True, col_capitalize=True)
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。
-unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
+unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
 
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
@@ -89,7 +89,7 @@ plt.show()
 
 
 #%% #############################
-#---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认
+#---获取与交易单元起始时间匹配的指标值：shift_indi=1表示信号确认，结果以"Order0"排序
 tf_indi = "TIMEFRAME_H1"
 indiname = "@ADXW"
 para = [22]

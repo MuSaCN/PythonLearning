@@ -75,8 +75,11 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
-unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content)
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content)
+unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
+unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
+
+unit_total.sort_values(by="Time1").reset_index()["Profit"].cumsum().plot()
+plt.show()
 
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
@@ -85,7 +88,38 @@ myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly
 deal_content["Balance"][0:-1].plot()
 plt.show()
 
+
 #%% ======策略报告除去加仓行为(覆盖算法)======
+choosebuy =  unit_buyonly[["Order0","Order1","Time0","Time1"]].copy()
+choosebuy.sort_values(by="Order0", inplace=True)
+choosebuy.reset_index(drop=True, inplace=True)
+
+def f(x):
+    print(x)
+choosebuy[0:1].apply(f, axis=1)
+
+lasttime0 = [None]
+lasttime1 = [None]
+def killaddlots(row):
+    index = row.name
+    curtime0 = row["Time0"]
+    curtime1 = row["Time1"]
+    # ---第一次记忆且保留
+    if index == 0:
+        lasttime0[0] = curtime0
+        lasttime1[0] = curtime1
+        return True
+    # ---覆盖算法
+    if lasttime0[0] <= curtime0 and curtime1 <= lasttime1[0]:
+        return False
+    else:
+        lasttime0[0] = curtime0
+        lasttime1[0] = curtime1
+        return True
+
+choosebuyindex = choosebuy.apply(killaddlots, axis=1)
+
+unit_buyonly_noadd = unit_buyonly.sort_values(by="Order0")[choosebuyindex]
 
 
 
