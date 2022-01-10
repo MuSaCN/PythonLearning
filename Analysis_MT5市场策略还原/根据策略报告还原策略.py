@@ -104,11 +104,11 @@ myMT5Report.plot_report_balance(unit_total=unit_total_noadd, unit_buyonly=unit_b
 
 #%% ======策略报告除去重复持仓行为======
 
-
-
+# ---获取无加仓的交易单元，返回 unit_total_solo, unit_buyonly_solo, unit_sellonly_solo
+unit_total_solo, unit_buyonly_solo, unit_sellonly_solo = myMT5Report.get_norepeated_unit(unit_buyonly_noadd=unit_buyonly_noadd, unit_sellonly_noadd=unit_sellonly_noadd, sortby="Order0")
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
-
+myMT5Report.plot_report_balance(unit_total=unit_total_solo, unit_buyonly=unit_buyonly_solo, unit_sellonly=unit_sellonly_solo, savefig=None, show=True, title="策略基仓+无加仓+无重复持仓走势")
 
 
 
