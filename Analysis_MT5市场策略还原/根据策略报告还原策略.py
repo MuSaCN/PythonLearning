@@ -46,7 +46,7 @@ myTensor = MyDeepLearning.MyClass_TensorFlow()  # Tensorflow综合类
 myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户端类
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
-myMT5Report = MyMql.MyClass_StratTestReport()  # MT5策略报告类
+myMT5Report = MyMT5Report.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\CrazyBreakMT5.EURUSD.H1.xlsx"
+file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
@@ -97,22 +97,31 @@ unit_total_noadd, unit_buyonly_noadd, unit_sellonly_noadd = myMT5Report.get_noad
 myMT5Report.plot_report_balance(unit_total=unit_total_noadd, unit_buyonly=unit_buyonly_noadd, unit_sellonly=unit_sellonly_noadd, savefig=None, show=True, title="策略基仓+无加仓走势")
 
 # ---基仓无加仓情况下固定bar持仓走势研究
+#  根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。结果中"TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1。BarIndex0  BarIndex1 为 Time0和Time1 在 data 时间索引中的序号。
+newtime_buyonly_noadd = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly_noadd, data = data)
+newtime_sellonly_noadd = myMT5Report.parse_unit_to_timenorm(unit_order=unit_sellonly_noadd, data = data)
 
-
+# ---信号质量分析，返回 outStrat_Re, outSignal_Re：new_time 为 parse_unit_to_timenorm() 函数的输出结果；direct="BuyOnly"做多，"SellOnly"做空；
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_noadd, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+无加仓:BuyOnly",savefig=None, show=True)
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_noadd, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+无加仓:SellOnly",savefig=None, show=True)
 
 
 
 #%% ======策略报告除去重复持仓行为======
-
 # ---获取无加仓的交易单元，返回 unit_total_solo, unit_buyonly_solo, unit_sellonly_solo
 unit_total_solo, unit_buyonly_solo, unit_sellonly_solo = myMT5Report.get_norepeated_unit(unit_buyonly_noadd=unit_buyonly_noadd, unit_sellonly_noadd=unit_sellonly_noadd, sortby="Order0")
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 myMT5Report.plot_report_balance(unit_total=unit_total_solo, unit_buyonly=unit_buyonly_solo, unit_sellonly=unit_sellonly_solo, savefig=None, show=True, title="策略基仓+无加仓+无重复持仓走势")
 
-
-
 # ---基仓无加仓无重复持仓固定bar持仓走势研究
+newtime_buyonly_solo = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly_solo, data = data)
+newtime_sellonly_solo = myMT5Report.parse_unit_to_timenorm(unit_order=unit_sellonly_solo, data = data)
+
+# ---信号质量分析，返回 outStrat_Re, outSignal_Re：new_time 为 parse_unit_to_timenorm() 函数的输出结果；direct="BuyOnly"做多，"SellOnly"做空；
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_solo, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓+无加仓+无重复持仓:BuyOnly",savefig=None, show=True)
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_solo, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓+无加仓+无重复持仓:SellOnly",savefig=None, show=True)
+
 
 
 
