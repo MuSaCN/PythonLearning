@@ -74,8 +74,8 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
-# 设置tick_value。当用CFD做计算时，要重新设置下。
-myMT5Report.set_tick_value(symbol, tick_value=1)
+# 设置point_value。有时候做计算时，要重新设置下。
+# myMT5Report.set_point_value(symbol, point_value=10)
 
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
