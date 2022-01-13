@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
+file = __mypath__.get_desktop_path() + "\\Golden.H1.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
@@ -75,7 +75,7 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 
 # 设置point_value。有时候做计算时，要重新设置下。
-myMT5Report.set_point_value(symbol, point_value=10)
+myMT5Report.set_point_value(symbol, point_value=1)
 
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
