@@ -63,10 +63,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\Golden.H1.xlsx"
+file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file)
+strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, onlytestsymbol=True)
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
@@ -76,7 +76,6 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 
 # 设置point_value。有时候做计算时，要重新设置下。
 myMT5Report.set_point_value(symbol, point_value=1)
-
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
@@ -89,7 +88,8 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
 myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
-deal_content["Balance"][0:-1].plot()
+
+deal_content["Balance"][0:-1].plot(title="原策略未做Symbol筛选走势")
 plt.show()
 
 
