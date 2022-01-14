@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
+file = __mypath__.get_desktop_path() + "\\SIEA Zen.EURUSD.H1.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, onlytestsymbol=True)
@@ -89,7 +89,7 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
 myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
-deal_content["Balance"][0:-1].plot(title="原策略未做Symbol筛选走势")
+deal_content["Balance"][0:-1].plot(title="原策略走势")
 plt.show()
 
 
