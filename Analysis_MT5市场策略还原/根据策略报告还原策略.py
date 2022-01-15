@@ -66,16 +66,20 @@ warnings.filterwarnings('ignore')
 file = __mypath__.get_desktop_path() + "\\SIEA Zen.EURUSD.H1.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, order_content, deal_content = myMT5Report.read_report_xlsx(filepath=file, onlytestsymbol=True)
+strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file)
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
-
 # 设置point_value。有时候做计算时，要重新设置下。
 myMT5Report.set_point_value(symbol, point_value=1)
+
+# 设置为指定品种的内容
+order_content = dict_order_content[symbol]
+deal_content = dict_deal_content[symbol]
+
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
