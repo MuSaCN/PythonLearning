@@ -65,7 +65,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 Inp_filename = input("输入文件名称，无后缀：") + ".xlsx"
-Inp_pipvalue = input("输入点值，可以不输入。但是有的品种需要输入：")
+Inp_pipvalue = float(input("输入点值，可以不输入。但是有的品种需要输入："))
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
 file = __mypath__.get_desktop_path() + "\\" + Inp_filename
