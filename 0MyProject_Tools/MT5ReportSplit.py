@@ -65,7 +65,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 Inp_filename = input("输入文件名称，无后缀：") + ".xlsx"
-Inp_pipvalue = float(input("输入点值，可以不输入。但是有的品种需要输入："))
+Inp_pipvalue = input("输入点值，可以不输入。但是有的品种需要输入：")
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
 file = __mypath__.get_desktop_path() + "\\" + Inp_filename
@@ -85,7 +85,7 @@ data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True,
 # 设置point_value。有时候做计算时，要重新设置下。
 # myMT5Report.set_point_value(symbol, point_value=1)
 if Inp_pipvalue != "":
-    myMT5Report.set_point_value(symbol, point_value=Inp_pipvalue)
+    myMT5Report.set_point_value(symbol, point_value=float(Inp_pipvalue))
 
 # 设置为指定品种的内容
 order_content = dict_order_content[symbol]
