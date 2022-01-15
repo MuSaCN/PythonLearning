@@ -168,5 +168,5 @@ myMT5Report.analysis_more_holding(new_time = newtime_sellonly_solo, direct = "Se
 print("4.基仓+去加仓+去重复持仓.SellOnly.订单可管理性研究.jpg")
 
 
-
+input("All Finished, any input to exit!")
 
