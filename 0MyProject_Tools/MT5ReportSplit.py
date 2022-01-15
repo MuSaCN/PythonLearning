@@ -152,19 +152,19 @@ newtime_buyonly_solo = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonl
 newtime_sellonly_solo = myMT5Report.parse_unit_to_timenorm(unit_order=unit_sellonly_solo, data = data)
 
 # ---信号质量分析，返回 outStrat_Re, outSignal_Re：new_time 为 parse_unit_to_timenorm() 函数的输出结果；direct="BuyOnly"做多，"SellOnly"做空；
-savefig = savefolder + "\\4.基仓.去加仓.去重.BuyOnly.1Bar.jpg"
-outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_solo, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓.去加仓.去重持.BuyOnly.1Bar",savefig=None, show=True, batch=True)
+savefig = savefolder + "\\4.基仓.去加仓.去重持.BuyOnly.1Bar.jpg"
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_solo, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓.去加仓.去重持.BuyOnly.1Bar",savefig=savefig, show=True, batch=True)
 print("4.基仓.去加仓.去重持.BuyOnly.1Bar.jpg")
-savefig = savefolder + "\\4.基仓.去加仓.去重.SellOnly.1Bar.jpg"
-outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_solo, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓.去加仓.去重持.SellOnly.1Bar",savefig=None, show=True, batch=True)
+savefig = savefolder + "\\4.基仓.去加仓.去重持.SellOnly.1Bar.jpg"
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_solo, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=True, suptitle="基仓.去加仓.去重持.SellOnly.1Bar",savefig=savefig, show=True, batch=True)
 print("4.基仓.去加仓.去重持.SellOnly.1Bar.jpg")
 
 # ---订单可管理性研究，画图。策略训练集多holding回测，选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
 savefig = savefolder + "\\4.基仓.去加仓.去重持.BuyOnly.订单可管理性研究.jpg"
-myMT5Report.analysis_more_holding(new_time = newtime_buyonly_solo, direct = "BuyOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓.去加仓.去重持.BuyOnly.订单可管理性研究", savefig=None, show=True, batch=True)
+myMT5Report.analysis_more_holding(new_time = newtime_buyonly_solo, direct = "BuyOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓.去加仓.去重持.BuyOnly.订单可管理性研究", savefig=savefig, show=True, batch=True)
 print("4.基仓.去加仓.去重持.BuyOnly.订单可管理性研究.jpg")
 savefig = savefolder + "\\4.基仓.去加仓.去重持.SellOnly.订单可管理性研究.jpg"
-myMT5Report.analysis_more_holding(new_time = newtime_sellonly_solo, direct = "SellOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓.去加仓.去重持.SellOnly.订单可管理性研究", savefig=None, show=True, batch=True)
+myMT5Report.analysis_more_holding(new_time = newtime_sellonly_solo, direct = "SellOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓.去加仓.去重持.SellOnly.订单可管理性研究", savefig=savefig, show=True, batch=True)
 print("4.基仓.去加仓.去重持.SellOnly.订单可管理性研究.jpg")
 
 
