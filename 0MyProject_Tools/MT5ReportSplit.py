@@ -1,4 +1,7 @@
 # Author:Zhang Yuan
+Inp_filename = input("输入文件名称，无后缀：") + ".xlsx"
+Inp_pipvalue = input("输入点值，可以不输入。但是有的品种需要输入：")
+
 from MyPackage import *
 import numpy as np
 import pandas as pd
@@ -64,8 +67,6 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 import warnings
 warnings.filterwarnings('ignore')
 
-Inp_filename = input("输入文件名称，无后缀：") + ".xlsx"
-Inp_pipvalue = input("输入点值，可以不输入。但是有的品种需要输入：")
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
 file = __mypath__.get_desktop_path() + "\\" + Inp_filename
