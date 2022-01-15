@@ -101,6 +101,8 @@ if __name__ == '__main__':
     # ---并行运算，卡尔曼选择后策略回测
     c_report_filter.main_auto_kalman_stratgy_test()
 
+    input("All Finished, any input to exit!")
+
 
 
 
