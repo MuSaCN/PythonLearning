@@ -60,6 +60,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # warnings.filterwarnings('ignore')
 '''
 MT5上回测策略必须要求可重复持仓
+注意：此处代码分析错误。单侧过滤思想不能用于止损，因为止损选择后，左侧订单不是砍去，而是确定性损失。
+      此处代码作为单侧过滤的案例留着。
 '''
 
 # %% ############ MT5上回测策略必须要求可重复持仓 ############
