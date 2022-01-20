@@ -67,7 +67,7 @@ MT5上回测策略必须要求可重复持仓
 import warnings
 warnings.filterwarnings('ignore')
 
-file = __mypath__.get_desktop_path() + "\\BuyOnly.NoRepeat.xlsx"
+file = __mypath__.get_desktop_path() + "\\SellOnly.NoRepeat.xlsx"
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
@@ -94,14 +94,19 @@ deal_content["Balance"][1:-1].plot()
 plt.show()
 
 #%% ############ Balance均线研究 ############
-unit_direct = unit_buyonly.copy()
+unit_direct = unit_total.copy()
 meanperiod = 5
 
 balance = pd.DataFrame(unit_direct["Balance_Base"])
 balance["Mean"] = balance["Balance_Base"].rolling(meanperiod).mean()
 
+
+
 myDefault.set_backend_default("tkagg")
 balance.plot()
 plt.show()
+
+
+
 
 
