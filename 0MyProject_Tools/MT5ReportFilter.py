@@ -109,6 +109,7 @@ if __name__ == '__main__':
 
 
         # ===两侧过滤===
+        plt.close()
         plt.show() # 必须要先释放下，不然多进程分别测试各个模式会出错。
         print("===开始两侧过滤===")
         c_report_filter = MT5_Report_Filter()
