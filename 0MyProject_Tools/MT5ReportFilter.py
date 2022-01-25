@@ -93,7 +93,7 @@ if __name__ == '__main__':
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
-        c_report_filter.core_num = 1
+        c_report_filter.core_num = -1
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
         c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
