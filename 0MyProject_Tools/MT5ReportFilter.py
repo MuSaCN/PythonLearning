@@ -69,38 +69,79 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
-    c_report_filter = MT5_Report_Filter()
 
     # ---外部输入
     file = input("输入桌面上的文件名，默认：ReportTester.xlsx")
     file = "ReportTester.xlsx" if file == "" else file
     direct = input("输入交易方向，默认：All")
     direct = "All" if direct == "" else direct
-    filtermode = input("输入过滤模式：0-range, 1-2side. 默认：0")
-    if filtermode == "" or filtermode == "0":
+    filtermode = input("输入过滤模式：-1-all, 0-range, 1-2side. 默认：-1")
+    if filtermode == "" or filtermode == "-1":
+        filtermode = "all" # 所有的都测试
+    elif filtermode == "0":
         filtermode = "range"
     elif filtermode == "1":
         filtermode = "2side"
     tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1")
     tf_indi = "TIMEFRAME_H1" if tf_indi == "" else tf_indi
 
-    # ---外部赋值
-    c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
-    c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
-    c_report_filter.filtermode = filtermode  # 过滤模式 "range","2side"
-    c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
+    # ---如果是都测试
+    if filtermode == "all":
+        print("所有的都测试filtermode=", filtermode)
+        # ===范围过滤===
+        print("===开始范围过滤===")
+        c_report_filter = MT5_Report_Filter()
+        myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        # ---外部赋值
+        c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
+        c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
+        c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
+        c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
+        # ---读取报告，设定各种变量
+        c_report_filter.load_report()
+        # ---并行运算，输出过滤的文本文档
+        c_report_filter.main_filter_and_xlsx()
+        # ---参数过滤自动选择，且画图、输出xlsx。
+        c_report_filter.main_auto_kalman_choose()
+        # ---并行运算，卡尔曼选择后策略回测
+        c_report_filter.main_auto_kalman_stratgy_test()
 
-    myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        # ===两侧过滤===
+        print("===开始两侧过滤===")
+        c_report_filter = MT5_Report_Filter()
+        myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        # ---外部赋值
+        c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
+        c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
+        c_report_filter.filtermode = "2side"  # 过滤模式 "range","2side"
+        c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
+        # ---读取报告，设定各种变量
+        c_report_filter.load_report()
+        # ---并行运算，输出过滤的文本文档
+        c_report_filter.main_filter_and_xlsx()
+        # ---参数过滤自动选择，且画图、输出xlsx。
+        c_report_filter.main_auto_kalman_choose()
+        # ---并行运算，卡尔曼选择后策略回测
+        c_report_filter.main_auto_kalman_stratgy_test()
 
-    # ---读取报告，设定各种变量
-    c_report_filter.load_report()
-    # ---并行运算，输出过滤的文本文档
-    c_report_filter.main_filter_and_xlsx()
-    # ---参数过滤自动选择，且画图、输出xlsx。
-    c_report_filter.main_auto_kalman_choose()
-    # ---并行运算，卡尔曼选择后策略回测
-    c_report_filter.main_auto_kalman_stratgy_test()
-
+    # ---仅测试指定的模式
+    else:
+        c_report_filter = MT5_Report_Filter()
+        myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        # ---外部赋值
+        c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
+        c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
+        c_report_filter.filtermode = filtermode  # 过滤模式 "range","2side"
+        c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
+        # ---读取报告，设定各种变量
+        c_report_filter.load_report()
+        # ---并行运算，输出过滤的文本文档
+        c_report_filter.main_filter_and_xlsx()
+        # ---参数过滤自动选择，且画图、输出xlsx。
+        c_report_filter.main_auto_kalman_choose()
+        # ---并行运算，卡尔曼选择后策略回测
+        c_report_filter.main_auto_kalman_stratgy_test()
+    # ---
     input("All Finished, any input to exit!")
 
 
