@@ -101,7 +101,7 @@ if __name__ == '__main__':
         c_report_filter.load_report()
         # # ---并行运算，输出过滤的文本文档
         c_report_filter.main_filter_and_xlsx()
-        # # ---参数过滤自动选择，且画图、输出xlsx。
+        # ---参数过滤自动选择，且画图、输出xlsx。
         c_report_filter.main_auto_kalman_choose()
         # ---并行运算，卡尔曼选择后策略回测
         c_report_filter.main_auto_kalman_stratgy_test()
