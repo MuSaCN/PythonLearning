@@ -71,18 +71,18 @@ if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
 
     # ---外部输入
-    file = input("输入桌面上的文件名，默认：ReportTester.xlsx")
+    file = input("输入桌面上的文件名，默认：ReportTester.xlsx  ")
     file = "ReportTester.xlsx" if file == "" else file
-    direct = input("输入交易方向，默认：All")
+    direct = input("输入交易方向，默认：All  ")
     direct = "All" if direct == "" else direct
-    filtermode = input("输入过滤模式：-1-all, 0-range, 1-2side. 默认：-1")
+    filtermode = input("输入过滤模式：-1-all, 0-range, 1-2side. 默认：-1  ")
     if filtermode == "" or filtermode == "-1":
         filtermode = "all" # 所有的都测试
     elif filtermode == "0":
         filtermode = "range"
     elif filtermode == "1":
         filtermode = "2side"
-    tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1")
+    tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1  ")
     tf_indi = "TIMEFRAME_H1" if tf_indi == "" else tf_indi
 
     # ---如果是都测试
@@ -99,14 +99,16 @@ if __name__ == '__main__':
         c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
         # ---读取报告，设定各种变量
         c_report_filter.load_report()
-        # ---并行运算，输出过滤的文本文档
+        # # ---并行运算，输出过滤的文本文档
         c_report_filter.main_filter_and_xlsx()
-        # ---参数过滤自动选择，且画图、输出xlsx。
+        # # ---参数过滤自动选择，且画图、输出xlsx。
         c_report_filter.main_auto_kalman_choose()
         # ---并行运算，卡尔曼选择后策略回测
         c_report_filter.main_auto_kalman_stratgy_test()
 
+
         # ===两侧过滤===
+        plt.show() # 必须要先释放下，不然多进程分别测试各个模式会出错。
         print("===开始两侧过滤===")
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
