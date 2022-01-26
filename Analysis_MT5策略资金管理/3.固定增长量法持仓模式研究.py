@@ -106,7 +106,7 @@ print(text_base)
 
 #%% 测试仓位比例
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
-point_value = myMT5Report.symbol_df[symbol]["point_value"]
+pip_value = myMT5Report.symbol_df[symbol]["pip_value"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
 point = myMT5Report.symbol_df[symbol]["point"]
 

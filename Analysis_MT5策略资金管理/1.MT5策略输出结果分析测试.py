@@ -166,7 +166,7 @@ f_limit_bankrupt = myMoneyM.f_limit_bankrupt(result_base.winRate, bankrupt_risk=
 
 #%% ############
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
-point_value = myMT5Report.symbol_df[symbol]["point_value"]
+pip_value = myMT5Report.symbol_df[symbol]["pip_value"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
 point = myMT5Report.symbol_df[symbol]["point"]
 

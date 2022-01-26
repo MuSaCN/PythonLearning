@@ -104,7 +104,7 @@ result_out = myMT5Report.backtest_with_lots_risk_percent(lots_class_case=myMT5Lo
 
 #%% 测试仓位比例 ###### 完善 ##############################
 volume_min = myMT5Report.symbol_df[symbol]["volume_min"]
-point_value = myMT5Report.symbol_df[symbol]["point_value"]
+pip_value = myMT5Report.symbol_df[symbol]["pip_value"]
 digits = myMT5Report.symbol_df[symbol]["digits"]
 point = myMT5Report.symbol_df[symbol]["point"]
 

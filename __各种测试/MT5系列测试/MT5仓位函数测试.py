@@ -74,10 +74,10 @@ myMT5Lots_Dy.cummargin
 
 symbol = "GBPUSD"
 myMT5Lots_Fix.check_symbol(symbol)
-myMT5Lots_Fix.symbol_df[symbol].loc["point_value"]
+myMT5Lots_Fix.symbol_df[symbol].loc["pip_value"]
 
 myMT5Lots_Dy.check_symbol(symbol)
-myMT5Lots_Dy.symbol_df[symbol].loc["point_value"]
+myMT5Lots_Dy.symbol_df[symbol].loc["pip_value"]
 
 
 

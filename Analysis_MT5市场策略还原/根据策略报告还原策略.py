@@ -83,10 +83,10 @@ symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
-# 设置point_value。有时候做计算时，要重新设置下。
-# myMT5Report.set_point_value(symbol, point_value=1)
+# 设置pip_value。有时候做计算时，要重新设置下。
+# myMT5Report.set_pip_value(symbol, pip_value=1)
 if Inp_pipvalue != "":
-    myMT5Report.set_point_value(symbol, point_value=float(Inp_pipvalue))
+    myMT5Report.set_pip_value(symbol, pip_value=float(Inp_pipvalue))
 
 # 设置为指定品种的内容
 order_content = dict_order_content[symbol]
