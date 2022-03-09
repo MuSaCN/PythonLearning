@@ -59,6 +59,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # import warnings
 # warnings.filterwarnings('ignore')
 
+'''
+切片指的是：把数据按每小时进行拆分，如数据的小时为1作为1组。
+'''
+
 #%%
 ### 数据切片的分布研究
 symbol_list =['EURUSD','GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD'] # myMT5Pro.get_main_symbol_name_list()
@@ -73,7 +77,7 @@ date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_total["C-O"] = data_total["Close"] - data_total["Open"]
 
-# 切片数据的分布统计
+# 切片数据的分布统计，把原数据按照每小时进行拆分
 def slice_statistic(affix = "Range"):
     df_out = pd.DataFrame()
     for limited_i in range(24):
@@ -91,16 +95,22 @@ def plot_statistic(df_out, affix = "Range"):
     myfig.__init__(1,1, figsize=[1280,720])
     mean = df_out.loc["mean"].reset_index(drop=True)
     std = df_out.loc["std"].reset_index(drop=True)
-    myfig.plot_line(mean, axesindex=0, show=False)
-    myfig.plot_line(std, axesindex=0, show=False, color="red",twinXY="X")
+    ax = myfig.axeslist[0]
+    myfig.plot_line(mean, axesindex=0, objectname = "mean", show=False)
+    ax.legend(loc="upper right")
+    myfig.plot_line(std, axesindex=0, objectname = "std", show=False, color="red",twinXY="X")
+    ax.legend(loc="upper left")
     myfig.suptitle(affix+ ": mean+std")
     myfig.show()
     #---
     myfig.__init__(1, 1, figsize=[1280, 720], sharex=True)
     skew = df_out.loc["skew偏度"].reset_index(drop=True)
     kurt = df_out.loc["kurt峰度"].reset_index(drop=True)
-    myfig.plot_line(skew, axesindex=0, show=False)
-    myfig.plot_line(kurt, axesindex=0, show=False, color="red", twinXY="X")
+    ax = myfig.axeslist[0]
+    myfig.plot_line(skew, axesindex=0, objectname = "skew", show=False)
+    ax.legend(loc="upper right")
+    myfig.plot_line(kurt, axesindex=0, objectname = "kurt", show=False, color="red", twinXY="X")
+    ax.legend(loc="upper left")
     myfig.suptitle(affix+ ": skew+kurt")
     myfig.show()
 
