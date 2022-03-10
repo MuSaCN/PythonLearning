@@ -136,6 +136,7 @@ arrayX = opt1[para1].values
 ylabel = "label"
 filterlevel = 1
 comparator = np.greater_equal # np.greater # np.greater_equal
+
 # 卡尔曼过滤
 array_filter1 = myDA.kalman_1D(array, 1, restore_nan=False)
 array_filter2 = myDA.kalman_1D(array_filter1, 1, restore_nan=False)
