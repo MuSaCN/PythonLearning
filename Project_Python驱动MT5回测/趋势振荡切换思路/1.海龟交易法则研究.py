@@ -110,10 +110,10 @@ opt = myMT5Report.read_opt_xml(reportfile)
 # ---
 myDefault.set_backend_default("tkagg")
 # ---固定指定, 排除 "FixedHolding" 后剩下的
-para0,para1,para2 = "Result","FixedHolding",opt.columns[-2:].drop(para1)[0]
+para0,para1,para2 = "Result","FixedHolding",opt.columns[-2:].drop("FixedHolding")[0]
 x, y, z = opt[para1], opt[para2], opt[para0]
 
-# ---
+# ---画3D图
 myfig.__init__(1,1,figsize=[1024,768])
 myfig.set_axes_3d2d()
 myfig.plot3Ddf_trisurf(xs=x,ys=y,zs=z, PlotLabel=[para0,para1,para2])
