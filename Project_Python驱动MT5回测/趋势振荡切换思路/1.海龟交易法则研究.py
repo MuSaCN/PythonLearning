@@ -108,20 +108,74 @@ myMT5run.run_MT5()
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
 opt = myMT5Report.read_opt_xml(reportfile)
 # ---
-myDefault.set_backend_default("tkagg")
-# ---固定指定, 排除 "FixedHolding" 后剩下的
-para0,para1,para2 = "Result","FixedHolding",opt.columns[-2:].drop("FixedHolding")[0]
-x, y, z = opt[para1], opt[para2], opt[para0]
+# myDefault.set_backend_default("tkagg")
+# ---信号参数，排除 "FixedHolding" 后剩下的；固定持仓；Z值
+para1,para2,paraZ = opt.columns[-2:].drop("FixedHolding")[0], "FixedHolding",  "Custom"
+X, Y, Z = opt[para1], opt[para2], opt[paraZ]
 
 # ---画3D图
 myfig.__init__(1,1,figsize=[1024,768])
 myfig.set_axes_3d2d()
-myfig.plot3Ddf_trisurf(xs=x,ys=y,zs=z, PlotLabel=[para0,para1,para2])
-# ---
-y[x == 1]
-z[x == 1]
+myfig.plot3Ddf_trisurf(xs=X,ys=Y,zs=Z, PlotLabel=[paraZ,para1,para2])
+
+# ---选择固定持仓1期，且交易数量平均每天1次的
+opt1 = opt[(opt["FixedHolding"]==1) & (opt["Trades"]>=250*7)]
+opt1.set_index(keys=para1, drop=False, inplace=True)
+
+# ['Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Custom']
+opt1["Custom"].plot()
+plt.show()
+opt1["Recovery Factor"].plot()
+plt.show()
+
 
 #%%
+order = 30
+array = opt1["Custom"].values
+arrayX = opt1[para1].values
+ylabel = "label"
+filterlevel = 1
+comparator = np.greater_equal # np.greater # np.greater_equal
+# 卡尔曼过滤
+array_filter1 = myDA.kalman_1D(array, 1, restore_nan=False)
+array_filter2 = myDA.kalman_1D(array_filter1, 1, restore_nan=False)
+
+# ---画图
+myfig.__init__(nrows=3, ncols=6, figsize=[1920, 1080], GridSpec=["[0,:]", "[1,:]", "[2,:]"],AddFigure=True)
+index0, values0, ax0 = myDA.argrelextrema(
+    array, comparator=comparator, order=order, arrayX=arrayX, plot=True, label=ylabel, ax=myfig.axeslist[0])
+index1, values1, ax1 = myDA.argrelextrema(
+    array_filter1, comparator=comparator, order=order,arrayX=arrayX, plot=True, label=ylabel, ax=myfig.axeslist[1])
+index2, values2, ax2 = myDA.argrelextrema(
+    array_filter2, comparator=comparator, order=order, arrayX=arrayX, plot=True, label=ylabel, ax=myfig.axeslist[2])
+myfig.suptitle("{0} {1}: indi_para0的卡尔曼滤波".format("indi_name", ylabel))
+
+# ---卡尔曼过滤后的值会变动，要索引到源数据的值
+if filterlevel == 0:
+    index, values, ax = index0, values0, ax0
+    y_filter = values0
+elif filterlevel == 1:  # 注意过滤后的值会变动，要索引到源数据的值。
+    temp1 = [array[arrayX == i] for i in index1[0]]
+    index, values, ax = index1, [np.array(temp1).ravel()], ax1
+    y_filter = values1
+elif filterlevel == 2:  # 注意过滤后的值会变动，要索引到源数据的值。
+    temp2 = [array[arrayX == i] for i in index2[0]]
+    index, values, ax = index2, [np.array(temp2).ravel()], ax2
+    y_filter = values2
+
+# ---
+savefig=None
+if savefig is not None:
+    if len(index[0])>0:
+        myfig.savefig(fname=savefig)
+    else:
+        print("卡尔曼滤波自动选择没有结果：{}.{}".format("indi_name", ylabel))
+# if batch == True:
+#     myfig.close(check=False)
+#     plt.close()
+myfig.show()
+plt.show()
+
 
 
 
