@@ -59,6 +59,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # import warnings
 # warnings.filterwarnings('ignore')
 
+#%%
+'''
+注意信号是 Cross 还是 Momentum，若要修改需要到 EA 中修改。
+'''
 
 #%% ###### 通用参数 ######
 experfolder = "My_Experts\\Strategy走势分类研究\海龟交易法则趋势振荡分类"
@@ -72,7 +76,7 @@ reportfolder = r"F:\工作(同步)\工作---MT5策略研究\海龟交易法则_�
 
 
 
-#%% ###### 第一步优化信号参数和固定持仓 ######
+#%% ###### Step1.0 优化信号参数和固定持仓 ######
 reportfile = reportfolder + "\\{}.{}\\{}\\1.opt信号固定持仓.xml".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 # ---
@@ -100,6 +104,26 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
 myMT5run.run_MT5()
+
+#%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
+opt = myMT5Report.read_opt_xml(reportfile)
+# ---
+myDefault.set_backend_default("tkagg")
+# ---固定指定, 排除 "FixedHolding" 后剩下的
+para0,para1,para2 = "Result","FixedHolding",opt.columns[-2:].drop(para1)[0]
+x, y, z = opt[para1], opt[para2], opt[para0]
+
+# ---
+myfig.__init__(1,1,figsize=[1024,768])
+myfig.set_axes_3d2d()
+myfig.plot3Ddf_trisurf(xs=x,ys=y,zs=z, PlotLabel=[para0,para1,para2])
+# ---
+y[x == 1]
+z[x == 1]
+
+#%%
+
+
 
 
 
