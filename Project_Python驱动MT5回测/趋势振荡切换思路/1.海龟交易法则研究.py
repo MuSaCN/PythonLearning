@@ -176,18 +176,21 @@ myMT5run.run_MT5()
 
 
 
-#%%
+#%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
+# ---需要 run 中运行，ipython中不行。
 file = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
-reportfolder
+FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\0MyProject_Tools\MT5ReportFilter.py"
+import os
+os.system(FilterScript)
+
+
+
+
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
-dict_deal_content["EURUSD"]
+order_content = dict_order_content["EURUSD"]
+deal_content = dict_deal_content["EURUSD"]
 
-file1 = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
-
-# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting1, strat_result1, dict_order_content1, dict_deal_content1 = myMT5Report.read_report_xlsx(filepath=file1, result_vert=True, deal_standard=False, onlytestsymbol=False)
-dict_deal_content1["EURUSD"]
 
 
 #%%
