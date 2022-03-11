@@ -202,16 +202,14 @@ import time
 time.sleep(1)
 print("通用过滤参数输出完成！")
 
-# ---读取 filehtm, outdesktopfile
-
-
-
 # ---需要 run 中运行，ipython中不行。
 FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
 import os
 os.system("python "+FilterScript)
+time.sleep(1)
+print("通用过滤执行完成！")
 
-
+# ---剪切桌面的结果到项目目录
 
 
 
