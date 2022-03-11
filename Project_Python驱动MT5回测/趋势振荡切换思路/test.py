@@ -61,12 +61,6 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 #%%
-import sys
-sys.argv.append('F:\\工作(同步)\\工作---MT5策略研究\\海龟交易法则_趋势振荡分类研究\\EURUSD.TIMEFRAME_M15\\1.海龟交易法则研究.Trend\\1.b.信号=100.0.Fixed=1.htm')
-sys.argv.append("All")
-sys.argv.append("-1")
-sys.argv.append("TIMEFRAME_M15")
-
 # ---需要 run 中运行，ipython中不行。
 FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
 import os
