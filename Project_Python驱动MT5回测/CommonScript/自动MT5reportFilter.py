@@ -70,19 +70,27 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
 
-    # ---外部输入
-    file = "ReportTester.xlsx"
+    # ---从桌面加载
+    filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
+    outdesktopfile = __mypath__.get_desktop_path() + r"\2.通用过滤参数.csv"
+    # 读取
+    readfile = myfile.read_pd(outdesktopfile, sep=";")
+    readfile.set_index(keys="0",drop=True,inplace=True)
+    # 加载参数
+    file = "通用过滤.htm"
+    direct = readfile.loc["direct"][0]
+    filtermode = readfile.loc["filtermode"][0]
+    tf_indi = readfile.loc["tf_indi"][0]
+
+    # ---输入调整
     file = "ReportTester.xlsx" if file == "" else file
-    direct = "All"
     direct = "All" if direct == "" else direct
-    filtermode = "-1"
     if filtermode == "" or filtermode == "-1":
         filtermode = "all" # 所有的都测试
     elif filtermode == "0":
         filtermode = "range"
     elif filtermode == "1":
         filtermode = "2side"
-    tf_indi = input("输入指标的时间框，默认：TIMEFRAME_H1  ")
     tf_indi = "TIMEFRAME_H1" if tf_indi == "" else tf_indi
 
     # ---如果是都测试
@@ -106,7 +114,6 @@ if __name__ == '__main__':
         c_report_filter.main_auto_kalman_choose()
         # ---并行运算，卡尔曼选择后策略回测
         c_report_filter.main_auto_kalman_stratgy_test()
-
 
         # ===两侧过滤===
         plt.close()

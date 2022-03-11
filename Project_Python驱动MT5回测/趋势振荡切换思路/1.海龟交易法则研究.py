@@ -145,12 +145,12 @@ signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
 
 
 #%% ###### Step1.2 单独一次回测 ######
-reportfile = reportfolder + "\\1.b.信号={}.Fixed=1".format(signalpara1) # 不需要.xml后缀
+reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed=1".format(signalpara1) # 不需要.xml后缀
 optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 # ---
 myMT5run.__init__()
 myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
+                       delays=0, optimization=optimization, reportfile=reportfile_1b)
 
 myMT5run.input_set("Inp_ChannelPeriod", "{}||5||1||100||N".format(signalpara1))
 # ======(通用)用于分析======
@@ -177,19 +177,41 @@ myMT5run.run_MT5()
 
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
+# ====== 操作都默认从桌面操作 ======
+# ---把 .htm 文件复制到桌面 通用过滤.htm
+filepath2 = reportfile_1b + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
+filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
+myfile.copy_dir_or_file(source=filepath2, destination=filehtm, DirRemove=True)
+
+# ---输出参数csv到指定目录和桌面
+dfpara = []
+dfpara.append(["filepath",filepath2])
+dfpara.append(["direct","All"])
+dfpara.append(["filtermode","-1"])
+dfpara.append(["tf_indi",timeframe])
+dfpara = pd.DataFrame(dfpara)
+dfpara.set_index(keys=0,drop=True,inplace=True)
+# 添加到指定目录
+outfile = reportfolder + r"\2.通用过滤参数.csv"
+dfpara.to_csv(outfile, sep=";")
+# 添加到桌面，从桌面加载
+outdesktopfile = __mypath__.get_desktop_path() + r"\2.通用过滤参数.csv"
+dfpara.to_csv(outdesktopfile, sep=";")
+# 休息
+import time
+time.sleep(1)
+print("通用过滤参数输出完成！")
+
+# ---读取 filehtm, outdesktopfile
+
+
+
 # ---需要 run 中运行，ipython中不行。
-file = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
-FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\0MyProject_Tools\MT5ReportFilter.py"
+FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
 import os
-os.system(FilterScript)
+os.system("python "+FilterScript)
 
 
-
-
-# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
-order_content = dict_order_content["EURUSD"]
-deal_content = dict_deal_content["EURUSD"]
 
 
 
