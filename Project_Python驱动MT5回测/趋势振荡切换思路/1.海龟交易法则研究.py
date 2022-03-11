@@ -63,6 +63,8 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 '''
 注意信号是 Cross 还是 Momentum，若要修改需要到 EA 中修改。
 '''
+import warnings
+warnings.filterwarnings('ignore')
 
 #%% ###### 通用参数 ######
 experfolder = "My_Experts\\Strategy走势分类研究\海龟交易法则趋势振荡分类"
@@ -139,7 +141,7 @@ for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'S
     totalindex = totalindex + indexlist
 
 # ---选择考虑权重后的众数作为信号参数1。
-signalpara1 = pd.Series(totalindex).mode()[0]
+signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
 
 
 #%% ###### Step1.2 单独一次回测 ######
@@ -175,46 +177,18 @@ myMT5run.run_MT5()
 
 
 #%%
-file = reportfile + ".htm"
+file = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
+reportfolder
+# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
+strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
+dict_deal_content["EURUSD"]
 
-# ---返回的结果是 DataFrame 组成的 list。
-[summary, table] = pd.read_html(file)
+file1 = __mypath__.get_desktop_path() + "\\ReportTester.xlsx"
 
-# summary 拆分为 Settings, Results
-setting = pd.DataFrame([], columns=["name","value"])
-results = pd.DataFrame([], columns=["name","value"])
-setting = []
-results = []
-startsetting = False
-startresults = False
-for i, row in summary.iterrows():
-    row.dropna(inplace=True) # 必须丢去nan
-    rowunique = row.unique() # 元素可能会多次重复，分析唯一
-    # 跳过全部都是nan的一行
-    if len(rowunique)==1 and rowunique[0] is np.nan:
-        continue
-    # 跳过空的
-    if len(rowunique)==0:
-        continue
-    # ---
-    if rowunique[0] == "Settings":
-        startsetting = True
-    if rowunique[0] == "Results":
-        startsetting = False
-        startresults = True
-    # ---
-    if startsetting==True:
-        setting.append(rowunique)
-    if startresults==True:
-        results.append(rowunique)
-
-# ---
-pd.DataFrame(setting)
-pd.DataFrame(results)
-
-
+# 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
+strat_setting1, strat_result1, dict_order_content1, dict_deal_content1 = myMT5Report.read_report_xlsx(filepath=file1, result_vert=True, deal_standard=False, onlytestsymbol=False)
+dict_deal_content1["EURUSD"]
 
 
 #%%
 
-myMT5Report.read_report_xlsx()
