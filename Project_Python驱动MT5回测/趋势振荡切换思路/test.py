@@ -62,6 +62,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 #%%
 # ---需要 run 中运行，ipython中不行。
+myDefault.set_backend_default("agg")
 FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
 import os
 os.system("python "+FilterScript)
