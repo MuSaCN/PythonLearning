@@ -88,6 +88,157 @@ scatter = (
 
 
 #%%
+import numpy as np
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from datetime import datetime
+import talib as ta
+from pyecharts import Line, Kline, Pie, Grid, Overlap, Timeline, WordCloud
+
+#%%
+import math
+from typing import Union
+
+import pyecharts.options as opts
+from pyecharts.charts import Surface3D
+
+"""
+Gallery 使用 pyecharts 1.1.0
+参考地址: https://echarts.apache.org/examples/editor.html?c=surface-wave&gl=1
+
+目前无法实现的功能:
+
+1、暂时无法设置光滑表面 wireframe
+2、暂时无法把 visualmap 进行隐藏
+"""
+
+
+def float_range(start: int, end: int, step: Union[int, float], round_number: int = 2):
+    """
+    浮点数 range
+    :param start: 起始值
+    :param end: 结束值
+    :param step: 步长
+    :param round_number: 精度
+    :return: 返回一个 list
+    """
+    temp = []
+    while True:
+        if start < end:
+            temp.append(round(start, round_number))
+            start += step
+        else:
+            break
+    return temp
+
+
+def surface3d_data():
+    for t0 in float_range(-3, 3, 0.05):
+        y = t0
+        for t1 in float_range(-3, 3, 0.05):
+            x = t1
+            z = math.sin(x ** 2 + y ** 2) * x / 3.14
+            yield [x, y, z]
+
+
+(
+    Surface3D(init_opts=opts.InitOpts(width="1600px", height="800px"))
+    .add(
+        series_name="",
+        shading="color",
+        data=list(surface3d_data()),
+        xaxis3d_opts=opts.Axis3DOpts(type_="value"),
+        yaxis3d_opts=opts.Axis3DOpts(type_="value"),
+        grid3d_opts=opts.Grid3DOpts(width=100, height=40, depth=100),
+    )
+    .set_global_opts(
+        visualmap_opts=opts.VisualMapOpts(
+            dimension=2,
+            max_=1,
+            min_=-1,
+            range_color=[
+                "#313695",
+                "#4575b4",
+                "#74add1",
+                "#abd9e9",
+                "#e0f3f8",
+                "#ffffbf",
+                "#fee090",
+                "#fdae61",
+                "#f46d43",
+                "#d73027",
+                "#a50026",
+            ],
+        )
+    )
+    .render(__mypath__.get_desktop_path()+r"\surface_wave.html")
+)
+
+#%%
+from pyecharts import options as opts
+from pyecharts.charts import Map3D
+from pyecharts.globals import ChartType
+
+example_data = [
+    [[119.107078, 36.70925, 1000], [116.587245, 35.415393, 1000]],
+    [[117.000923, 36.675807], [120.355173, 36.082982]],
+    [[118.047648, 36.814939], [118.66471, 37.434564]],
+    [[121.391382, 37.539297], [119.107078, 36.70925]],
+    [[116.587245, 35.415393], [122.116394, 37.509691]],
+    [[119.461208, 35.428588], [118.326443, 35.065282]],
+    [[116.307428, 37.453968], [115.469381, 35.246531]],
+]
+c = (
+    Map3D()
+    .add_schema(
+        maptype="山东",
+        itemstyle_opts=opts.ItemStyleOpts(
+            color="rgb(5,101,123)",
+            opacity=1,
+            border_width=0.8,
+            border_color="rgb(62,215,213)",
+        ),
+        light_opts=opts.Map3DLightOpts(
+            main_color="#fff",
+            main_intensity=1.2,
+            is_main_shadow=False,
+            main_alpha=55,
+            main_beta=10,
+            ambient_intensity=0.3,
+        ),
+        view_control_opts=opts.Map3DViewControlOpts(center=[-10, 0, 10]),
+        post_effect_opts=opts.Map3DPostEffectOpts(is_enable=False),
+    )
+    .add(
+        series_name="",
+        data_pair=example_data,
+        type_=ChartType.LINES3D,
+        effect=opts.Lines3DEffectOpts(
+            is_show=True,
+            period=4,
+            trail_width=3,
+            trail_length=0.5,
+            trail_color="#f00",
+            trail_opacity=1,
+        ),
+        linestyle_opts=opts.LineStyleOpts(is_show=False, color="#fff", opacity=0),
+    )
+    .set_global_opts(title_opts=opts.TitleOpts(title="Map3D-Lines3D"))
+    .render(__mypath__.get_desktop_path()+r"\map3d_with_lines3d.html")
+)
+
+
+#%%
+from pyecharts.charts import Bar
+
+bar = Bar()
+bar.add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
+bar.add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
+# render 会生成本地 HTML 文件，默认会在当前目录生成 render.html 文件
+# 也可以传入路径参数，如 bar.render("mycharts.html")
+bar.render() # 会默认到当前工作位置，要输入路径
 
 
 
