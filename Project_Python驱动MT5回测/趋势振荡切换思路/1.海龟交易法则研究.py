@@ -203,14 +203,28 @@ time.sleep(1)
 print("通用过滤参数输出完成！")
 
 # ---需要 run 中运行，ipython中不行。
+myDefault.set_backend_default("agg")
 FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
 import os
 os.system("python "+FilterScript)
 time.sleep(1)
 print("通用过滤执行完成！")
 
-# ---剪切桌面的结果到项目目录
-
+# ---剪切桌面的结果到项目目录 reportfolder
+# 移动桌面 通用过滤.range 通用过滤.2side 到项目目录
+filterfolder1 = __mypath__.get_desktop_path() + "\\通用过滤.range"
+tofilterfolder1 = reportfolder + "\\2.通用过滤.range"
+filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
+tofilterfolder2 = reportfolder + "\\2.通用过滤.2side"
+myfile.move(src=filterfolder1,dst=tofilterfolder1)
+myfile.move(src=filterfolder2,dst=tofilterfolder2)
+time.sleep(3)
+print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
+# 删除 filehtm, outdesktopfile
+myfile.remove_dir_or_file(filehtm)
+myfile.remove_dir_or_file(outdesktopfile)
+time.sleep(1)
+print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
 
 
 #%%
