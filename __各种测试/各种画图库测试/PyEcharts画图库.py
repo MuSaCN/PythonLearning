@@ -62,6 +62,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 ''' 详情请参考：https://gallery.pyecharts.org/#/README '''
 
+
 #%% ### 3D曲面 ###
 from typing import Union
 def float_range(start: int, end: int, step: Union[int, float], round_number: int = 2):
@@ -96,7 +97,7 @@ data = pd.DataFrame(data)
 data.columns = ["X","Y","Z"]
 # ---
 filepath = __mypath__.get_desktop_path()+r"\plot_surface3D.html"
-myplthtml.plot_surface3D(data=data, height=40, series_name="数据的名称", title="主题", savehtml = filepath)
+surface3D = myplthtml.plot_surface3D(data=data, height=40, series_name="数据的名称", title="主题", savehtml = filepath)
 import os
 os.startfile(filepath)
 
@@ -110,7 +111,7 @@ data = pd.DataFrame(data)
 data.columns = ["X","Y","Z"]
 # ---
 filepath = __mypath__.get_desktop_path()+r"\plot_scatter3D.html"
-myplthtml.plot_scatter3D(data=data, series_name="数据的名称", title="主题", savehtml = filepath)
+scatter3D = myplthtml.plot_scatter3D(data=data, series_name="数据的名称", title="主题", savehtml = filepath)
 import os
 os.startfile(filepath)
 
@@ -128,7 +129,7 @@ data = pd.DataFrame(data)
 data.columns = ["X","Y","Z"]
 # ---
 filepath = __mypath__.get_desktop_path()+r"\line3d_autorotate.html"
-myplthtml.plot_line3D(data=data, series_name="数据的名称", title="主题", savehtml = filepath)
+line3D = myplthtml.plot_line3D(data=data, series_name="数据的名称", title="主题", savehtml = filepath)
 import os
 os.startfile(filepath)
 
@@ -142,10 +143,17 @@ data = [[i, j, random.randint(0, 12)] for i in range(24) for j in range(7)] # �
 data = pd.DataFrame(data)
 data.columns = ["X","Y","Z"]
 filepath = __mypath__.get_desktop_path()+r"\bar3d_punch_card.html"
-myplthtml.plot_bar3D(data=data, series_name="数据的名称", xlabellist=hourslabel, ylabellist=weeklabel, title="主题", savehtml = filepath)
+bar3D = myplthtml.plot_bar3D(data=data, series_name="数据的名称", xlabellist=hourslabel, ylabellist=weeklabel, title="主题", savehtml = filepath)
 import os
 os.startfile(filepath)
 
 
+#%% ### 画选项卡多图 ###
+filepath = __mypath__.get_desktop_path()+r"\tab_base.html"
+tab = myplthtml.plot_tab_chart(chart_list=[bar3D,line3D,scatter3D,surface3D],
+                               tab_name_list=["bar3D","line3D","scatter3D","surface3D"],
+                               savehtml=filepath)
+import os
+os.startfile(filepath)
 
 
