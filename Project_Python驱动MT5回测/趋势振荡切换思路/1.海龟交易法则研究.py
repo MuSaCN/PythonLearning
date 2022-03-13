@@ -21,6 +21,7 @@ myplt = MyPlot.MyClass_Plot()  # 直接绘图类(单个图窗)
 mypltpro = MyPlot.MyClass_PlotPro()  # Plot高级图系列
 myfig = MyPlot.MyClass_Figure(AddFigure=False)  # 对象式绘图类(可多个图窗)
 myfigpro = MyPlot.MyClass_FigurePro(AddFigure=False)  # Figure高级图系列
+myplthtml = MyPlot.MyClass_PlotHTML() # 画可以交互的html格式的图
 mynp = MyArray.MyClass_NumPy()  # 多维数组类(整合Numpy)
 mypd = MyArray.MyClass_Pandas()  # 矩阵数组类(整合Pandas)
 mypdpro = MyArray.MyClass_PandasPro()  # 高级矩阵数组类
@@ -108,27 +109,41 @@ myMT5run.check_inputs_and_write()
 myMT5run.run_MT5()
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
-# reportfolder
+filepath = reportfolder+r"\1.a.3D信号固定持仓.html" # 输出3D图的位置
+choose_fixedholding = 10 # 选择固定持仓的周期，有时候小时间框需要固定持仓大一点的
+
+# ---
+# 读取优化opt结果
 opt = myMT5Report.read_opt_xml(reportfile)
+columns = opt.columns
+columns = columns.insert(loc=columns.get_loc("Sharpe Ratio")+1, item="Sqn") # 插入到指定位置
+# 由于时间是一样的，所以不需要考虑年化交易数量
+opt["Sqn"] = opt["Sharpe Ratio"] * np.power(opt["Trades"], 0.5)
+# 必须要重新排列下
+opt = opt[columns.tolist()]
 
-myDefault.set_backend_default("agg") # 后台输出图片
+# ---分别画3D图
+chart_list, tab_name_list = [], []
+for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Sqn', 'Custom', 'Equity DD %', 'Trades']:
+    # 参数1为信号参数，排除 "FixedHolding" 后剩下的；参数2为固定持仓；参数Z为策略表现；
+    para1,para2,paraZ = opt.columns[-2:].drop("FixedHolding")[0], "FixedHolding",  name
+    data3D = opt[[para1,para2,paraZ]]
+    # 画3D图
+    surface3D = myplthtml.plot_surface3D(data=data3D, height=100, series_name=paraZ, title=paraZ, savehtml = None)
+    chart_list.append(surface3D)
+    tab_name_list.append(name)
+# 输出到html
+tab = myplthtml.plot_tab_chart(chart_list=chart_list,tab_name_list=tab_name_list,savehtml=filepath)
+# import os
+# os.startfile(filepath)
 
-# ---信号参数，排除 "FixedHolding" 后剩下的；固定持仓；Z值
-# 参数1为信号参数，参数2为固定持仓，参数Z为策略表现
-para1,para2,paraZ = opt.columns[-2:].drop("FixedHolding")[0], "FixedHolding",  "Custom"
-X, Y, Z = opt[para1], opt[para2], opt[paraZ]
 
-# ---画3D图
-myfig.__init__(1,1,figsize=[1024,768])
-myfig.set_axes_3d2d()
-myfig.plot3Ddf_trisurf(xs=X,ys=Y,zs=Z, PlotLabel=[paraZ,para1,para2])
-myfig.savefig(reportfolder + "\\1.a.3D信号固定持仓.jpg")
-
-# ---选择固定持仓1期，且交易数量平均每天1次的
-opt1 = opt[(opt["FixedHolding"]==1) & (opt["Trades"]>=250*7)]
+# ---选择固定持仓，且交易数量平均每天1次的
+opt1 = opt[(opt["FixedHolding"]==choose_fixedholding) & (opt["Trades"]>=250*7)]
 opt1.set_index(keys=para1, drop=False, inplace=True)
 
 # ---分别输出各策略结果的卡尔曼过滤选择结果
+myDefault.set_backend_default("agg") # 后台输出图片
 totalindex = []
 for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Custom']: # name = "Expected Payoff"
     # 有时候夏普比会都为-5
@@ -145,7 +160,8 @@ signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
 
 
 #%% ###### Step1.2 单独一次回测 ######
-reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed=1".format(signalpara1) # 不需要.xml后缀
+# 输出结果，不需要.xml后缀
+reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed={}".format(signalpara1,choose_fixedholding)
 optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 # ---
 myMT5run.__init__()
