@@ -110,7 +110,7 @@ myMT5run.run_MT5()
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
 filepath = reportfolder+r"\1.a.3D信号固定持仓.html" # 输出3D图的位置
-choose_fixedholding = 10 # 选择固定持仓的周期，有时候小时间框需要固定持仓大一点的
+fixedholding = 10 # 选择固定持仓的周期，有时候小时间框需要固定持仓大一点的
 
 # ---
 # 读取优化opt结果
@@ -139,7 +139,7 @@ tab = myplthtml.plot_tab_chart(chart_list=chart_list,tab_name_list=tab_name_list
 
 
 # ---选择固定持仓，且交易数量平均每天1次的
-opt1 = opt[(opt["FixedHolding"]==choose_fixedholding) & (opt["Trades"]>=250*7)]
+opt1 = opt[(opt["FixedHolding"]==fixedholding) & (opt["Trades"]>=250*7)]
 opt1.set_index(keys=para1, drop=False, inplace=True)
 
 # ---分别输出各策略结果的卡尔曼过滤选择结果
@@ -150,7 +150,7 @@ for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'S
     if len(opt1[name].unique())==1:
         continue
     # 输出结果
-    index, values, ax = myDA.plot_kalman_and_extrema(array = opt1[name], arrayX = opt1[para1], restore_nan=False, comparator=np.greater_equal, order=30, filterlevel=1, ylabel = name,savefig=reportfolder+"\\1.a.信号1期.%s.jpg"%name, batch=True, show=True)
+    index, values, ax = myDA.plot_kalman_and_extrema(array = opt1[name], arrayX = opt1[para1], restore_nan=False, comparator=np.greater_equal, order=30, filterlevel=1, ylabel = name,savefig=reportfolder+"\\1.a.信号{}期.{}.jpg".format(fixedholding, name), batch=True, show=True)
     # 特殊结果占权重两个
     indexlist = index[0].tolist() * 2 if name in ["Sharpe Ratio", "Custom"] else index[0].tolist()
     totalindex = totalindex + indexlist
@@ -161,7 +161,7 @@ signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
 
 #%% ###### Step1.2 单独一次回测 ######
 # 输出结果，不需要.xml后缀
-reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed={}".format(signalpara1,choose_fixedholding)
+reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed={}".format(signalpara1, fixedholding)
 optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 # ---
 myMT5run.__init__()
@@ -199,7 +199,7 @@ filepath2 = reportfile_1b + ".htm" # file = reportfolder + "\\1.b.信号=100.0.F
 filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
 myfile.copy_dir_or_file(source=filepath2, destination=filehtm, DirRemove=True)
 
-# ---输出参数csv到指定目录和桌面
+# ---输出参数csv到项目目录和桌面
 dfpara = []
 dfpara.append(["filepath",filepath2])
 dfpara.append(["direct","All"])
@@ -208,7 +208,7 @@ dfpara.append(["tf_indi",timeframe])
 dfpara = pd.DataFrame(dfpara)
 dfpara.set_index(keys=0,drop=True,inplace=True)
 # 添加到指定目录
-outfile = reportfolder + r"\2.通用过滤参数.csv"
+outfile = reportfolder + r"\2.信号={}.Fixed={}.通用过滤参数.csv".format(signalpara1,fixedholding)
 dfpara.to_csv(outfile, sep=";")
 # 添加到桌面，从桌面加载
 outdesktopfile = __mypath__.get_desktop_path() + r"\2.通用过滤参数.csv"
@@ -229,9 +229,9 @@ print("通用过滤执行完成！")
 # ---剪切桌面的结果到项目目录 reportfolder
 # 移动桌面 通用过滤.range 通用过滤.2side 到项目目录
 filterfolder1 = __mypath__.get_desktop_path() + "\\通用过滤.range"
-tofilterfolder1 = reportfolder + "\\2.通用过滤.range"
+tofilterfolder1 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.range".format(signalpara1,fixedholding)
 filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
-tofilterfolder2 = reportfolder + "\\2.通用过滤.2side"
+tofilterfolder2 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.2side".format(signalpara1,fixedholding)
 myfile.move(src=filterfolder1,dst=tofilterfolder1)
 myfile.move(src=filterfolder2,dst=tofilterfolder2)
 time.sleep(3)
