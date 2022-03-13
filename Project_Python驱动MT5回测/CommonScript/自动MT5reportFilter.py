@@ -69,7 +69,7 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
-
+    myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
     # ---从桌面加载
     outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
     # 读取
