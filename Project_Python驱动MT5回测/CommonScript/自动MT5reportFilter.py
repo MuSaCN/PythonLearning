@@ -71,8 +71,7 @@ if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
 
     # ---从桌面加载
-    filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
-    outdesktopfile = __mypath__.get_desktop_path() + r"\2.通用过滤参数.csv"
+    outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
     # 读取
     readfile = myfile.read_pd(outdesktopfile, sep=";")
     readfile.set_index(keys="0",drop=True,inplace=True)

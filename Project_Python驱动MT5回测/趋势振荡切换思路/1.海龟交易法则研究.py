@@ -211,7 +211,7 @@ dfpara.set_index(keys=0,drop=True,inplace=True)
 outfile = reportfolder + r"\2.信号={}.Fixed={}.通用过滤参数.csv".format(signalpara1,fixedholding)
 dfpara.to_csv(outfile, sep=";")
 # 添加到桌面，从桌面加载
-outdesktopfile = __mypath__.get_desktop_path() + r"\2.通用过滤参数.csv"
+outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
 dfpara.to_csv(outdesktopfile, sep=";")
 # 休息
 import time
