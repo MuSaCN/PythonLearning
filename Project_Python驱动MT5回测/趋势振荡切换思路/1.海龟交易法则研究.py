@@ -53,7 +53,7 @@ myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位�
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
 myMT5code = MyMql.MyClass_CodeMql5()  # Python生成MT5代码
 myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
-myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示图
+myDefault.set_backend_default("agg")  # Pycharm下需要plt.show()才显示图
 # ------------------------------------------------------------
 # Jupyter Notebook 控制台显示必须加上：%matplotlib inline ，弹出窗显示必须加上：%matplotlib auto
 # %matplotlib inline
