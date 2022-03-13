@@ -81,7 +81,7 @@ if __name__ == '__main__':
     direct = readfile.loc["direct"][0]
     filtermode = readfile.loc["filtermode"][0]
     tf_indi = readfile.loc["tf_indi"][0]
-
+    print("file=",file," direct=",direct," filtermode=",filtermode," tf_indi=",tf_indi)
     # ---输入调整
     file = "ReportTester.xlsx" if file == "" else file
     direct = "All" if direct == "" else direct
