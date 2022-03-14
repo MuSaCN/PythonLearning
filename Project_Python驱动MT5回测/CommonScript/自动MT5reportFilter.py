@@ -98,7 +98,7 @@ if __name__ == '__main__':
         print("所有的都测试filtermode=", filtermode)
         # ===范围过滤===
         print("===开始范围过滤===")
-        c_report_filter = MT5_Report_Filter()
+        c_report_filter = MT5_Report_Filter(logger=mylogging)
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         plt.close()
         plt.show() # 必须要先释放下，不然多进程分别测试各个模式会出错。
         print("===开始两侧过滤===")
-        c_report_filter = MT5_Report_Filter()
+        c_report_filter = MT5_Report_Filter(logger=mylogging)
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
     # ---仅测试指定的模式
     else:
-        c_report_filter = MT5_Report_Filter()
+        c_report_filter = MT5_Report_Filter(logger=mylogging)
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
