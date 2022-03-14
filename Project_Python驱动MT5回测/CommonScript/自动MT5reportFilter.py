@@ -80,7 +80,7 @@ if __name__ == '__main__':
     direct = readfile.loc["direct"][0]
     filtermode = readfile.loc["filtermode"][0]
     tf_indi = readfile.loc["tf_indi"][0]
-    core_num = readfile.loc["core_num"][0]
+    core_num = int(readfile.loc["core_num"][0])
     print(readfile)
     # ---输入调整
     file = "ReportTester.xlsx" if file == "" else file
