@@ -193,7 +193,7 @@ myMT5run.run_MT5()
 
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
-core_num = 8
+core_num = -1
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
@@ -235,13 +235,26 @@ filterfolder1 = __mypath__.get_desktop_path() + "\\通用过滤.range"
 tofilterfolder1 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.range".format(signalpara1,fixedholding)
 filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
 tofilterfolder2 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.2side".format(signalpara1,fixedholding)
-myfile.move(src=filterfolder1,dst=tofilterfolder1)
-myfile.move(src=filterfolder2,dst=tofilterfolder2)
+if __mypath__.path_exists(filterfolder1):
+    myfile.move(src=filterfolder1,dst=tofilterfolder1)
+else:
+    print("{}不存在！！！".format(filterfolder1))
+if __mypath__.path_exists(filterfolder2):
+    myfile.move(src=filterfolder2,dst=tofilterfolder2)
+else:
+    print("{}不存在！！！".format(filterfolder2))
+#
 time.sleep(3)
 print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
 # 删除 filehtm, outdesktopfile
-myfile.remove_dir_or_file(filehtm)
-myfile.remove_dir_or_file(outdesktopfile)
+if __mypath__.path_exists(filehtm):
+    myfile.remove_dir_or_file(filehtm)
+else:
+    print("{}不存在！！！".format(filehtm))
+if __mypath__.path_exists(outdesktopfile):
+    myfile.remove_dir_or_file(outdesktopfile)
+else:
+    print("{}不存在！！！".format(outdesktopfile))
 time.sleep(1)
 print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
 
