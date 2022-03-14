@@ -193,6 +193,8 @@ myMT5run.run_MT5()
 
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
+core_num = 8
+
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
 filepath2 = reportfile_1b + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
@@ -205,6 +207,7 @@ dfpara.append(["filepath",filepath2])
 dfpara.append(["direct","All"])
 dfpara.append(["filtermode","-1"])
 dfpara.append(["tf_indi",timeframe])
+dfpara.append(["core_num",core_num])
 dfpara = pd.DataFrame(dfpara)
 dfpara.set_index(keys=0,drop=True,inplace=True)
 # 添加到指定目录

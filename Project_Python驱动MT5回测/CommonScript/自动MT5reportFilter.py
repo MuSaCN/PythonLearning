@@ -80,7 +80,8 @@ if __name__ == '__main__':
     direct = readfile.loc["direct"][0]
     filtermode = readfile.loc["filtermode"][0]
     tf_indi = readfile.loc["tf_indi"][0]
-    print("file=",file," direct=",direct," filtermode=",filtermode," tf_indi=",tf_indi)
+    core_num = readfile.loc["core_num"][0]
+    print(readfile)
     # ---输入调整
     file = "ReportTester.xlsx" if file == "" else file
     direct = "All" if direct == "" else direct
@@ -100,7 +101,7 @@ if __name__ == '__main__':
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
-        c_report_filter.core_num = -1
+        c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
         c_report_filter.filtermode = "range"  # 过滤模式 "range","2side"
@@ -121,6 +122,7 @@ if __name__ == '__main__':
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
+        c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
         c_report_filter.filtermode = "2side"  # 过滤模式 "range","2side"
@@ -139,6 +141,7 @@ if __name__ == '__main__':
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
+        c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
         c_report_filter.filtermode = filtermode  # 过滤模式 "range","2side"
