@@ -106,7 +106,7 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+# myMT5run.run_MT5()
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
 filepath = reportfolder+r"\1.a.3D信号固定持仓.html" # 输出3D图的位置
@@ -188,7 +188,7 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+# myMT5run.run_MT5()
 
 
 
