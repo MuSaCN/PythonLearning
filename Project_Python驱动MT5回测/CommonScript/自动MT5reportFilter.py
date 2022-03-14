@@ -13,7 +13,7 @@ from scipy import stats
 
 # ------------------------------------------------------------
 __mypath__ = MyPath.MyClass_Path("")  # 路径类
-mylogging = MyDefault.MyClass_Default_Logging(activate=True, filename=__mypath__.get_desktop_path()+"\\通用过滤记录.log")  # 日志记录类，需要放在上面才行
+mylogging = MyDefault.MyClass_Default_Logging(activate=False)  # 日志记录类，需要放在上面才行
 myfile = MyFile.MyClass_File()  # 文件操作类
 myword = MyFile.MyClass_Word()  # word生成类
 myexcel = MyFile.MyClass_Excel()  # excel生成类
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         print("所有的都测试filtermode=", filtermode)
         # ===范围过滤===
         print("===开始范围过滤===")
-        c_report_filter = MT5_Report_Filter(logger=mylogging)
+        c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         plt.close()
         plt.show() # 必须要先释放下，不然多进程分别测试各个模式会出错。
         print("===开始两侧过滤===")
-        c_report_filter = MT5_Report_Filter(logger=mylogging)
+        c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
     # ---仅测试指定的模式
     else:
-        c_report_filter = MT5_Report_Filter(logger=mylogging)
+        c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
         # ---外部赋值
         c_report_filter.core_num = core_num
