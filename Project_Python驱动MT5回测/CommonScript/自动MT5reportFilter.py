@@ -65,11 +65,12 @@ import warnings
 warnings.filterwarnings('ignore')
 
 #%%
-myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须放到类下面.
+
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
     myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+    plt.show()
     # ---从桌面加载
     outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
     # 读取
@@ -100,6 +101,7 @@ if __name__ == '__main__':
         print("===开始范围过滤===")
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
@@ -108,7 +110,7 @@ if __name__ == '__main__':
         c_report_filter.tf_indi = tf_indi  # 指标的时间框，可以与报告的不同
         # ---读取报告，设定各种变量
         c_report_filter.load_report()
-        # # ---并行运算，输出过滤的文本文档
+        # ---并行运算，输出过滤的文本文档
         c_report_filter.main_filter_and_xlsx()
         # ---参数过滤自动选择，且画图、输出xlsx。
         c_report_filter.main_auto_kalman_choose()
@@ -122,6 +124,7 @@ if __name__ == '__main__':
         print("===开始两侧过滤===")
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
@@ -141,6 +144,7 @@ if __name__ == '__main__':
     else:
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.core_num = core_num
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file

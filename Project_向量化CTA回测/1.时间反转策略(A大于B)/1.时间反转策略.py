@@ -393,53 +393,53 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
 
-    # # ---1_1.参数优化。写入log
-    # print("1_1. 开始策略参数优化_并行")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\1_1.参数优化.log")
-    # opt.main_func(run_testset=False, logger=logger)
-    # # ---1_2.参数自动选择
-    # print("1_2. 开始策略参数自动选择_并行")
-    # choose_opt.main_func()
-    # # ---1_3.汇总品种不同过滤结果
-    # print("1_3. 开始汇总品种不同过滤结果_并行")
-    # sum_choo.main_func()
-    #
-    # # ---2_1.开始订单可管理性分析。包括 2_1_1新的文档文件、2_1_2分析图片写入log
-    # print("2_1. 开始订单可管理性分析： ")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\2_1.订单可管理性分析.log")
-    # more_h.main_func(logger=logger) # 注意，多核不完全输出，此处用的是折中办法。
-    # # ---2_2.订单可管理性分析后进行回测
-    # print("2_2. 开始筛选后策略自动回测： ")
-    # strat_bt.main_func()
-    # # ---2_3.同策同框同向不同参数比较筛选
-    # print("2_3. 开始同策同框同向不同参数比较筛选： ")
-    # s_better.main_func()
-    #
-    # # ---3_1.指标范围过滤输出文档
-    # print("3_1. 开始指标范围过滤输出文档")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_1.指标范围过滤输出文档.log")
-    # rf_out.main_func(logger=logger)
-    # # ---3_2.范围过滤参数自动选择及策略回测
-    # # 3_2_1.范围过滤参数自动选择
-    # print("3_2_1. 开始范围过滤参数自动选择：")
-    # rf_choo_para.main_func()
-    # # 3_2_2. 范围过滤策略回测
-    # print("3_2_2. 开始范围过滤策略回测：")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_2.范围过滤策略回测.log")
-    # rf_bt.main_func(logger=logger)
+    # ---1_1.参数优化。写入log
+    print("1_1. 开始策略参数优化_并行")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\1_1.参数优化.log")
+    opt.main_func(run_testset=False, logger=logger)
+    # ---1_2.参数自动选择
+    print("1_2. 开始策略参数自动选择_并行")
+    choose_opt.main_func()
+    # ---1_3.汇总品种不同过滤结果
+    print("1_3. 开始汇总品种不同过滤结果_并行")
+    sum_choo.main_func()
+
+    # ---2_1.开始订单可管理性分析。包括 2_1_1新的文档文件、2_1_2分析图片写入log
+    print("2_1. 开始订单可管理性分析： ")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\2_1.订单可管理性分析.log")
+    more_h.main_func(logger=logger) # 注意，多核不完全输出，此处用的是折中办法。
+    # ---2_2.订单可管理性分析后进行回测
+    print("2_2. 开始筛选后策略自动回测： ")
+    strat_bt.main_func()
+    # ---2_3.同策同框同向不同参数比较筛选
+    print("2_3. 开始同策同框同向不同参数比较筛选： ")
+    s_better.main_func()
+
+    # ---3_1.指标范围过滤输出文档
+    print("3_1. 开始指标范围过滤输出文档")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_1.指标范围过滤输出文档.log")
+    rf_out.main_func(logger=logger)
+    # ---3_2.范围过滤参数自动选择及策略回测
+    # 3_2_1.范围过滤参数自动选择
+    print("3_2_1. 开始范围过滤参数自动选择：")
+    rf_choo_para.main_func()
+    # 3_2_2. 范围过滤策略回测
+    print("3_2_2. 开始范围过滤策略回测：")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\3_2.范围过滤策略回测.log")
+    rf_bt.main_func(logger=logger)
 
     # ---4_1.指标方向过滤输出文档
-    # print("4_1. 开始指标方向过滤输出文档")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_1.指标方向过滤输出文档.log")
-    # df_out.main_func(logger=logger)
-    # # ---4_2.方向过滤参数自动选择及策略回测
-    # # 4_2_1 方向过滤参数自动选择
-    # print("4_2_1. 开始方向过滤参数自动选择：")
-    # df_choo_para.main_func()
-    # # 4_2_2 方向过滤策略回测
-    # print("4_2_2. 开始方向过滤策略回测：")
-    # logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")
-    # df_bt.main_func(logger=logger)
+    print("4_1. 开始指标方向过滤输出文档")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_1.指标方向过滤输出文档.log")
+    df_out.main_func(logger=logger)
+    # ---4_2.方向过滤参数自动选择及策略回测
+    # 4_2_1 方向过滤参数自动选择
+    print("4_2_1. 开始方向过滤参数自动选择：")
+    df_choo_para.main_func()
+    # 4_2_2 方向过滤策略回测
+    print("4_2_2. 开始方向过滤策略回测：")
+    logger = mylogging.getLogger(__mypath__.get_desktop_path() + "\\4_2.方向过滤策略回测.log")
+    df_bt.main_func(logger=logger)
 
     # ---5.策略池整合
     print("5. 策略池整合")
