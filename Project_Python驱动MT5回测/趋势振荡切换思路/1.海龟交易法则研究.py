@@ -259,6 +259,3 @@ time.sleep(1)
 print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
 
 
-
-
-
