@@ -74,7 +74,7 @@ expertname = experfolder + "\\" + expertfile
 fromdate = "2010.01.01"
 todate = "2017.01.01"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_M5"
+timeframe = "TIMEFRAME_M15"
 totalfolder = r"F:\工作(同步)\工作---MT5策略研究\海龟交易法则_趋势振荡分类研究"
 reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 
@@ -106,7 +106,7 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+# myMT5run.run_MT5()
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
 filepath = reportfolder+r"\1.a.3D信号固定持仓.html" # 输出3D图的位置
@@ -160,6 +160,7 @@ signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
 
 
 #%% ###### Step1.2 单独一次回测 ######
+""
 # 输出结果，不需要.xml后缀
 reportfile_1b = reportfolder + "\\1.b.信号={}.Fixed={}".format(signalpara1, fixedholding)
 optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
@@ -188,12 +189,13 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+# myMT5run.run_MT5()
 
 
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
 core_num = -1
+tf_indi = "TIMEFRAME_H1" # 过滤指标的时间框 timeframe "TIMEFRAME_H1"
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
@@ -206,7 +208,7 @@ dfpara = []
 dfpara.append(["filepath",filepath2])
 dfpara.append(["direct","All"])
 dfpara.append(["filtermode","-1"])
-dfpara.append(["tf_indi",timeframe])
+dfpara.append(["tf_indi",tf_indi])
 dfpara.append(["core_num",core_num])
 dfpara = pd.DataFrame(dfpara)
 dfpara.set_index(keys=0,drop=True,inplace=True)
@@ -236,11 +238,11 @@ tofilterfolder1 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.range".for
 filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
 tofilterfolder2 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.2side".format(signalpara1,fixedholding)
 if __mypath__.path_exists(filterfolder1):
-    myfile.move(src=filterfolder1,dst=tofilterfolder1)
+    myfile.move(src=filterfolder1,dst=tofilterfolder1,cover=True)
 else:
     print("{}不存在！！！".format(filterfolder1))
 if __mypath__.path_exists(filterfolder2):
-    myfile.move(src=filterfolder2,dst=tofilterfolder2)
+    myfile.move(src=filterfolder2,dst=tofilterfolder2,cover=True)
 else:
     print("{}不存在！！！".format(filterfolder2))
 #
@@ -257,5 +259,6 @@ else:
     print("{}不存在！！！".format(outdesktopfile))
 time.sleep(1)
 print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
+
 
 
