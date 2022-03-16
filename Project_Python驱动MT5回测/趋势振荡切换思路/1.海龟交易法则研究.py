@@ -66,6 +66,8 @@ myMoneyM = MyTrade.MyClass_MoneyManage()  # 资金管理类
 '''
 import warnings
 warnings.filterwarnings('ignore')
+myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+plt.show()
 
 #%% ###### 通用参数 ######
 experfolder = "My_Experts\\Strategy走势分类研究\海龟交易法则趋势振荡分类"
@@ -74,7 +76,7 @@ expertname = experfolder + "\\" + expertfile
 fromdate = "2010.01.01"
 todate = "2017.01.01"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_M15"
+timeframe = "TIMEFRAME_M5"
 totalfolder = r"F:\工作(同步)\工作---MT5策略研究\海龟交易法则_趋势振荡分类研究"
 reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 
@@ -195,7 +197,7 @@ myMT5run.run_MT5()
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
 core_num = -1
-tf_indi = "TIMEFRAME_H1" # 过滤指标的时间框 timeframe "TIMEFRAME_H1"
+tf_indi = "TIMEFRAME_M30" # 过滤指标的时间框 timeframe "TIMEFRAME_H1"
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
