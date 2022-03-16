@@ -70,14 +70,14 @@ myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须�
 plt.show()
 
 #%% ###### 通用参数 ######
-experfolder = "My_Experts\\Strategy走势分类研究\海趋势振荡分类研究_海龟交易法则_Momentum"
+experfolder = "My_Experts\\Strategy走势分类研究\海龟交易法则趋势振荡分类"
 expertfile = "1.海龟交易法则研究.Trend.ex5"
 expertname = experfolder + "\\" + expertfile
 fromdate = "2010.01.01"
 todate = "2017.01.01"
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M15"
-totalfolder = r"F:\工作(同步)\工作---MT5策略研究\海龟交易法则_趋势振荡分类研究"
+totalfolder = r"F:\工作(同步)\工作---MT5策略研究\趋势振荡分类研究_海龟交易法则_Momentum"
 reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 
 
