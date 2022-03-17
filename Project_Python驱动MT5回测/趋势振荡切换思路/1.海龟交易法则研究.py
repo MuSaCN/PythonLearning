@@ -108,7 +108,7 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-# myMT5run.run_MT5()
+myMT5run.run_MT5()
 
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
@@ -246,25 +246,25 @@ tofilterfolder1 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.range".for
 filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
 tofilterfolder2 = reportfolder + "\\2.信号={}.Fixed={}.通用过滤.2side".format(signalpara1,fixedholding)
 if __mypath__.path_exists(filterfolder1):
-    myfile.move(src=filterfolder1,dst=tofilterfolder1,cover=True)
+    myfile.copy(src=filterfolder1,dst=tofilterfolder1,cover=True)
 else:
     print("{}不存在！！！".format(filterfolder1))
 if __mypath__.path_exists(filterfolder2):
-    myfile.move(src=filterfolder2,dst=tofilterfolder2,cover=True)
+    myfile.copy(src=filterfolder2,dst=tofilterfolder2,cover=True)
 else:
     print("{}不存在！！！".format(filterfolder2))
 #
 time.sleep(3)
 print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
 # 删除 filehtm, outdesktopfile
-if __mypath__.path_exists(filehtm):
-    myfile.remove_dir_or_file(filehtm)
-else:
-    print("{}不存在！！！".format(filehtm))
-if __mypath__.path_exists(outdesktopfile):
-    myfile.remove_dir_or_file(outdesktopfile)
-else:
-    print("{}不存在！！！".format(outdesktopfile))
+# if __mypath__.path_exists(filehtm):
+#     myfile.remove_dir_or_file(filehtm)
+# else:
+#     print("{}不存在！！！".format(filehtm))
+# if __mypath__.path_exists(outdesktopfile):
+#     myfile.remove_dir_or_file(outdesktopfile)
+# else:
+#     print("{}不存在！！！".format(outdesktopfile))
 time.sleep(1)
 print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
 
