@@ -96,7 +96,12 @@ myMT5run.input_set("backtestmode", "0") # 0-FitnessPerformance
 # ------1.固定持仓------
 myMT5run.input_set("FixedHolding", "0||1||1||10||Y") # 0表示不是固定持仓模式，>0表示固定周期持仓。
 # ------2.信号过滤------
-myMT5run.input_set("FilterMode", "0||0||0||4||N") # 0-NoFilter, 1-Range, 2-TwoSide
+myMT5run.input_set("FilterMode", "0") # 0-NoFilter, 1-Range, 2-TwoSide
+myMT5run.input_set("FilterIndiName", "过滤指标名称") # 过滤指标名称
+myMT5run.input_set("FilterIndiTF", "TIMEFRAME_H1") # 过滤指标时间框字符串
+myMT5run.input_set("FilterIndiPara0", "0") # 过滤指标首个参数
+myMT5run.input_set("FilterLeftValue", "0") # 过滤指标左侧的值
+myMT5run.input_set("FilterRightValue", "0") # 过滤指标右侧的值
 # ------3.止盈止损------
 myMT5run.input_set("InitTPPoint", "0||200||100||2000||N")
 myMT5run.input_set("SL_Init", "false") # false表示没有初期止损，true表示有初期止损。
@@ -184,7 +189,12 @@ myMT5run.input_set("backtestmode", "0") # 0-FitnessPerformance
 # ------1.固定持仓------
 myMT5run.input_set("FixedHolding", "1||1||1||10||N") # 0表示不是固定持仓模式，>0表示固定周期持仓。
 # ------2.信号过滤------
-myMT5run.input_set("FilterMode", "0||0||0||4||N") # 0-NoFilter, 1-Range, 2-TwoSide
+myMT5run.input_set("FilterMode", "0") # 0-NoFilter, 1-Range, 2-TwoSide
+myMT5run.input_set("FilterIndiName", "过滤指标名称") # 过滤指标名称
+myMT5run.input_set("FilterIndiTF", "TIMEFRAME_H1") # 过滤指标时间框字符串
+myMT5run.input_set("FilterIndiPara0", "0") # 过滤指标首个参数
+myMT5run.input_set("FilterLeftValue", "0") # 过滤指标左侧的值
+myMT5run.input_set("FilterRightValue", "0") # 过滤指标右侧的值
 # ------3.止盈止损------
 myMT5run.input_set("InitTPPoint", "0||200||100||2000||N")
 myMT5run.input_set("SL_Init", "false") # false表示没有初期止损，true表示有初期止损。
