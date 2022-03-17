@@ -76,7 +76,7 @@ expertname = experfolder + "\\" + expertfile
 fromdate = "2010.01.01"
 todate = "2017.01.01"
 symbol = "EURUSD"
-timeframe = "TIMEFRAME_M15"
+timeframe = "TIMEFRAME_M5"
 totalfolder = r"F:\工作(同步)\工作---MT5策略研究\趋势振荡分类研究_海龟交易法则_Momentum"
 reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 
@@ -108,7 +108,7 @@ myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false
 
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+# myMT5run.run_MT5()
 
 
 #%% ###### Step1.1 找寻随着持仓周期增加策略表现递增的信号参数 ######
@@ -142,6 +142,7 @@ tab = myplthtml.plot_tab_chart(chart_list=chart_list,tab_name_list=tab_name_list
 
 
 # ---选择固定持仓，且交易数量平均每天1次的
+para1 = opt.columns[-2:].drop("FixedHolding")[0]
 opt1 = opt[(opt["FixedHolding"]==fixedholding) & (opt["Trades"]>=250*7)]
 opt1.set_index(keys=para1, drop=False, inplace=True)
 
@@ -158,8 +159,12 @@ for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'S
     indexlist = index[0].tolist() * 2 if name in ["Sharpe Ratio", "Custom"] else index[0].tolist()
     totalindex = totalindex + indexlist
 
-# ---选择考虑权重后的众数作为信号参数1。
-signalpara1 = pd.Series(totalindex).mode()[0] # signalpara1 = 100.0
+# ---选择考虑权重后的均值距离最近的作为信号参数1，距离算法保证了结果只有一个。
+mean = pd.Series(totalindex).mean() #
+dist = np.abs(totalindex - mean)
+signalpara1 = totalindex[dist.argmin()] # signalpara1 = 17.0
+
+
 
 
 #%% ###### Step1.2 单独一次回测 ######
@@ -198,7 +203,7 @@ myMT5run.run_MT5()
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
 core_num = -1
-tf_indi = timeframe # 过滤指标的时间框 timeframe "TIMEFRAME_H1"
+tf_indi = "TIMEFRAME_M30" # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRAME_M30"
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
