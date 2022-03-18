@@ -213,7 +213,7 @@ myMT5run.run_MT5()
 
 #%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
 core_num = -1
-tf_indi = "TIMEFRAME_M30" # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRAME_M30"
+tf_indi = timeframe # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRAME_M30"
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
