@@ -69,6 +69,8 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 # ---多进程必须要在这里执行
 if __name__ == '__main__':
     from MyPackage.MyProjects.MT5回测结果过滤.MT5_report_filter import MT5_Report_Filter
+    myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+    plt.show()
 
     # ---外部输入
     file = input("输入桌面上的文件名，默认：ReportTester.xlsx  ")
@@ -92,6 +94,7 @@ if __name__ == '__main__':
         print("===开始范围过滤===")
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.core_num = -1
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
@@ -107,13 +110,14 @@ if __name__ == '__main__':
         # ---并行运算，卡尔曼选择后策略回测
         c_report_filter.main_auto_kalman_stratgy_test()
 
-
         # ===两侧过滤===
         plt.close()
-        plt.show() # 必须要先释放下，不然多进程分别测试各个模式会出错。
+        plt.show()
+        plt.close() # 必须要先释放下，不然多进程分别测试各个模式会出错。
         print("===开始两侧过滤===")
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
@@ -132,6 +136,7 @@ if __name__ == '__main__':
     else:
         c_report_filter = MT5_Report_Filter()
         myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+        plt.show()
         # ---外部赋值
         c_report_filter.file = __mypath__.get_desktop_path() + "\\" + file
         c_report_filter.direct = direct  # 方向 "All","BuyOnly","SellOnly"
