@@ -71,7 +71,15 @@ plt.show()
 
 #%% ###### 通用参数 ######
 symbol_list = myMT5Pro.get_main_symbol_name_list()
-symbol_list = ['XAGUSD']
+timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
+                  "TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
+                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
+                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
+                  "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
+timeframe_list = ["TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
+                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
+                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]
+
 
 def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRAME_H4"
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
@@ -229,8 +237,9 @@ def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRA
     time.sleep(5)
 
 for symbol in symbol_list:
-    muiltPinbar(symbol, "TIMEFRAME_H4")
-    print(symbol, "finished!")
+    for timeframe in timeframe_list:
+        muiltPinbar(symbol, timeframe)
+        print(symbol, timeframe, "finished!")
 
 
 
