@@ -74,7 +74,7 @@ symbol_list = myMT5Pro.get_main_symbol_name_list()
 symbol_list = ['USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
 symbol_list = ["USDJPY"]
 
-def muiltPinbar(symbol, timeframe):
+def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0], timeframe="TIMEFRAME_H4"
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
     expertfile = "Pinbar裸K策略.ex5"
     expertname = experfolder + "\\" + expertfile
@@ -223,7 +223,7 @@ def muiltPinbar(symbol, timeframe):
     else:
         print("{}不存在！！！".format(filterfolder2))
     time.sleep(1)
-    print("删除桌面 {}, {}, {], {}".format(filehtm, outdesktopfile, filterfolder1, filterfolder2))
+    print("删除桌面 {}, {}, {}, {}".format(filehtm, outdesktopfile, filterfolder1, filterfolder2))
     # 关闭 MT5 进程
     import os
     os.system("TASKKILL /F /IM terminal64.exe") # os.system("taskkill /F /IM 进程名")
@@ -232,3 +232,6 @@ def muiltPinbar(symbol, timeframe):
 for symbol in symbol_list:
     muiltPinbar(symbol, "TIMEFRAME_H4")
     print(symbol, "finished!")
+
+
+
