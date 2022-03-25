@@ -83,7 +83,8 @@ reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.
 
 #%% ###### Step1.0 无筛选.固定持仓=1单次回测 ######
 fixedholding = 1
-reportfile = reportfolder + "\\1.a.无筛选.Fixed={}.xml".format(fixedholding)
+# 单一测试不需要.xml后缀
+reportfile = reportfolder + "\\1.a.无筛选.Fixed={}".format(fixedholding)
 optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 # ---
 myMT5run.__init__()
@@ -153,7 +154,7 @@ tf_indi = timeframe # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRA
 
 # ====== 操作都默认从桌面操作 ======
 # ---把 .htm 文件复制到桌面 通用过滤.htm
-filepath2 = reportfile # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
+filepath2 = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
 filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
 myfile.copy_dir_or_file(source=filepath2, destination=filehtm, DirRemove=True)
 
