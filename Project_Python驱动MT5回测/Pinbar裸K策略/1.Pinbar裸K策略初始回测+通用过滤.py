@@ -219,3 +219,4 @@ def muiltPinbar(symbol, timeframe):
 
 for symbol in symbol_list:
     muiltPinbar(symbol, "TIMEFRAME_H4")
+    print(symbol, "finished!")
