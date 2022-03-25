@@ -70,150 +70,152 @@ myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须�
 plt.show()
 
 #%% ###### 通用参数 ######
-experfolder = "My_Experts\\Strategy\\K线形态CTA"
-expertfile = "Pinbar裸K策略.ex5"
-expertname = experfolder + "\\" + expertfile
-fromdate = "2010.01.01"
-todate = "2020.01.01"
-symbol = "EURUSD"
-timeframe = "TIMEFRAME_H4"
-totalfolder = r"F:\工作(同步)\工作---MT5策略研究\Pinbar裸K策略"
-reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
+symbol_list = myMT5Pro.get_main_symbol_name_list()
+symbol_list = ['GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
 
+def muiltPinbar(symbol, timeframe):
+    experfolder = "My_Experts\\Strategy\\K线形态CTA"
+    expertfile = "Pinbar裸K策略.ex5"
+    expertname = experfolder + "\\" + expertfile
+    fromdate = "2010.01.01"
+    todate = "2020.01.01"
+    symbol = symbol # "EURUSD"
+    timeframe = timeframe # "TIMEFRAME_H4"
+    totalfolder = r"F:\工作(同步)\工作---MT5策略研究\Pinbar裸K策略"
+    reportfolder = totalfolder + "\\{}.{}\\{}".format(symbol, timeframe, expertfile.rsplit(sep=".", maxsplit=1)[0])
 
-#%% ###### Step1.0 无筛选.固定持仓=1单次回测 ######
-fixedholding = 1
-# 单一测试不需要.xml后缀
-reportfile = reportfolder + "\\1.a.无筛选.Fixed={}".format(fixedholding)
-optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-# ---
-myMT5run.__init__()
-myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
+    ###### Step1.0 无筛选.固定持仓=1单次回测 ######
+    fixedholding = 1
+    # 单一测试不需要.xml后缀
+    reportfile = reportfolder + "\\1.a.无筛选.Fixed={}".format(fixedholding)
+    optimization = 0 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+    # ---
+    myMT5run.__init__()
+    myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
+                           delays=0, optimization=optimization, reportfile=reportfile)
 
-def PinbarSetting():
-    # ======Pinbar指标参数======
-    myMT5run.input_set("Inp_CombinMax", "3||1||1||3||N")
-    myMT5run.input_set("Inp_RiFaCompare", "true||false||0||true||N")
-    myMT5run.input_set("Inp_RStatPeriod", "100||100||1||1000||N")
-    myMT5run.input_set("Inp_RQuantile", "0.5||0.5||0.05||5.0||N")
-    # ======Pinbar必要筛选======
-    myMT5run.input_set("IsConti", "true||false||0||true||N")
-    myMT5run.input_set("IsExtrema", "true||false||0||true||N")
-    # ======Pinbar细节筛选======
-    myMT5run.input_set("NeedDetail", "0||0||1||4||Y")
-    myMT5run.input_set("IsSizeLarge", "false||false||0||true||Y")
-    myMT5run.input_set("IsFalseBreak", "false||false||0||true||Y")
-    myMT5run.input_set("IsEyeBody", "false||false||0||true||Y")
-    myMT5run.input_set("IsEyeRange", "false||false||0||true||Y")
-    myMT5run.input_set("IsFitTrend", "false||false||0||true||Y")
-def CommonSetting():
-    # ======(通用)用于分析======
-    myMT5run.input_set("CustomMode", "0") # 设置自定义的回测结果 0-TB, 42-最大连亏, 4-SQN_MT5_No
-    # ------1.固定持仓------
-    myMT5run.input_set("FixedHolding", "%s||1||1||10||N"%fixedholding) # 0不是固定持仓模式，>0固定周期持仓
-    # ------2.信号过滤------
-    myMT5run.input_set("FilterMode", "0") # 0-NoFilter, 1-Range, 2-TwoSide
-    myMT5run.input_set("FilterIndiName", "过滤指标名称") # 过滤指标名称
-    myMT5run.input_set("FilterIndiTF", "TIMEFRAME_H1") # 过滤指标时间框字符串
-    myMT5run.input_set("FilterIndiPara0", "0") # 过滤指标首个参数
-    myMT5run.input_set("FilterLeftValue", "0") # 过滤指标左侧的值
-    myMT5run.input_set("FilterRightValue", "0") # 过滤指标右侧的值
-    # ------3.止损止盈------
-    # 3.1 止损设置
-    myMT5run.input_set("Init_SLMode", "0") # 设置初始止损模式
-    myMT5run.input_set("SL_Point", "100||100||100||1000||N") # SLMode_POINT模式：指定止损点.
-    myMT5run.input_set("SL_PreBar", "1||1||1||3||Y") # SLMode_BAR模式：信号前的bar数量.
-    myMT5run.input_set("SL_atr_Period", "7||7||1||70||N") # SLMode_ATR模式：止损ATR周期.
-    myMT5run.input_set("SL_atr_N", "3||3||0.3||30||N") # SLMode_ATR模式：ATR倍数.
-    myMT5run.input_set("SL_Adjust", "100||20||20||100||Y") # SLMode_*模式：调节点数.
-    # 3.2 止盈设置
-    myMT5run.input_set("Init_TPMode", "0") # 设置初始止盈模式
-    myMT5run.input_set("TP_Point", "0||0||1||10||N") # TPMode_POINT模式：0表示没有.
-    myMT5run.input_set("TP_SLMultiple", "2.0||1.0||0.2||2.0||Y") # TPMode_PnLRatio模式：止损盈亏比.
-    # ------4.直接交易或挂单交易------
-    myMT5run.input_set("Is_DirectTrade", "true||false||0||true||N") # Is_DirectTrade=true直接进场；false挂单进场.
-    myMT5run.input_set("Pending_PreBar", "1||1||1||10||N") # 挂单：在之前的N根极值处挂单
-    myMT5run.input_set("Pending_Adjust", "20||20||20||100||Y") # 挂单：以点数修正下挂单位置
-    myMT5run.input_set("Pending_ExpireTF", "0||0||0||49153||N") # 挂单：挂单有效的时间框
-    myMT5run.input_set("Pending_ExpireBar", "3||1||1||5||Y") # 挂单：挂单有效的Bar个数
-    # ------5.重复入场------
-    myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false不允许信号重复入场。
+    def PinbarSetting():
+        # ======Pinbar指标参数======
+        myMT5run.input_set("Inp_CombinMax", "3||1||1||3||N")
+        myMT5run.input_set("Inp_RiFaCompare", "true||false||0||true||N")
+        myMT5run.input_set("Inp_RStatPeriod", "100||100||1||1000||N")
+        myMT5run.input_set("Inp_RQuantile", "0.5||0.5||0.05||5.0||N")
+        # ======Pinbar必要筛选======
+        myMT5run.input_set("IsConti", "true||false||0||true||N")
+        myMT5run.input_set("IsExtrema", "true||false||0||true||N")
+        # ======Pinbar细节筛选======
+        myMT5run.input_set("NeedDetail", "0||0||1||4||Y")
+        myMT5run.input_set("IsSizeLarge", "false||false||0||true||Y")
+        myMT5run.input_set("IsFalseBreak", "false||false||0||true||Y")
+        myMT5run.input_set("IsEyeBody", "false||false||0||true||Y")
+        myMT5run.input_set("IsEyeRange", "false||false||0||true||Y")
+        myMT5run.input_set("IsFitTrend", "false||false||0||true||Y")
+    def CommonSetting():
+        # ======(通用)用于分析======
+        myMT5run.input_set("CustomMode", "0") # 设置自定义的回测结果 0-TB, 42-最大连亏, 4-SQN_MT5_No
+        # ------1.固定持仓------
+        myMT5run.input_set("FixedHolding", "%s||1||1||10||N"%fixedholding) # 0不是固定持仓模式，>0固定周期持仓
+        # ------2.信号过滤------
+        myMT5run.input_set("FilterMode", "0") # 0-NoFilter, 1-Range, 2-TwoSide
+        myMT5run.input_set("FilterIndiName", "过滤指标名称") # 过滤指标名称
+        myMT5run.input_set("FilterIndiTF", "TIMEFRAME_H1") # 过滤指标时间框字符串
+        myMT5run.input_set("FilterIndiPara0", "0") # 过滤指标首个参数
+        myMT5run.input_set("FilterLeftValue", "0") # 过滤指标左侧的值
+        myMT5run.input_set("FilterRightValue", "0") # 过滤指标右侧的值
+        # ------3.止损止盈------
+        # 3.1 止损设置
+        myMT5run.input_set("Init_SLMode", "0") # 设置初始止损模式
+        myMT5run.input_set("SL_Point", "100||100||100||1000||N") # SLMode_POINT模式：指定止损点.
+        myMT5run.input_set("SL_PreBar", "1||1||1||3||Y") # SLMode_BAR模式：信号前的bar数量.
+        myMT5run.input_set("SL_atr_Period", "7||7||1||70||N") # SLMode_ATR模式：止损ATR周期.
+        myMT5run.input_set("SL_atr_N", "3||3||0.3||30||N") # SLMode_ATR模式：ATR倍数.
+        myMT5run.input_set("SL_Adjust", "100||20||20||100||Y") # SLMode_*模式：调节点数.
+        # 3.2 止盈设置
+        myMT5run.input_set("Init_TPMode", "0") # 设置初始止盈模式
+        myMT5run.input_set("TP_Point", "0||0||1||10||N") # TPMode_POINT模式：0表示没有.
+        myMT5run.input_set("TP_SLMultiple", "2.0||1.0||0.2||2.0||Y") # TPMode_PnLRatio模式：止损盈亏比.
+        # ------4.直接交易或挂单交易------
+        myMT5run.input_set("Is_DirectTrade", "true||false||0||true||N") # Is_DirectTrade=true直接进场；false挂单进场.
+        myMT5run.input_set("Pending_PreBar", "1||1||1||10||N") # 挂单：在之前的N根极值处挂单
+        myMT5run.input_set("Pending_Adjust", "20||20||20||100||Y") # 挂单：以点数修正下挂单位置
+        myMT5run.input_set("Pending_ExpireTF", "0||0||0||49153||N") # 挂单：挂单有效的时间框
+        myMT5run.input_set("Pending_ExpireBar", "3||1||1||5||Y") # 挂单：挂单有效的Bar个数
+        # ------5.重复入场------
+        myMT5run.input_set("Is_ReSignal", "true") # true允许信号重复入场，false不允许信号重复入场。
 
-PinbarSetting()
-CommonSetting()
-# ---检查参数输入是否匹配优化的模式，且写出配置结果。
-myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
+    PinbarSetting()
+    CommonSetting()
+    # ---检查参数输入是否匹配优化的模式，且写出配置结果。
+    myMT5run.check_inputs_and_write()
+    myMT5run.run_MT5()
 
+    ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
+    core_num = -1
+    tf_indi = timeframe # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRAME_M30"
 
+    # ====== 操作都默认从桌面操作 ======
+    # ---把 .htm 文件复制到桌面 通用过滤.htm
+    filepath2 = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
+    filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
+    myfile.copy_dir_or_file(source=filepath2, destination=filehtm, DirRemove=True)
 
-#%% ###### Step2.0 通用过滤：范围过滤和两侧过滤 ######
-core_num = -1
-tf_indi = timeframe # 过滤指标的时间框 timeframe "TIMEFRAME_H1" "TIMEFRAME_M30"
+    # ---输出参数csv到项目目录和桌面
+    dfpara = []
+    dfpara.append(["filepath",filepath2])
+    dfpara.append(["direct","All"])
+    dfpara.append(["filtermode","-1"])
+    dfpara.append(["tf_indi",tf_indi])
+    dfpara.append(["core_num",core_num])
+    dfpara = pd.DataFrame(dfpara)
+    dfpara.set_index(keys=0,drop=True,inplace=True)
+    # 添加到指定目录
+    outfile = reportfolder + r"\2.无筛选.Fixed={}.通用过滤参数.csv".format(fixedholding)
+    dfpara.to_csv(outfile, sep=";")
+    # 添加到桌面，从桌面加载
+    outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
+    dfpara.to_csv(outdesktopfile, sep=";")
+    # 休息
+    import time
+    time.sleep(1)
+    print("通用过滤参数输出完成！")
 
-# ====== 操作都默认从桌面操作 ======
-# ---把 .htm 文件复制到桌面 通用过滤.htm
-filepath2 = reportfile + ".htm" # file = reportfolder + "\\1.b.信号=100.0.Fixed=1.htm"
-filehtm = __mypath__.get_desktop_path() + r"\通用过滤.htm"
-myfile.copy_dir_or_file(source=filepath2, destination=filehtm, DirRemove=True)
+    # ---需要 run 中运行，ipython中不行。
+    myDefault.set_backend_default("agg")
+    FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
+    import os
+    os.system("python "+FilterScript)
+    time.sleep(1)
+    print("通用过滤执行完成！")
 
-# ---输出参数csv到项目目录和桌面
-dfpara = []
-dfpara.append(["filepath",filepath2])
-dfpara.append(["direct","All"])
-dfpara.append(["filtermode","-1"])
-dfpara.append(["tf_indi",tf_indi])
-dfpara.append(["core_num",core_num])
-dfpara = pd.DataFrame(dfpara)
-dfpara.set_index(keys=0,drop=True,inplace=True)
-# 添加到指定目录
-outfile = reportfolder + r"\2.无筛选.Fixed={}.通用过滤参数.csv".format(fixedholding)
-dfpara.to_csv(outfile, sep=";")
-# 添加到桌面，从桌面加载
-outdesktopfile = __mypath__.get_desktop_path() + r"\通用过滤参数.csv"
-dfpara.to_csv(outdesktopfile, sep=";")
-# 休息
-import time
-time.sleep(1)
-print("通用过滤参数输出完成！")
+    # ---剪切桌面的结果到项目目录 reportfolder
+    # 移动桌面 通用过滤.range 通用过滤.2side 到项目目录
+    filterfolder1 = __mypath__.get_desktop_path() + "\\通用过滤.range"
+    tofilterfolder1 = reportfolder + "\\2.无筛选.Fixed={}.通用过滤.range".format(fixedholding)
+    filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
+    tofilterfolder2 = reportfolder + "\\2.无筛选.Fixed={}.通用过滤.2side".format(fixedholding)
+    if __mypath__.path_exists(filterfolder1):
+        myfile.copy(src=filterfolder1,dst=tofilterfolder1,cover=True)
+    else:
+        print("{}不存在！！！".format(filterfolder1))
+    if __mypath__.path_exists(filterfolder2):
+        myfile.copy(src=filterfolder2,dst=tofilterfolder2,cover=True)
+    else:
+        print("{}不存在！！！".format(filterfolder2))
+    #
+    time.sleep(3)
+    print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
+    # 删除 filehtm, outdesktopfile
+    if __mypath__.path_exists(filehtm):
+        myfile.remove_dir_or_file(filehtm)
+    else:
+        print("{}不存在！！！".format(filehtm))
+    if __mypath__.path_exists(outdesktopfile):
+        myfile.remove_dir_or_file(outdesktopfile)
+    else:
+        print("{}不存在！！！".format(outdesktopfile))
+    time.sleep(1)
+    print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
+    myMT5.shutdown()
 
-# ---需要 run 中运行，ipython中不行。
-myDefault.set_backend_default("agg")
-FilterScript = __mypath__.get_user_path()+r"\PycharmProjects\PythonLearning\Project_Python驱动MT5回测\CommonScript\自动MT5reportFilter.py"
-import os
-os.system("python "+FilterScript)
-time.sleep(1)
-print("通用过滤执行完成！")
-
-# ---剪切桌面的结果到项目目录 reportfolder
-# 移动桌面 通用过滤.range 通用过滤.2side 到项目目录
-filterfolder1 = __mypath__.get_desktop_path() + "\\通用过滤.range"
-tofilterfolder1 = reportfolder + "\\2.无筛选.Fixed={}.通用过滤.range".format(fixedholding)
-filterfolder2 = __mypath__.get_desktop_path() + "\\通用过滤.2side"
-tofilterfolder2 = reportfolder + "\\2.无筛选.Fixed={}.通用过滤.2side".format(fixedholding)
-if __mypath__.path_exists(filterfolder1):
-    myfile.copy(src=filterfolder1,dst=tofilterfolder1,cover=True)
-else:
-    print("{}不存在！！！".format(filterfolder1))
-if __mypath__.path_exists(filterfolder2):
-    myfile.copy(src=filterfolder2,dst=tofilterfolder2,cover=True)
-else:
-    print("{}不存在！！！".format(filterfolder2))
-#
-time.sleep(3)
-print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
-# 删除 filehtm, outdesktopfile
-# if __mypath__.path_exists(filehtm):
-#     myfile.remove_dir_or_file(filehtm)
-# else:
-#     print("{}不存在！！！".format(filehtm))
-# if __mypath__.path_exists(outdesktopfile):
-#     myfile.remove_dir_or_file(outdesktopfile)
-# else:
-#     print("{}不存在！！！".format(outdesktopfile))
-time.sleep(1)
-print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
-
-
-
+for symbol in symbol_list:
+    muiltPinbar(symbol, "TIMEFRAME_H4")
