@@ -72,7 +72,6 @@ plt.show()
 #%% ###### 通用参数 ######
 symbol_list = myMT5Pro.get_main_symbol_name_list()
 symbol_list = ['USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
-symbol_list = ["USDJPY"]
 
 def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0], timeframe="TIMEFRAME_H4"
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
