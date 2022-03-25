@@ -71,7 +71,8 @@ plt.show()
 
 #%% ###### 通用参数 ######
 symbol_list = myMT5Pro.get_main_symbol_name_list()
-symbol_list = ['GBPUSD','AUDUSD','NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
+symbol_list = ['NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
+symbol_list = ['NZDUSD']
 
 def muiltPinbar(symbol, timeframe):
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
@@ -215,7 +216,10 @@ def muiltPinbar(symbol, timeframe):
         print("{}不存在！！！".format(outdesktopfile))
     time.sleep(1)
     print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
-    myMT5.shutdown()
+    # 关闭 MT5 进程
+    import os
+    os.system("TASKKILL /F /IM terminal64.exe") # os.system("taskkill /F /IM 进程名")
+    time.sleep(1)
 
 for symbol in symbol_list:
     muiltPinbar(symbol, "TIMEFRAME_H4")
