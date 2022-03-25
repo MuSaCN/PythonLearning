@@ -71,8 +71,8 @@ plt.show()
 
 #%% ###### 通用参数 ######
 symbol_list = myMT5Pro.get_main_symbol_name_list()
-symbol_list = ['NZDUSD','USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
-symbol_list = ['NZDUSD']
+symbol_list = ['USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
+
 
 def muiltPinbar(symbol, timeframe):
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
@@ -205,7 +205,7 @@ def muiltPinbar(symbol, timeframe):
     #
     time.sleep(3)
     print("移动桌面 通用过滤.range 通用过滤.2side 到项目目录 %s"%reportfolder)
-    # 删除 filehtm, outdesktopfile
+    # 必须删除 filehtm, outdesktopfile, filterfolder1, filterfolder2
     if __mypath__.path_exists(filehtm):
         myfile.remove_dir_or_file(filehtm)
     else:
@@ -214,8 +214,16 @@ def muiltPinbar(symbol, timeframe):
         myfile.remove_dir_or_file(outdesktopfile)
     else:
         print("{}不存在！！！".format(outdesktopfile))
+    if __mypath__.path_exists(filterfolder1):
+        myfile.remove_dir_or_file(filterfolder1)
+    else:
+        print("{}不存在！！！".format(filterfolder1))
+    if __mypath__.path_exists(filterfolder2):
+        myfile.remove_dir_or_file(filterfolder2)
+    else:
+        print("{}不存在！！！".format(filterfolder2))
     time.sleep(1)
-    print("删除桌面 {}, {}".format(filehtm, outdesktopfile))
+    print("删除桌面 {}, {}, {], {}".format(filehtm, outdesktopfile, filterfolder1, filterfolder2))
     # 关闭 MT5 进程
     import os
     os.system("TASKKILL /F /IM terminal64.exe") # os.system("taskkill /F /IM 进程名")
