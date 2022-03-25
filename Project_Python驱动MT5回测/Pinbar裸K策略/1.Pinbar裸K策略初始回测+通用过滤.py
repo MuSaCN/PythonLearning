@@ -71,7 +71,7 @@ plt.show()
 
 #%% ###### 通用参数 ######
 symbol_list = myMT5Pro.get_main_symbol_name_list()
-symbol_list = ['USDJPY','USDCAD','USDCHF','XAUUSD','XAGUSD']
+symbol_list = ['XAGUSD']
 
 def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRAME_H4"
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
@@ -226,7 +226,7 @@ def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRA
     # 关闭 MT5 进程
     import os
     os.system("TASKKILL /F /IM terminal64.exe") # os.system("taskkill /F /IM 进程名")
-    time.sleep(1)
+    time.sleep(5)
 
 for symbol in symbol_list:
     muiltPinbar(symbol, "TIMEFRAME_H4")
