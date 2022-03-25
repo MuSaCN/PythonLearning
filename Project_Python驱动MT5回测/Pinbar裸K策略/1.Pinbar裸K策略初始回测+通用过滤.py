@@ -214,11 +214,11 @@ def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRA
     else:
         print("{}不存在！！！".format(outdesktopfile))
     if __mypath__.path_exists(filterfolder1):
-        myfile.remove_dir_or_file(filterfolder1)
+        myfile.remove_dir_or_file(filterfolder1, onlyContent=False)
     else:
         print("{}不存在！！！".format(filterfolder1))
     if __mypath__.path_exists(filterfolder2):
-        myfile.remove_dir_or_file(filterfolder2)
+        myfile.remove_dir_or_file(filterfolder2, onlyContent=False)
     else:
         print("{}不存在！！！".format(filterfolder2))
     time.sleep(1)
