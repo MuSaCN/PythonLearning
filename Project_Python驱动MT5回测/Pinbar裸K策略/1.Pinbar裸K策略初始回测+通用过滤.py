@@ -236,8 +236,9 @@ def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRA
     os.system("TASKKILL /F /IM terminal64.exe") # os.system("taskkill /F /IM 进程名")
     time.sleep(5)
 
-for symbol in symbol_list:
-    for timeframe in timeframe_list:
+
+for timeframe in timeframe_list:
+    for symbol in symbol_list:
         muiltPinbar(symbol, timeframe)
         print(symbol, timeframe, "finished!")
 
