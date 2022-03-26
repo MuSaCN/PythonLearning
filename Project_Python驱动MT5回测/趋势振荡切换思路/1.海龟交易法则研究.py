@@ -126,13 +126,13 @@ opt = myMT5Report.read_opt_xml(reportfile)
 columns = opt.columns
 columns = columns.insert(loc=columns.get_loc("Sharpe Ratio")+1, item="Sqn") # 插入到指定位置
 # 由于时间是一样的，所以不需要考虑年化交易数量
-opt["Sqn"] = opt["Sharpe Ratio"] * np.power(opt["Trades"], 0.5)
+opt["Sqn_No"] = opt["Sharpe Ratio"] * np.power(opt["Trades"], 0.5)
 # 必须要重新排列下
 opt = opt[columns.tolist()]
 
 # ---分别画3D图
 chart_list, tab_name_list = [], []
-for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Sqn', 'Custom', 'Equity DD %', 'Trades']:
+for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Sqn_No', 'Custom', 'Equity DD %', 'Trades']:
     # 参数1为信号参数，排除 "FixedHolding" 后剩下的；参数2为固定持仓；参数Z为策略表现；
     para1,para2,paraZ = opt.columns[-2:].drop("FixedHolding")[0], "FixedHolding",  name
     data3D = opt[[para1,para2,paraZ]]
@@ -154,14 +154,14 @@ opt1.set_index(keys=para1, drop=False, inplace=True)
 # ---分别输出各策略结果的卡尔曼过滤选择结果
 myDefault.set_backend_default("agg") # 后台输出图片
 totalindex = []
-for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', 'Custom']: # name = "Expected Payoff"
+for name in ['Profit', 'Expected Payoff', 'Profit Factor', 'Recovery Factor', 'Sharpe Ratio', "Sqn_No", 'Custom']: # name = "Expected Payoff"
     # 有时候夏普比会都为-5
     if len(opt1[name].unique())==1:
         continue
     # 输出结果
     index, values, ax = myDA.plot_kalman_and_extrema(array = opt1[name], arrayX = opt1[para1], restore_nan=False, comparator=np.greater_equal, order=30, filterlevel=1, ylabel = name,savefig=reportfolder+"\\1.a.信号{}期.{}.jpg".format(fixedholding, name), batch=True, show=True)
     # 特殊结果占权重两个
-    indexlist = index[0].tolist() * 2 if name in ["Sharpe Ratio", "Custom"] else index[0].tolist()
+    indexlist = index[0].tolist() * 2 if name in ["Sharpe Ratio", "Custom", "Sqn_No"] else index[0].tolist()
     totalindex = totalindex + indexlist
 
 # ---选择考虑权重后的均值距离最近的作为信号参数1，距离算法保证了结果只有一个。
