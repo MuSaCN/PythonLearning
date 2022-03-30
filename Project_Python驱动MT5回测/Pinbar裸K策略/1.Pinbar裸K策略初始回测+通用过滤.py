@@ -76,9 +76,7 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
-timeframe_list = ["TIMEFRAME_H4","TIMEFRAME_H3","TIMEFRAME_H2","TIMEFRAME_H1",
-                  "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
-                  "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]
+timeframe_list = ["TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]
 
 
 def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRAME_H4"
