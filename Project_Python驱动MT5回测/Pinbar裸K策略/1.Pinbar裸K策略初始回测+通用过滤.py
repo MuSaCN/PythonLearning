@@ -80,6 +80,10 @@ timeframe_list = ["TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5"]
 
 
 def muiltPinbar(symbol, timeframe): # symbol=symbol_list[0] ; timeframe="TIMEFRAME_H4"
+    if timeframe == "TIMEFRAME_M10" and symbol == "EURUSD":
+        return
+
+
     experfolder = "My_Experts\\Strategy\\K线形态CTA"
     expertfile = "Pinbar裸K策略.ex5"
     expertname = experfolder + "\\" + expertfile
