@@ -100,38 +100,13 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
 #%%
-# ---分析损益的时间keys按指定时间切片的平均利润柱状图
-myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","平均PnL"])
-myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","平均PnL"])
-
-
 # ---分析损益的时间keys按指定时间切片的总体利润柱状图
 myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
 myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
 
 
-
-
-unit = unit_total.copy()
-
-# 整理下数据
-unit["Time0"] = unit["Time0"].apply(lambda x: x.hour)
-unit["Time1"] = unit["Time1"].apply(lambda x: x.hour)
-unit["NetProfit_Base1"] = unit["NetProfit_Base"].abs() # 损益全部取正数
-unit["NetProfitType"] = None
-unit["NetProfitType"][unit["NetProfit_Base"]>0] = "win"
-unit["NetProfitType"][unit["NetProfit_Base"]<=0] = "loss"
-# 处理下win和loss排序，便于画图win排在左侧
-unit = pd.concat((unit[unit["NetProfitType"]=="win"], unit[unit["NetProfitType"]=="loss"]), axis=0)
-unit.reset_index(inplace=True)
-
-# 分析入场时间按小时切片的平均利润柱状图
-mypltpro.grouped_barplots_mean(unit, x="Time0", y="NetProfit_Base1", hue="NetProfitType", show=True)
-mypltpro.grouped_barplots_mean(unit, x="Time1", y="NetProfit_Base1", hue="NetProfitType", show=True)
-
-
-# 分析入场时间按小时切片的总和利润柱状图
-mypltpro.grouped_barplots_sum(unit, x="Time0", y="NetProfit_Base1", hue="NetProfitType", show=True)
-mypltpro.grouped_barplots_sum(unit, x="Time1", y="NetProfit_Base1", hue="NetProfitType", show=True)
+# ---分析损益的时间keys按指定时间切片的平均利润柱状图
+myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","平均PnL"])
+myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","平均PnL"])
 
 
