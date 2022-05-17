@@ -71,11 +71,12 @@ timeframe_list = ["TIMEFRAME_D1","TIMEFRAME_H12","TIMEFRAME_H8","TIMEFRAME_H6",
                   "TIMEFRAME_M30","TIMEFRAME_M20","TIMEFRAME_M15","TIMEFRAME_M12",
                   "TIMEFRAME_M10","TIMEFRAME_M6","TIMEFRAME_M5","TIMEFRAME_M4",
                   "TIMEFRAME_M3","TIMEFRAME_M2","TIMEFRAME_M1"]
-symbol = "EURUSD"
+symbol = "AUDUSD"
 timeframe = "TIMEFRAME_H1"
 date_from, date_to = myMT5Pro.get_date_range(timeframe)
 data_total = myMT5Pro.getsymboldata(symbol, timeframe, date_from, date_to, index_time=True, col_capitalize=True)
 data_total["C-O"] = data_total["Close"] - data_total["Open"]
+data_total["C-O"] = data_total["C-O"].abs()
 
 # 切片数据的分布统计，把原数据按照每小时进行拆分
 def slice_statistic(affix = "Range"):
@@ -92,7 +93,7 @@ def slice_statistic(affix = "Range"):
 
 # 画统计图
 def plot_statistic(df_out, affix = "Range"):
-    myfig.__init__(1,1, figsize=[1280,720])
+    myfig.__init__(1,1, figsize=[1280,720], AddFigure=True)
     mean = df_out.loc["mean"].reset_index(drop=True)
     std = df_out.loc["std"].reset_index(drop=True)
     ax = myfig.axeslist[0]
@@ -103,7 +104,7 @@ def plot_statistic(df_out, affix = "Range"):
     myfig.suptitle(affix+ ": mean+std")
     myfig.show()
     #---
-    myfig.__init__(1, 1, figsize=[1280, 720], sharex=True)
+    myfig.__init__(1, 1, figsize=[1280, 720], sharex=True, AddFigure=True)
     skew = df_out.loc["skew偏度"].reset_index(drop=True)
     kurt = df_out.loc["kurt峰度"].reset_index(drop=True)
     ax = myfig.axeslist[0]
@@ -113,6 +114,7 @@ def plot_statistic(df_out, affix = "Range"):
     ax.legend(loc="upper left")
     myfig.suptitle(affix+ ": skew+kurt")
     myfig.show()
+
 
 
 #%%
