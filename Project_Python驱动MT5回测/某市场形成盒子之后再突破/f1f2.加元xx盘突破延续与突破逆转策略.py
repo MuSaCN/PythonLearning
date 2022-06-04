@@ -274,7 +274,7 @@ myMT5run.input_set("StartMinute", "0||0||30||30||Y")
 myMT5run.input_set("Box", "1||1||1||3||Y")
 myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
 myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_conti() # 延续策略信号过滤参数
+para_reverse() # 逆转策略信号过滤参数
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
 myMT5run.run_MT5()
@@ -295,7 +295,7 @@ myMT5run.input_set("StartMinute", "0||0||30||30||Y")
 myMT5run.input_set("Box", "1||1||1||3||Y")
 myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
 myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_conti() # 延续策略信号过滤参数
+para_reverse() # 逆转策略信号过滤参数
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
 myMT5run.run_MT5()
