@@ -75,7 +75,7 @@ plt.show()
 experfolder = "My_Experts\\Strategy深度研究\\某市场形成盒子之后再突破策略"
 fromdate = "2014.01.01"
 todate = "2022.05.11"
-reportfolder = r"F:\工作(同步)\工作---MT5策略研究\4.某市场形成盒子之后再突破策略"
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\4.某市场形成盒子之后再突破策略"
 symbol = "EURUSD" # ************
 timeframe = "TIMEFRAME_M30"
 
