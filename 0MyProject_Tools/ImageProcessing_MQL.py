@@ -7,6 +7,7 @@
 # logo图片添加文字：
 #   IndicatorName = [*] / myImage.textOnImage() 为logo核心文本输入内容，每次使用都不同，需要修改。
 
+#%%
 from MyPackage.MyPath import MyClass_Path
 from MyPackage.MyMql import MyClass_ImageMql
 
@@ -23,5 +24,5 @@ IndicatorName = ["MT5"]
 
 myIMql.__init__(filepath)
 myIMql.screen_shot()
-myIMql.logo(indicatorName=IndicatorName,y=120,size=28)
+myIMql.logo(indicatorName=IndicatorName,y=150,size=28)
 
