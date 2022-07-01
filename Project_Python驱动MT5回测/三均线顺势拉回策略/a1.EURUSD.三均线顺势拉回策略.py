@@ -226,13 +226,14 @@ expertfile = "a1.三均线顺势拉回策略.ex5" # ************
 expertname = experfolder + "\\" + expertfile
 symbol = "EURUSD" # ************
 timeframe = "TIMEFRAME_M30" # ************
-reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
+# reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
 model = 2 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
 optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
 optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 # ---通过遗传算法，针对 利润和TB系数 做下优化。
 for optcriterion in [0,6]:
+    reportfile = reportfolder + "\\{}.{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, timeframe, optcriterion)
     myMT5run.__init__()
     myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
                            delays=0, model=model, optimization=optimization,
