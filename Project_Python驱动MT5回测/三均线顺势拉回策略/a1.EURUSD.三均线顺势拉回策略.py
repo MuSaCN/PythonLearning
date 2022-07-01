@@ -234,7 +234,7 @@ optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法
 myMT5run.__init__()
 myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
                        delays=0, model=model, optimization=optimization, reportfile=reportfile)
-common_set() # 通用分析套件参数
+common_set()
 strategy_set()
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
