@@ -150,8 +150,8 @@ def common_set():
     myMT5run.input_set("Inp_Trail_SAR_Max", "0.2||0.2||0.020000||2.000000||N")
     myMT5run.input_set("Inp_Trail_Adjust", "10||10||1||100||N")
     # ; ------6.盈亏平衡------
-    myMT5run.input_set("Inp_BreakEven_Mode", "0") # 1-BreakEven_POINT
-    myMT5run.input_set("Inp_BreakEven_Point", "200||100||50||1000||N")
+    myMT5run.input_set("Inp_BreakEven_Mode", "1") # 1-BreakEven_POINT
+    myMT5run.input_set("Inp_BreakEven_Point", "200||100||20||600||Y") # *********************
     # ; ------7.挂单交易------
     myMT5run.input_set("Inp_PendingMode", "0")
     myMT5run.input_set("Inp_Is_PendDeal_SetSLTP", "true")
@@ -190,13 +190,13 @@ def common_set():
     myMT5run.input_set("Inp_AddIn_IntervalTF", "0")
     myMT5run.input_set("Inp_AddIn_IntervalBar", "9||0||1||25||N")
     # ------10.2加仓止盈损、仓位大小设置------
-    myMT5run.input_set("Inp_TIB_SLMode", "1")
-    myMT5run.input_set("Inp_TIB_TPMode", "2")
-    myMT5run.input_set("Inp_TIB_LotsMode", "2")
+    myMT5run.input_set("Inp_TIB_SLMode", "1") # 1-TIB_Special,
+    myMT5run.input_set("Inp_TIB_TPMode", "2") # 2-TIB_TargetPrice
+    myMT5run.input_set("Inp_TIB_LotsMode", "2") # 2-TIB_Lots_Ratio
     myMT5run.input_set("Inp_TIB_RatioLots", "1||0.5||0.050000||5.000000||N")
     # ------10.3加仓策略方法------
     myMT5run.input_set("Inp_TIB_Method", "0")
-    myMT5run.input_set("Inp_TIB_MaxAddCount", "0||1||1||10||N")
+    myMT5run.input_set("Inp_TIB_MaxAddCount", "0||0||1||5||N")
     myMT5run.input_set("Inp_TIB_AddInPoint", "100||100||1||1000||N")
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N")
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")
@@ -209,15 +209,15 @@ def strategy_set():
     myMT5run.input_set("Inp_Close1", "false||false||0||true||Y") # ************
     myMT5run.input_set("Inp_Close2", "true||false||0||true||N") # 固定
     myMT5run.input_set("Inp_Filter0", "true||false||0||true||N") # 固定
-    myMT5run.input_set("Inp_Filter1", "false||false||0||true||N")
-    myMT5run.input_set("F1_Filter1Count", "1||1||1||5||N")
-    myMT5run.input_set("Inp_Filter2", "false||false||0||true||N")
-    myMT5run.input_set("F2_Filter2Count", "1||1||1||5||N")
-    myMT5run.input_set("Inp_Filter3", "false||false||0||true||N")
-    myMT5run.input_set("F3_TradeTrend", "true||false||0||true||N")
-    myMT5run.input_set("F3_TrendOsciLimit", "28||20.0||2.0||40.0||N")
-    myMT5run.input_set("F3_TrendOsciTF", "16408||0||0||49153||N")
-    myMT5run.input_set("Inp_Filter4", "false||false||0||true||N")
+    myMT5run.input_set("Inp_Filter1", "true||false||0||true||N")
+    myMT5run.input_set("F1_Filter1Count", "1||1||1||3||Y")
+    myMT5run.input_set("Inp_Filter2", "true||false||0||true||N")
+    myMT5run.input_set("F2_Filter2Count", "1||1||1||3||Y")
+    myMT5run.input_set("Inp_Filter3", "false||false||0||true||Y")
+    myMT5run.input_set("F3_TradeTrend", "true||false||0||true||Y")
+    myMT5run.input_set("F3_TrendOsciLimit", "24||20||2.0||40||Y")
+    myMT5run.input_set("F3_TrendOsciTF", "16408||16385||0||16408||Y")
+    myMT5run.input_set("Inp_Filter4", "false||false||0||true||Y")
     myMT5run.input_set("F4_ThresholdMode", "0||0||1||1||N")
 
 
