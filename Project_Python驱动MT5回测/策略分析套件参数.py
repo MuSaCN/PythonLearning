@@ -99,7 +99,7 @@ def common_set():
     myMT5run.input_set("Inp_DirectIndiPara0", "0||0||0.000000||0.000000||N")
     myMT5run.input_set("Inp_DirectCompareCloseTF", "0")
     # ; ------4.1 初始止损设置------
-    myMT5run.input_set("Inp_Init_SLMode", "0") # 0-SLMode_NONE, 2-SLMode_SpecifyDist
+    myMT5run.input_set("Inp_Init_SLMode", "0") # 0-SLMode_NONE, 2-SLMode_SpecifyDist, 3-SLMode_POINT
     myMT5run.input_set("Inp_SL_Point", "100||100||1||1000||N")
     myMT5run.input_set("Inp_SL_PreBar", "1||1||1||10||N")
     myMT5run.input_set("Inp_SL_ATR_Period", "7||7||1||70||N")
@@ -179,7 +179,7 @@ def common_set():
     myMT5run.input_set("Inp_TIB_RatioLots", "1")
     # ------10.3加仓策略方法------
     myMT5run.input_set("Inp_TIB_Method", "0")
-    myMT5run.input_set("Inp_TIB_MaxAddCount", "9||1||1||10||Y")
+    myMT5run.input_set("Inp_TIB_MaxAddCount", "9||1||1||10||N")
     myMT5run.input_set("Inp_TIB_AddInPoint", "100||100||1||1000||N")
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N")
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")

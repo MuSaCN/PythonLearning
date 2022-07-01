@@ -76,8 +76,6 @@ experfolder = "My_Experts\\Strategy深度研究\\三均线顺势拉回策略"
 fromdate = "2010.01.01"
 todate = "2022.01.01"
 reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\5.三均线顺势拉回策略"
-symbol = "EURUSD" # ************
-timeframe = "TIMEFRAME_M30"
 
 # ====== 策略参数 ======
 # ------通用分析套件参数------
@@ -118,8 +116,8 @@ def common_set():
     myMT5run.input_set("Inp_DirectIndiPara0", "0||0||0.000000||0.000000||N")
     myMT5run.input_set("Inp_DirectCompareCloseTF", "0")
     # ; ------4.1 初始止损设置------
-    myMT5run.input_set("Inp_Init_SLMode", "0") # 0-SLMode_NONE, 2-SLMode_SpecifyDist
-    myMT5run.input_set("Inp_SL_Point", "100||100||1||1000||N")
+    myMT5run.input_set("Inp_Init_SLMode", "3") # 0-SLMode_NONE, 3-SLMode_POINT
+    myMT5run.input_set("Inp_SL_Point", "500||500||50||1500||Y") # ***************************
     myMT5run.input_set("Inp_SL_PreBar", "1||1||1||10||N")
     myMT5run.input_set("Inp_SL_ATR_Period", "7||7||1||70||N")
     myMT5run.input_set("Inp_SL_ATR_N", "3||3||0.300000||30.000000||N")
@@ -198,131 +196,49 @@ def common_set():
     myMT5run.input_set("Inp_TIB_RatioLots", "1")
     # ------10.3加仓策略方法------
     myMT5run.input_set("Inp_TIB_Method", "0")
-    myMT5run.input_set("Inp_TIB_MaxAddCount", "9||1||1||10||Y")
+    myMT5run.input_set("Inp_TIB_MaxAddCount", "9||1||1||10||N")
     myMT5run.input_set("Inp_TIB_AddInPoint", "100||100||1||1000||N")
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N")
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")
 
-
-
-
-
 # ------策略参数------
-# myMT5run.input_set("StartHour", "13||0||1||2||Y") # 时间修改：**盘
-# myMT5run.input_set("StartMinute", "0||0||30||30||Y")
-# myMT5run.input_set("Box", "1||1||1||3||Y")
-# myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
-# myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-
-# ---延续策略信号过滤参数
-def para_conti():
-    myMT5run.input_set("IsFilter0", "false||false||0||true||Y")
-    myMT5run.input_set("F0_BoxSize", "250||150||50||600||Y")
-    myMT5run.input_set("IsFilter1", "false||false||0||true||Y")
-    myMT5run.input_set("F1_ContiBar", "5||5||1||50||N")
-    myMT5run.input_set("IsFilter2", "false||false||0||true||Y")
-    myMT5run.input_set("F2_AroonPeriod", "50||50||1||500||N")
-    myMT5run.input_set("F2_AroonLimit", "95||95||9.500000||950.000000||N")
-    myMT5run.input_set("IsFilter3", "true||false||0||true||Y")
-    myMT5run.input_set("F3_TradeTrend", "false||false||0||true||Y")
-    myMT5run.input_set("F3_AMADiffLimit", "30||30||1||300||N")
-    myMT5run.input_set("F3_AMADiffTF", "16408||0||0||49153||N")
-
-# ---逆转策略信号过滤参数(信号过滤只有过滤3优化)
-def para_reverse():
-    myMT5run.input_set("IsFilter0", "false||false||0||true||N")
-    myMT5run.input_set("F0_BoxSize", "250||150||50||600||N")
-    myMT5run.input_set("IsFilter1", "false||false||0||true||N")
-    myMT5run.input_set("F1_ContiBar", "5||5||1||50||N")
-    myMT5run.input_set("IsFilter2", "false||false||0||true||N")
-    myMT5run.input_set("F2_AroonPeriod", "50||50||1||500||N")
-    myMT5run.input_set("F2_AroonLimit", "95||95||9.500000||950.000000||N")
-    myMT5run.input_set("IsFilter3", "true||false||0||true||Y")
-    myMT5run.input_set("F3_TradeTrend", "false||false||0||true||Y")
-    myMT5run.input_set("F3_AMADiffLimit", "30||30||1||300||N")
-    myMT5run.input_set("F3_AMADiffTF", "16408||0||0||49153||N")
+def strategy_set():
+    myMT5run.input_set("Inp_FastMA", "50||30||5||75||Y") # ************
+    myMT5run.input_set("Inp_MiddleMA", "100||60||5||150||Y") # ************
+    myMT5run.input_set("Inp_SlowMA", "200||120||5||300||Y") # ************
+    myMT5run.input_set("Inp_Close1", "false||false||0||true||Y") # ************
+    myMT5run.input_set("Inp_Close2", "true||false||0||true||N") # 固定
+    myMT5run.input_set("Inp_Filter0", "true||false||0||true||N") # 固定
+    myMT5run.input_set("Inp_Filter1", "false||false||0||true||N")
+    myMT5run.input_set("F1_Filter1Count", "1||1||1||5||N")
+    myMT5run.input_set("Inp_Filter2", "false||false||0||true||N")
+    myMT5run.input_set("F2_Filter2Count", "1||1||1||5||N")
+    myMT5run.input_set("Inp_Filter3", "false||false||0||true||N")
+    myMT5run.input_set("F3_TradeTrend", "true||false||0||true||N")
+    myMT5run.input_set("F3_TrendOsciLimit", "28||20.0||2.0||40.0||N")
+    myMT5run.input_set("F3_TrendOsciTF", "16408||0||0||49153||N")
+    myMT5run.input_set("Inp_Filter4", "false||false||0||true||N")
+    myMT5run.input_set("F4_ThresholdMode", "0||0||1||1||N")
 
 
-#%% ###### a1.欧元伦敦盘突破延续策略 欧洲盘 策略优化 ######
-expertfile = "a1.欧元伦敦盘突破延续策略.ex5" # ************
+#%% ###### a1.EURUSD.三均线顺势拉回策略 策略优化 ######
+expertfile = "a1.三均线顺势拉回策略.ex5" # ************
 expertname = experfolder + "\\" + expertfile
+symbol = "EURUSD" # ************
+timeframe = "TIMEFRAME_M30" # ************
 reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
-optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+model = 2 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+
 # ---
 myMT5run.__init__()
 myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
+                       delays=0, model=model, optimization=optimization, reportfile=reportfile)
 common_set() # 通用分析套件参数
-myMT5run.input_set("StartHour", "0||9||1||11||Y") # ******时间修改：欧洲盘******
-myMT5run.input_set("StartMinute", "0||0||30||30||Y")
-myMT5run.input_set("Box", "1||1||1||3||Y")
-myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
-myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_conti() # 延续策略信号过滤参数
+strategy_set()
 # ---检查参数输入是否匹配优化的模式，且写出配置结果。
 myMT5run.check_inputs_and_write()
 myMT5run.run_MT5()
 
 
-#%% ###### a1.欧元伦敦盘突破延续策略 xx盘 策略优化 ######
-expertfile = "a1.欧元伦敦盘突破延续策略.ex5" # ******
-expertname = experfolder + "\\" + expertfile
-reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
-optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-# ---
-myMT5run.__init__()
-myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
-common_set() # 通用分析套件参数
-myMT5run.input_set("StartHour", "0||0||1||20||Y") # ******时间修改：全部盘******
-myMT5run.input_set("StartMinute", "0||0||30||30||Y")
-myMT5run.input_set("Box", "1||1||1||3||Y")
-myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
-myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_conti() # 延续策略信号过滤参数
-# ---检查参数输入是否匹配优化的模式，且写出配置结果。
-myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
-
-
-#%% ###### a2.欧元伦敦盘突破逆转策略 欧洲盘 策略优化 ######
-expertfile = "a2.欧元伦敦盘突破逆转策略.ex5" # ************
-expertname = experfolder + "\\" + expertfile
-reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
-optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-# ---
-myMT5run.__init__()
-myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
-common_set() # 通用分析套件参数
-myMT5run.input_set("StartHour", "0||9||1||11||Y") # ******时间修改：欧洲盘******
-myMT5run.input_set("StartMinute", "0||0||30||30||Y")
-myMT5run.input_set("Box", "1||1||1||3||Y")
-myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
-myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_reverse() # 逆转策略信号过滤参数
-# ---检查参数输入是否匹配优化的模式，且写出配置结果。
-myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
-
-
-#%% ###### a2.欧元伦敦盘突破逆转策略 xx盘 策略优化 ######
-expertfile = "a2.欧元伦敦盘突破逆转策略.ex5"
-expertname = experfolder + "\\" + expertfile
-reportfile = reportfolder + "\\{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0],symbol,timeframe)
-optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-# ---
-myMT5run.__init__()
-myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                       delays=0, optimization=optimization, reportfile=reportfile)
-common_set() # 通用分析套件参数
-myMT5run.input_set("StartHour", "0||0||1||20||Y") # ******时间修改：全部盘******
-myMT5run.input_set("StartMinute", "0||0||30||30||Y")
-myMT5run.input_set("Box", "1||1||1||3||Y")
-myMT5run.input_set("AfterMarket", "1||1||1||3||Y")
-myMT5run.input_set("MaxSLPoint", "400||300||50||600||Y")
-para_reverse() # 逆转策略信号过滤参数
-# ---检查参数输入是否匹配优化的模式，且写出配置结果。
-myMT5run.check_inputs_and_write()
-myMT5run.run_MT5()
 
