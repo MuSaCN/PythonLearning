@@ -204,8 +204,8 @@ def common_set():
 
 # ------策略参数------
 def strategy_set(tf_main):
-    tf_start = myMT5run.TimeFrame_To_Up(tf_main)
-    tf_ini = myMT5run.TimeFrame_To_INIParameters(tf_start)
+    tf_start = myMT5run.timeframe_to_up(tf_main)
+    tf_ini = myMT5run.timeframe_to_ini_para(tf_start)
     myMT5run.input_set("Inp_FastMA", "50||30||5||75||Y") # ************
     myMT5run.input_set("Inp_MiddleMA", "100||60||5||150||Y") # ************
     myMT5run.input_set("Inp_SlowMA", "200||120||5||300||Y") # ************
