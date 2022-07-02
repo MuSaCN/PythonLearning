@@ -237,6 +237,7 @@ for timeframe in ["TIMEFRAME_M15","TIMEFRAME_M30","TIMEFRAME_H1",
         continue
     # ---通过遗传算法，针对 利润和TB系数 做下优化。
     for optcriterion in [0,6]:
+        print("开始分析 timeframe=", timeframe, "optcriterion=",optcriterion, ":")
         reportfile = reportfolder + "\\{}.{}.{}.{}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, timeframe, optcriterion)
         myMT5run.__init__()
         myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
