@@ -71,6 +71,7 @@ myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须�
 plt.show()
 
 
+
 #%% ###### 外部参数 ######
 experfolder = "My_Experts\\Strategy深度研究\\三均线顺势拉回策略"
 fromdate = "2010.01.01"
@@ -202,7 +203,9 @@ def common_set():
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")
 
 # ------策略参数------
-def strategy_set():
+def strategy_set(tf_main):
+    tf_start = myMT5run.TimeFrame_To_Up(tf_main)
+    tf_ini = myMT5run.TimeFrame_To_INIParameters(tf_start)
     myMT5run.input_set("Inp_FastMA", "50||30||5||75||Y") # ************
     myMT5run.input_set("Inp_MiddleMA", "100||60||5||150||Y") # ************
     myMT5run.input_set("Inp_SlowMA", "200||120||5||300||Y") # ************
@@ -216,9 +219,11 @@ def strategy_set():
     myMT5run.input_set("Inp_Filter3", "false||false||0||true||Y")
     myMT5run.input_set("F3_TradeTrend", "true||false||0||true||Y")
     myMT5run.input_set("F3_TrendOsciLimit", "24||20||2.0||40||Y")
-    myMT5run.input_set("F3_TrendOsciTF", "16408||16385||0||16408||Y")
+    myMT5run.input_set("F3_TrendOsciTF", "16408||%s||0||16408||Y"%tf_ini)
     myMT5run.input_set("Inp_Filter4", "false||false||0||true||Y")
     myMT5run.input_set("F4_ThresholdMode", "0||0||1||1||N")
+
+
 
 
 #%% ###### a1.EURUSD.三均线顺势拉回策略 策略优化 ######
@@ -233,7 +238,7 @@ optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payof
 
 for timeframe in ["TIMEFRAME_M15","TIMEFRAME_M30","TIMEFRAME_H1",
                   "TIMEFRAME_H2","TIMEFRAME_H3","TIMEFRAME_H4"]:
-    if timeframe == "TIMEFRAME_M30":
+    if timeframe in ["TIMEFRAME_M15","TIMEFRAME_M30","TIMEFRAME_H1"]:
         continue
     # ---通过遗传算法，针对 利润和TB系数 做下优化。
     for optcriterion in [0,6]:
@@ -244,7 +249,7 @@ for timeframe in ["TIMEFRAME_M15","TIMEFRAME_M30","TIMEFRAME_H1",
                                delays=0, model=model, optimization=optimization,
                                optcriterion=optcriterion, reportfile=reportfile)
         common_set()
-        strategy_set()
+        strategy_set(timeframe)
         # ---检查参数输入是否匹配优化的模式，且写出配置结果。
         myMT5run.check_inputs_and_write()
         myMT5run.run_MT5()
