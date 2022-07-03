@@ -237,7 +237,7 @@ optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法
 optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
-    if symbol in ["EURUSD"]:
+    if symbol in ["EURUSD","GBPUSD","AUDUSD"]:
         continue
     for timeframe in ["TIMEFRAME_M15","TIMEFRAME_M30","TIMEFRAME_H1",
                       "TIMEFRAME_H2","TIMEFRAME_H3","TIMEFRAME_H4"]:
