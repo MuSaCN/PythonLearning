@@ -96,7 +96,7 @@ def common_set():
     myMT5run.input_set("Inp_TimeRangeTF", "16408||0||0||49153||N") # 16408-1D
     myMT5run.input_set("Inp_TimeRangeTFShift", "0||0||1||10||N")
     # ------1.3 节假日刚开盘触发入场信号------
-    myMT5run.input_set("Inp_Is_AfHoliOpLimit", "true")
+    myMT5run.input_set("Inp_Is_AfHoliOpLimit", "false")
     # ; ------2.出场模式------
     myMT5run.input_set("Inp_Is_SigToCloseInver", "false")
     myMT5run.input_set("Inp_Is_PendToCloseInver", "false")
