@@ -203,7 +203,7 @@ def common_set():
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")
 
 # ------策略参数------
-def strategy_set(tf_main, tf_int=15):
+def strategy_set(tf_main, tf_int="15"):
     tf_start = myMT5run.timeframe_to_up(tf_main)
     tf_ini = myMT5run.timeframe_to_ini_para(tf_start)
     myMT5run.input_set("Inp_StrategyTF", tf_int)  # ************
@@ -249,7 +249,7 @@ for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","X
                                delays=0, model=model, optimization=optimization,
                                optcriterion=optcriterion, reportfile=reportfile)
         common_set()
-        strategy_set(timeframe, 15)
+        strategy_set(timeframe, "15")
         # ---检查参数输入是否匹配优化的模式，且写出配置结果。
         myMT5run.check_inputs_and_write()
         myMT5run.run_MT5()
