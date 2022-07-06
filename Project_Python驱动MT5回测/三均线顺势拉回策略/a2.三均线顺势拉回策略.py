@@ -228,7 +228,7 @@ def strategy_set(tf_main, tf_int="15"):
 
 
 #%% ###### a1.EURUSD.三均线顺势拉回策略 策略优化 ######
-expertfile = "a1.三均线顺势拉回策略.ex5" # ************
+expertfile = "a2.三均线顺势拉回策略.ex5" # ************
 expertname = experfolder + "\\" + expertfile
 symbol = "EURUSD" # ************
 timeframe = "TIMEFRAME_M5" # ************
