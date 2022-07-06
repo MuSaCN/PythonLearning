@@ -100,7 +100,7 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
 #%%
-# ---分析损益的时间keys按指定时间切片的总体利润柱状图
+# ---分析损益的时间keys按指定时间切片的总体利润柱状图(MT5上是Time1总体利润)
 myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
 myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
 
@@ -109,4 +109,9 @@ myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdaf
 myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","平均PnL"])
 myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","平均PnL"])
 
+
+#%%
+# ---分析损益的时间keys按指定时间切片的总体利润柱状图(MT5上是Time1总体利润)
+myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.dayofweek, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
+myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.dayofweek, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
 

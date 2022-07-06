@@ -66,13 +66,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
-file = __mypath__.get_desktop_path() + "\\" + "ReportTester.html" # ReportTester.xlsx ReportTester.html
+file = __mypath__.get_desktop_path() + "\\" + "ReportTester.xlsx" # ReportTester.xlsx ReportTester.html
+file = __mypath__.get_desktop_path() + "\\" + "ReportTester.html"
 folder = __mypath__.dirname(file, uplevel=0)
 filename = __mypath__.basename(file, uplevel=0)
 savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-# strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
+strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 
 # 解析下词缀
@@ -131,6 +132,17 @@ myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_sellonly, keys="Time1", lam
 
 
 #%% ###### 以周为单位收益，可以分析连续几周盈亏情况 ######
+# 多空总体利润
+myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.dayofweek, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
+myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.dayofweek, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
+# 多空平均利润
+myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.week, PlotLabel=["开仓时间分类柱状图","开仓时间","平均PnL"])
+myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.week, PlotLabel=["平仓时间分类柱状图","平仓时间","平均PnL"])
+
+
+
+
+
 # ---以周或月为单位收益情况(非累计收益)，返回df.
 pnltimebox = myMT5Report.pnl_to_timebox(symbol=symbol,timefrom=timefrom,timeto=timeto,boxtf="TIMEFRAME_W1",unit_trade=unit_total,timekey="Time0",plot=True,plotaffix="total")
 pnltimebox_buy = myMT5Report.pnl_to_timebox(symbol=symbol,timefrom=timefrom,timeto=timeto,boxtf="TIMEFRAME_W1",unit_trade=unit_buyonly,timekey="Time0",plot=True,plotaffix="buy")
