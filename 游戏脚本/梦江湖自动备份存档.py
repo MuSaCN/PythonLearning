@@ -13,6 +13,7 @@ while(True):
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     tofile = r"E:\games\MJH\存档保存\S110000111ca0088.{}.sav".format(str(now))
     myfile.copy_dir_or_file(source=savefile,destination=tofile,DirRemove=False)
+    print("存档以保存", tofile)
     time.sleep(60*5) # 每隔5分钟备份一次存档
 
 
