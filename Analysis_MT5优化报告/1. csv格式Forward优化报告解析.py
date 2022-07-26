@@ -64,7 +64,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略.EURUSD.M30.csv"
+filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略(2).EURUSD.M30.csv"
 
 # 匹配后的训练集和测试集.
 trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=filepath)
@@ -75,6 +75,11 @@ myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 # 手工根据秩相关性从数据面板中研究 trainmatch, testmatch
 
 
+#%% 自动选择
+sortby = "平均盈利"
+chooseby = "TB"
+trainchoose = myMT5Report.choose_opttrain_by2index(opttrain=trainmatch, count=0.5, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose
 
 
 
