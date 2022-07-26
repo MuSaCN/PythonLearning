@@ -69,7 +69,7 @@ filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略.EURU
 # 匹配后的训练集和测试集.
 trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=filepath)
 
-# 显示训练集测试集的spearman相关性.
+# 显示训练集测试集的 spearman pearson 相关性.
 myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 # 手工根据秩相关性从数据面板中研究 trainmatch, testmatch
