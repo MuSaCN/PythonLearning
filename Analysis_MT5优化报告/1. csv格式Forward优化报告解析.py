@@ -76,10 +76,25 @@ myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 
 #%% 自动选择
+# 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
+count = -1 # 0.5一半，-1全部。
 sortby = "平均盈利"
 chooseby = "TB"
-trainchoose = myMT5Report.choose_opttrain_by2index(opttrain=trainmatch, count=0.5, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
+
+# 选择的结果在测试集中所占的百分比位置
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose
+
+
+
+
+
+
+
+
+
 
 
 
