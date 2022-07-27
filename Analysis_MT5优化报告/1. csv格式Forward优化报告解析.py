@@ -64,9 +64,9 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略(2).EURUSD.M30.csv"
+filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略(4).EURUSD.M30.csv"
 
-# 匹配后的训练集和测试集.
+# 匹配后的训练集和测试集(csv为完整优化或遗传算法).
 trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=filepath)
 
 # 显示训练集测试集的 spearman pearson 相关性.
@@ -77,8 +77,9 @@ myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 #%% 自动选择
 # 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
-count = -1 # 0.5一半，-1全部。
-sortby = "平均盈利"
+count = 0.5 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
+count = -1
+sortby = "平均盈利" # "盈亏比" "平均盈利"
 chooseby = "TB"
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
