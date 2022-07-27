@@ -88,6 +88,7 @@ trainchoose
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
 
+# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。
 
 
 
