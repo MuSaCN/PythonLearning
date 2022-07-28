@@ -69,6 +69,14 @@ filepath = __mypath__.get_desktop_path() + "\\" + "a1.包络线振荡策略(7).E
 # 匹配后的训练集和测试集(csv为完整优化或遗传算法).
 trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=filepath)
 
+# 设置自定义准则
+mycriterion = "myCriterion"
+trainmatch.insert(loc=2, column=mycriterion, value=None)
+trainmatch[mycriterion] = np.power(trainmatch["总交易"],0.5)*trainmatch["盈亏比"]*trainmatch["%总胜率"]*np.power(trainmatch["盈利总和"],0.5)/np.power(np.abs(trainmatch["亏损总和"]),0.5) * np.power(trainmatch["盈利交易数量"], 0.5)
+testmatch.insert(loc=2, column=mycriterion, value=None)
+testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
+
+
 # 显示训练集测试集的 spearman pearson 相关性.
 myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
@@ -79,7 +87,7 @@ myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 # 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
 count = 0.5 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
 count = -1
-sortby = "平均连胜序列" # "盈亏比" "平均盈利"
+sortby = mycriterion # insertname "盈亏比" "平均盈利"
 chooseby = "TB"
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
@@ -88,10 +96,10 @@ trainchoose
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
 
-# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。
-
-
-
+# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。
+choosedmax = trainmatch[chooseby].max()
+# 看看选择的结果中是否有最大的tb。
+trainchoose[trainchoose["TB"] == choosedmax]
 
 
 
