@@ -242,7 +242,7 @@ for i, row in timedf.iterrows():
     fromdate = str(row["from"].strftime("%Y.%m.%d"))
     forwarddate = str(row["forward"].strftime("%Y.%m.%d"))
     todate = str(row["to"].strftime("%Y.%m.%d"))
-    print("开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
+    print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
 
     # ---xml格式优化报告的目录
     tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
