@@ -60,7 +60,28 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # import warnings
 # warnings.filterwarnings('ignore')
 
-# %%
+
+#%%
+'''
+策略优化结果不多，不使用遗传算法！
+'''
+import warnings
+warnings.filterwarnings('ignore')
+myDefault.set_backend_default("agg")  # 设置图片输出方式，这句必须放到类下面.
+plt.show()
+
+
+
+#%% ###### 外部参数 ######
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+
+fromdate = "2018.01.01"
+forwarddate = "2021.07.01"
+todate = "2022.07.27"
+
+
+# ====== 策略参数 ======
 # ------通用分析套件参数------
 def common_set():
     myMT5run.input_set("FrameMode", "1") # 0-FRAME_None 1-FRAME_Result 2-FRAME_GUI
@@ -188,5 +209,47 @@ def common_set():
     myMT5run.input_set("Inp_TIB_AddInPoint", "100||100||1||1000||N") # TIB_Method_Point模式：价格每次移动点数进行加仓.
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N") # TIB_Method_ATR模式：ATR周期.
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N") # TIB_Method_ATR模式：ATR倍数.
+
+# ------策略参数------
+def strategy_set():
+    myMT5run.input_set("Inp_SigMode", "1||1||1||2||Y")  # 1-左侧入场，2-右侧入场。
+    myMT5run.input_set("Inp_Ma_Period", "20||20||1||40||Y") # ************
+    myMT5run.input_set("Inp_Ma_Method", "0||0||0||3||N") # ************
+    myMT5run.input_set("Inp_Applied_Price", "1||1||0||7||N") # ************
+    myMT5run.input_set("Inp_Deviation", "0.1||0.1||0.05||0.7||Y") # ************
+    myMT5run.input_set("Inp_SLMuiltple", "2||2.0||0.200000||20.000000||N")  # 初始止损的倍数
+    myMT5run.input_set("Inp_Filter0", "false||false||0||true||Y")  # 信号过滤0：前一单做多亏，则当前只能做空；前一单做空亏，则当前只能做多。
+    myMT5run.input_set("Inp_Filter1", "true||false||0||true||Y") # 信号过滤1：D1上过滤震荡，D1上震荡才允许进场。
+
+
+#%% ###### a1.三均线顺势拉回策略 策略优化 ######
+expertfile = "a1.包络线振荡策略.ex5" # ************
+expertname = experfolder + "\\" + expertfile
+symbol = "EURUSD" # ************
+timeframe = "TIMEFRAME_M30" # ************
+forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+
+# xml格式优化报告的目录
+tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
+t0 = myMT5run.change_timestr_format(fromdate)
+t1 = myMT5run.change_timestr_format(forwarddate)
+t2 = myMT5run.change_timestr_format(todate)
+reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
+
+
+#%%
+myMT5run.__init__()
+myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
+                       forwardmode=forwardmode, forwarddate=forwarddate,
+                       delays=0, model=model, optimization=optimization,
+                       optcriterion=optcriterion, reportfile=reportfile)
+common_set()
+strategy_set()
+# ---检查参数输入是否匹配优化的模式，且写出配置结果。
+myMT5run.check_inputs_and_write()
+myMT5run.run_MT5()
 
 
