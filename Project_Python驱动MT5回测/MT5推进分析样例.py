@@ -220,8 +220,10 @@ def strategy_set():
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
 expertfile = "a1.包络线振荡策略.ex5" # ************
 expertname = experfolder + "\\" + expertfile
+
 symbol = "EURUSD" # ************
 timeframe = "TIMEFRAME_M30" # ************
+
 forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
 model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
 optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
@@ -229,10 +231,10 @@ optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payof
 
 
 # 推进测试的起止时间
-starttime = pd.Timestamp("2015.01.01")
-endtime = pd.Timestamp("2022.07.1")
-step_months = 6 # 推进步长，单位月
-length_year = 2 # 样本总时间包括训练集和测试集
+starttime = pd.Timestamp("2015.01.01") # ************
+endtime = pd.Timestamp("2022.07.1") # ************
+step_months = 6 # 推进步长，单位月 # ************
+length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 for i, row in timedf.iterrows():
