@@ -96,6 +96,8 @@ for i, row in timedf.iterrows():
 #%%
 name = "a1.包络线振荡策略(1).EURUSD.M30.2015-01-01.2016-07-01.2017-01-01.xlsx"
 name = "a1.包络线振荡策略(1).EURUSD.M30.2015-07-01.2017-01-01.2017-07-01.xlsx"
+name = "a1.包络线振荡策略(1).EURUSD.M30.2016-01-01.2017-07-01.2018-01-01.xlsx"
+name = "a1.包络线振荡策略(1).EURUSD.M30.2016-07-01.2018-01-01.2018-07-01.xlsx"
 
 xlsxfile = reportfolder + r"\%s"%name
 
@@ -111,6 +113,7 @@ testmatch.insert(loc=2, column=mycriterion, value=None)
 testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
 
 
+#%%
 # 显示训练集测试集的 spearman pearson 相关性.
 myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
@@ -119,25 +122,27 @@ myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 #%% 自动选择
 # 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
-count = 0.5 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
-count = -1
-sortby = "平均盈利" # mycriterion "盈亏比" "平均盈利"
+count = -1 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
+count = 0.5
+sortby = mycriterion
+sortby = "盈利总和" # mycriterion "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 chooseby = "TB"
+
+# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。
+trainmatch[chooseby].max()
+
+# 简单的选择的结果
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
-
-
 
 
 # 选择的结果在测试集中所占的百分比位置
 trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
 trainchoose
 
-# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。
-choosedmax = trainmatch[chooseby].max()
-# 看看选择的结果中是否有最大的tb。
-trainchoose[trainchoose["TB"] == choosedmax]
 
+# 看看选择的结果中是否有最大的tb。
+trainchoose[trainchoose["TB"] == trainmatch[chooseby].max()]
 
 
 #%% 记录下高相关性的词缀
@@ -152,6 +157,33 @@ a1.包络线振荡策略(1).EURUSD.M30.2015-01-01.2016-07-01.2017-01-01.xlsx
 %无仓GHPR_Profit  spearcorr = 0.7149091160180842  pearcorr = 0.6735018105166403
 盈利交易数量  spearcorr = 0.8945392183992829  pearcorr = 0.917201846947379
 亏损交易数量  spearcorr = 0.8637352551832493  pearcorr = 0.9472228325804275
+
+a1.包络线振荡策略(1).EURUSD.M30.2015-07-01.2017-01-01.2017-07-01.xlsx
+总交易  spearcorr = 0.7724663833720277  pearcorr = 0.9024321547785981
+多头交易  spearcorr = 0.7157690648761454  pearcorr = 0.8168961857740761
+空头交易  spearcorr = 0.6595577585017396  pearcorr = 0.8137632737221938
+Sharpe_Balance  spearcorr = 0.594905009488733  pearcorr = 0.5758782990346901
+Sharpe_Price  spearcorr = 0.5787045425595557  pearcorr = 0.5628518026045123
+利润因子  spearcorr = 0.5838191977935663  pearcorr = 0.5678291381124563
+期望利润  spearcorr = 0.6953525316135941  pearcorr = 0.6772716600094094
+Kelly止损仓位比率  spearcorr = 0.5727524311865076  pearcorr = 0.5762404909525187
+%最大相对回撤比  spearcorr = 0.5482841536282168  pearcorr = 0.3767667118415165
+最大相对回撤比占额  spearcorr = 0.5362210598253685  pearcorr = 0.3755968036604421
+最大绝对回撤值  spearcorr = 0.5362210598253685  pearcorr = 0.3755968036604421
+%最大绝对回撤值占比  spearcorr = 0.5482841536282168  pearcorr = 0.3767667118415165
+回归系数  spearcorr = 0.7363220951315584  pearcorr = 0.7093854543334555
+亏损总和  spearcorr = 0.6662482070989251  pearcorr = 0.7639717223076998
+盈利交易数量  spearcorr = 0.6601800364893541  pearcorr = 0.8562213166180398
+亏损交易数量  spearcorr = 0.7333172658836594  pearcorr = 0.8715237763860191
+
+a1.包络线振荡策略(1).EURUSD.M30.2016-01-01.2017-07-01.2018-01-01.xlsx
+总交易  spearcorr = 0.9288072833133255  pearcorr = 0.9506152789312625
+多头交易  spearcorr = 0.7975026200428488  pearcorr = 0.8574021091857378
+空头交易  spearcorr = 0.8706077849190784  pearcorr = 0.9133565368528833
+盈利总和  spearcorr = 0.7343052820266709  pearcorr = 0.8024419146326569
+亏损总和  spearcorr = 0.8096650359821721  pearcorr = 0.7860023230723364
+盈利交易数量  spearcorr = 0.8683669476200266  pearcorr = 0.9101292841040685
+亏损交易数量  spearcorr = 0.7963955057479855  pearcorr = 0.8257605886808501
 
 
 
