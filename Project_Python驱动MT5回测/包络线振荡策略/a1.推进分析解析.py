@@ -93,6 +93,9 @@ for i, row in timedf.iterrows():
     print("xlsxfile=",xlsxfile)
 
 
+    # 写按某种模式下推进快速分析！！！
+
+
 #%%
 name = "a1.包络线振荡策略(1).EURUSD.M30.2015-01-01.2016-07-01.2017-01-01.xlsx"
 name = "a1.包络线振荡策略(1).EURUSD.M30.2015-07-01.2017-01-01.2017-07-01.xlsx"
