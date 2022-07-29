@@ -30,7 +30,7 @@ Path2="C:\\Users\\i2011\\OneDrive\\Book_Code&Data\\量化投资以python为工�
 Yen=pd.read_csv(Path2+'/Part4/001/Yen.csv',index_col='date')
 Yen.index=pd.to_datetime(Yen.index,format='%Y%m%d')
 
-Yen=myfile.read_pd(Path2+'/Part4/001/Yen.csv',index="date",parse_dates=True)
+Yen=myfile.read_pd(Path2+'/Part4/001/Yen.csv',index_col="date",parse_dates=True)
 
 #3.
 Yen.s.plot()

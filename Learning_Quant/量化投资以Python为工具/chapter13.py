@@ -21,7 +21,7 @@ myDA = MyPackage.MyClass_DataAnalysis.MyClass_DataAnalysis()  #数据分析类
 
 Path2="C:\\Users\\i2011\\OneDrive\\Book_Code&Data\\量化投资以python为工具\\习题解答\\Part2\\001"
 File2=Path2+"\\history.csv"
-data2=myfile.read_pd(File2,",",index=["Date"],parse_dates=True)
+data2=myfile.read_pd(File2,",",index_col=["Date"],parse_dates=True)
 data2.head()
 myDA.describe(data2,False)
 myDA.describe(data2['Emerging.Markets'],True)

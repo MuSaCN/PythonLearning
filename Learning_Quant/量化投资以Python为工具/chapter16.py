@@ -24,7 +24,7 @@ Path="C:\\Users\\i2011\\OneDrive\\Book_Code&Data\\量化投资以python为工具
 Path2="C:\\Users\\i2011\\OneDrive\\Book_Code&Data\\量化投资以python为工具\\习题解答"
 
 #5
-managers = myfile.read_pd(Path2+'/Part2/004/managers.csv',index="Date")
+managers = myfile.read_pd(Path2+'/Part2/004/managers.csv',index_col="Date")
 Return=pd.concat([managers.HAM1,managers.HAM3,managers.HAM4],axis=1)
 myDA.describe(Return.dropna(),modeshow=False)
 Return=pd.melt(Return,value_vars=["HAM1","HAM3","HAM4"])

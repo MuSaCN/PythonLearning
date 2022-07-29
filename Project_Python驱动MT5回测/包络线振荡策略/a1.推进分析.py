@@ -73,8 +73,7 @@ plt.show()
 
 
 #%% ###### 外部参数 ######
-experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+
 
 # ====== 策略参数 ======
 # ------通用分析套件参数------
@@ -218,11 +217,16 @@ def strategy_set():
 
 
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
+symbol = "EURUSD" # ************
+timeframe = "TIMEFRAME_M30" # ************
+
+
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\{}".format(symbol)
 expertfile = "a1.包络线振荡策略.ex5" # ************
 expertname = experfolder + "\\" + expertfile
 
-symbol = "EURUSD" # ************
-timeframe = "TIMEFRAME_M30" # ************
+
 
 forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
 model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
@@ -237,11 +241,12 @@ step_months = 6 # 推进步长，单位月 # ************
 length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
+
 for i, row in timedf.iterrows():
     # 时间参数必须转成"%Y.%m.%d"字符串
-    fromdate = str(row["from"].strftime("%Y.%m.%d"))
-    forwarddate = str(row["forward"].strftime("%Y.%m.%d"))
-    todate = str(row["to"].strftime("%Y.%m.%d"))
+    fromdate = row["from"]
+    forwarddate = row["forward"]
+    todate = row["to"]
     print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
 
     # ---xml格式优化报告的目录

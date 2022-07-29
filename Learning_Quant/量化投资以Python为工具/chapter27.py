@@ -27,7 +27,7 @@ Path2="C:\\Users\\i2011\\OneDrive\\Book_Code&Data\\量化投资以python为工�
 
 
 ssec2015 = pd.read_csv(Path+'\\ssec2015.csv')
-ssec2015 = myfile.read_pd(Path+'\\ssec2015.csv',index="Date",parse_dates=True)
+ssec2015 = myfile.read_pd(Path+'\\ssec2015.csv',index_col="Date",parse_dates=True)
 ssec2015 = ssec2015.iloc[:, 1:]
 myDA.candle_ohlc(ssec2015)
 
