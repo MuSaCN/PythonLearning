@@ -265,3 +265,70 @@ for i, row in timedf.iterrows():
     myMT5run.run_MT5()
 
 
+#%% ####################### 推进分析解析，要等待推进分析优化完成 #######################
+symbol = "EURUSD"
+timeframe = "TIMEFRAME_M30"
+length = "2Y"
+step = "6M"
+
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),length,step)
+expertfile = "a1.包络线振荡策略(1).ex5"
+
+# 推进测试的起止时间
+starttime = pd.Timestamp("2015.01.01") # ************
+endtime = pd.Timestamp("2022.07.1") # ************
+step_months = 6 # 推进步长，单位月 # ************
+length_year = 2 # 样本总时间包括训练集和测试集 # ************
+timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
+
+name = "a1.包络线振荡策略(1).EURUSD.M30.2015-01-01.2016-07-01.2017-01-01.csv"
+name = "a1.包络线振荡策略(1).EURUSD.M30.2015-07-01.2017-01-01.2017-07-01.csv"
+name = "a1.包络线振荡策略(1).EURUSD.M30.2016-01-01.2017-07-01.2018-01-01.csv"
+name = "a1.包络线振荡策略(1).EURUSD.M30.2016-07-01.2018-01-01.2018-07-01.csv"
+
+csvfile = reportfolder + r"\%s"%name
+
+
+# 匹配后的训练集和测试集(csv为完整优化或遗传算法).
+trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=csvfile)
+
+# 设置自定义准则
+mycriterion = "myCriterion"
+trainmatch.insert(loc=2, column=mycriterion, value=None)
+trainmatch[mycriterion] = np.power(trainmatch["总交易"],0.5)*trainmatch["盈亏比"]*trainmatch["%总胜率"]*np.power(trainmatch["盈利总和"],0.5)/np.power(np.abs(trainmatch["亏损总和"]),0.5) * np.power(trainmatch["盈利交易数量"], 0.5)
+testmatch.insert(loc=2, column=mycriterion, value=None)
+testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
+
+
+#%%
+# 显示训练集测试集的 spearman pearson 相关性.
+myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
+
+# 手工根据秩相关性从数据面板中研究 trainmatch, testmatch
+
+
+#%% 自动选择
+# 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
+count = -1 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
+count = 0.5
+sortby = mycriterion
+sortby = "盈利总和" # mycriterion "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+chooseby = "TB"
+
+# 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。
+trainmatch[chooseby].max()
+
+# 简单的选择的结果
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose
+
+
+# 选择的结果在测试集中所占的百分比位置
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose
+
+# 看看选择的结果中是否有最大的tb。
+trainchoose[trainchoose["TB"] == trainmatch[chooseby].max()]
+
+
+
