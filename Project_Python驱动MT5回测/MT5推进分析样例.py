@@ -325,12 +325,12 @@ chooseby = "TB"
 trainmatch[chooseby].max()
 
 # 简单的选择的结果
-trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=None, sortby = sortby, count=count, chooseby = chooseby, n = 5, resultby="净利润")
 trainchoose
 
 
 # 选择的结果在测试集中所占的百分比位置
-trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, sortby = sortby, count=count, chooseby = chooseby, n = 5, resultby="净利润")
 trainchoose
 
 # 看看选择的结果中是否有最大的tb。

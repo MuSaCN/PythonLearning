@@ -109,9 +109,9 @@ n = 5
 resultby = "净利润"
 
 # ---
-for i in range(len(match)): # i=0
-    trainmatch = match[i][0]
-    testmatch = match[i][1]
+for i in range(len(match)): # i=8
+    trainmatch = match[i][0].copy()
+    testmatch = match[i][1].copy()
 
     # ---设置自定义准则
     trainmatch.insert(loc=2, column=mycriterion, value=None)
@@ -119,25 +119,26 @@ for i in range(len(match)): # i=0
     testmatch.insert(loc=2, column=mycriterion, value=None)
     testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
 
-    # 简单的选择的结果：根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=None, sortby = sortby, count=count, chooseby = chooseby, n = n, resultby=resultby)
-    trainchoose
-
-    # 选择的结果在测试集中所占的百分比位置
+    # 选择的结果在测试集中所占的百分比位置：根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
     trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, sortby = sortby, count=count, chooseby = chooseby, n = n, resultby=resultby)
     trainchoose
 
-    # 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。# 丢弃全局最大tb的那一行.
-    # 最大的TB结果，一般不选择这个
+    # 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。# 丢弃全局最大tb的那一行，最大的TB结果，一般不选择这个。
     maxchooseby = trainmatch[chooseby].max()
     row = trainchoose[trainchoose[chooseby] == maxchooseby]
-    if len(row)>0:
-        newtrainchoose = trainchoose.drop(row.index, axis=0)
-    else:
-        newtrainchoose = trainchoose
+    lastchoose = trainchoose
+    if len(row) > 0:
+        lastchoose = trainchoose.drop(row.index, axis=0)
+
+    # 获取时间
+    fromdate = timedf.iloc[i]["from"]
+    forwarddate = timedf.iloc[i]["forward"]
+    todate = timedf.iloc[i]["to"]
+    print("======",fromdate, forwarddate, todate,"======")
+    print(lastchoose)
 
     # 显示训练集测试集的 spearman pearson 相关性.
-    myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
+    # myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 
 
