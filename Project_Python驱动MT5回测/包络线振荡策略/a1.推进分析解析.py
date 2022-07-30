@@ -113,37 +113,30 @@ for i in range(len(match)): # i=0
     testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
 
 
-    # 显示训练集测试集的 spearman pearson 相关性.
-    myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
-
-    # 手工根据秩相关性从数据面板中研究 trainmatch, testmatch
-
-
     #%% 自动选择
-    # 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，返回 trainchoose。
-    count = -1 # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好。
-    count = 0.5
-    sortby = mycriterion
-    sortby = "盈利总和" # mycriterion "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+    # 训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前5个最大值，返回 trainchoose。
+    sortby = mycriterion # "mycriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+    count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
     chooseby = "TB"
+    n = 5
+    resultby = "净利润"
 
     # 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。
     trainmatch[chooseby].max()
 
     # 简单的选择的结果
-    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=None, sortby = sortby, count=count, chooseby = chooseby, n = n, resultby=resultby)
     trainchoose
-
 
     # 选择的结果在测试集中所占的百分比位置
-    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, count=count, sortby=sortby, chooseby=chooseby, n=5)
+    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, sortby = sortby, count=count, chooseby = chooseby, n = n, resultby=resultby)
     trainchoose
-
 
     # 看看选择的结果中是否有最大的tb。
     trainchoose[trainchoose["TB"] == trainmatch[chooseby].max()]
 
-
+    # 显示训练集测试集的 spearman pearson 相关性.
+    myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
 
 
 

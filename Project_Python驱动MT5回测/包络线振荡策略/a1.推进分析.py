@@ -217,29 +217,29 @@ def strategy_set():
 
 
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
-symbol = "EURUSD" # ************
-timeframe = "TIMEFRAME_M30" # ************
-
-
-experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\{}".format(symbol)
-expertfile = "a1.包络线振荡策略.ex5" # ************
-expertname = experfolder + "\\" + expertfile
-
-
-
-forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
-
-
 # 推进测试的起止时间
 starttime = pd.Timestamp("2015.01.01") # ************
 endtime = pd.Timestamp("2022.07.1") # ************
 step_months = 6 # 推进步长，单位月 # ************
 length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
+
+
+symbol = "EURUSD" # ************
+timeframe = "TIMEFRAME_M30" # ************
+length = "%sY"%length_year
+step = "%sM"%step_months
+
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),length,step)
+expertfile = "a1.包络线振荡策略.ex5" # ************
+expertname = experfolder + "\\" + expertfile
+
+
+forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 
 for i, row in timedf.iterrows():
