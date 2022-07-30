@@ -48,6 +48,7 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myMT5Report = MyMT5Report.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
+myMT5Analy = MyMT5Analysis.MyClass_ForwardAnalysis() # MT5分析类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
@@ -70,77 +71,51 @@ timeframe = "TIMEFRAME_M30"
 length = "2Y"
 step = "6M"
 
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),length,step)
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step)
 expertfile = "a1.包络线振荡策略(1).ex5"
 
 # 推进测试的起止时间
 starttime = pd.Timestamp("2015.01.01") # ************
-endtime = pd.Timestamp("2022.07.1") # ************
+endtime = pd.Timestamp("2022.07.01") # ************
 step_months = 6 # 推进步长，单位月 # ************
 length_year = 2 # 样本总时间包括训练集和测试集 # ************
-timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
+timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
-# ---批量自动读取(csv比xlsx速度快)
-match = []
+# ---批量读取推进优化的报告(csv比xlsx速度快)，保存到matchlist中 [[0,1],[0,1]]--- 0 trainmatch, 1 testmatch.
+matchlist = [] # [[0,1]]
 for i, row in timedf.iterrows():
     # 时间参数必须转成"%Y.%m.%d"字符串
     fromdate = row["from"]
     forwarddate = row["forward"]
     todate = row["to"]
-
     # ---xlsx格式优化报告
-    tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
-    t0 = myMT5run.change_timestr_format(fromdate)
-    t1 = myMT5run.change_timestr_format(forwarddate)
-    t2 = myMT5run.change_timestr_format(todate)
+    tf_affix = myMT5Analy.timeframe_to_ini_affix(timeframe)
+    t0 = myMT5Analy.change_timestr_format(fromdate)
+    t1 = myMT5Analy.change_timestr_format(forwarddate)
+    t2 = myMT5Analy.change_timestr_format(todate)
     csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
-    print("读取 csvfile=",csvfile)
-    trainmatch, testmatch = myMT5Report.read_forward_opt_csv(filepath=csvfile)
-    match.append([trainmatch, testmatch])
+    print("读取 csvfile=", csvfile)
+    trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
+    matchlist.append([trainmatch, testmatch])
+
 
 
 #%%
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-mycriterion = "myCriterion"
-sortby = mycriterion # "mycriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "盈利总和" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB"
 n = 5
 resultby = "净利润"
 
-# ---
-for i in range(len(match)): # i=8
-    trainmatch = match[i][0].copy()
-    testmatch = match[i][1].copy()
 
-    # ---设置自定义准则
-    trainmatch.insert(loc=2, column=mycriterion, value=None)
-    trainmatch[mycriterion] = np.power(trainmatch["总交易"],0.5)*trainmatch["盈亏比"]*trainmatch["%总胜率"]*np.power(trainmatch["盈利总和"],0.5)/np.power(np.abs(trainmatch["亏损总和"]),0.5) * np.power(trainmatch["盈利交易数量"], 0.5)
-    testmatch.insert(loc=2, column=mycriterion, value=None)
-    testmatch[mycriterion] = np.power(testmatch["总交易"],0.5)*testmatch["盈亏比"]*testmatch["%总胜率"]*np.power(testmatch["盈利总和"],0.5)/np.power(np.abs(testmatch["亏损总和"]),0.5) * np.power(testmatch["盈利交易数量"], 0.5)
+myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True)
 
-    # 选择的结果在测试集中所占的百分比位置：根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-    trainchoose = myMT5Report.choose_opttrain_by2index(trainmatch=trainmatch, testmatch=testmatch, sortby = sortby, count=count, chooseby = chooseby, n = n, resultby=resultby)
-    trainchoose
-
-    # 选择的结果不一定是5个中最大的tb，要看看最大的tb是否为全局最大的tb。然后再判断。根据自己的标准可以考虑第一个。# 丢弃全局最大tb的那一行，最大的TB结果，一般不选择这个。
-    maxchooseby = trainmatch[chooseby].max()
-    row = trainchoose[trainchoose[chooseby] == maxchooseby]
-    lastchoose = trainchoose
-    if len(row) > 0:
-        lastchoose = trainchoose.drop(row.index, axis=0)
-
-    # 获取时间
-    fromdate = timedf.iloc[i]["from"]
-    forwarddate = timedf.iloc[i]["forward"]
-    todate = timedf.iloc[i]["to"]
-    print("======",fromdate, forwarddate, todate,"======")
-    print(lastchoose)
-
+for i in range(len(matchlist)):  # i=0
+    trainmatch = matchlist[i][0].copy()
+    testmatch = matchlist[i][1].copy()
     # 显示训练集测试集的 spearman pearson 相关性.
-    # myMT5Report.show_traintest_spearcorr(trainmatch, testmatch)
-
-
+    myMT5Analy.show_traintest_spearcorr(trainmatch, testmatch)
 
 
 
