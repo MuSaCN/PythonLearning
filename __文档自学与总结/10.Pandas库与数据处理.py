@@ -104,3 +104,9 @@ df1*df2
 ### rolling的使用
 # df.rolling(..) --> 会对df中的每个列的Series进行rolling
 
+### 经过检验，重复列名的df，无法赋值。
+df = pd.DataFrame([[1,2],[2,4]])
+df = pd.concat((df,df),axis=1)
+df.columns = [0,1,1,2]
+df
+df[0][0] = 100 # 结果无法赋值！

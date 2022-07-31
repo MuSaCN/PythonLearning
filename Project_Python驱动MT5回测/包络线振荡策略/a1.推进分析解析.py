@@ -65,7 +65,6 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
 length = "2Y"
@@ -98,72 +97,81 @@ for i, row in timedf.iterrows():
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
     matchlist.append([trainmatch, testmatch])
 
-
-
-#%%
-# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-sortby = "盈利总和" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
-count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "TB"
-n = 5
-resultby = "净利润"
-
-
-myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True)
-
+#%% ### 展示相关性 ###
 for i in range(len(matchlist)):  # i=0
     trainmatch = matchlist[i][0].copy()
     testmatch = matchlist[i][1].copy()
     # 显示训练集测试集的 spearman pearson 相关性.
     myMT5Analy.show_traintest_spearcorr(trainmatch, testmatch)
 
+#%% ### 一次筛选 ###
+# "净利润"	"总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
+# "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
+# "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
+# "Vince止损仓位比率" "最小净值" "%最大相对回撤比" "最大相对回撤比占额" "%最小保证金" "最大绝对回撤值"
+# "%最大绝对回撤值占比" "回归系数" "回归截距" "LRCorrelation" "LRStandardError" "盈利总和" "亏损总和"
+# "AHPR" "GHPR" "%无仓GHPR_Profit" "%无仓GHPR_Loss" "盈利交易数量" "亏损交易数量" "(int)最长获利序列"
+# "最长获利序列额($)" "(int)最长亏损序列" "最长亏损序列额($)" "最大的连利($)" "(int)最大的连利序列数"
+# "最大的连亏($)" "(int)最大的连亏序列数" "平均连胜序列" "平均连亏序列" "获利交易中的最大值"
+# "亏损交易中的最大值"
+
+# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
+sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
+chooseby = "TB"
+n = 5
+resultby = "净利润"
+
+totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True, show=False)
+
+#%% ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
+group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
+# mypd.groupby_print(group)
+
+group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+group.apply(lambda x: x.iloc[x[chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby最大的一个
 
 
 
 
+#%% ### 暴力测试下怎么筛选结果较好 ###
+columns = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
 
-#%% 记录下高相关性的词缀
-'''
-a1.包络线振荡策略(1).EURUSD.M30.2015-01-01.2016-07-01.2017-01-01.xlsx
-总交易  spearcorr = 0.9559208932274254  pearcorr = 0.9682589002033708
-多头交易  spearcorr = 0.940742610290166  pearcorr = 0.9487822612339877
-空头交易  spearcorr = 0.9312374081558316  pearcorr = 0.9595628548607197
-平均盈利  spearcorr = 0.7214713311882196  pearcorr = 0.6807107044955332
-盈利总和  spearcorr = 0.7840437427212836  pearcorr = 0.8734806686006242
-亏损总和  spearcorr = 0.7850453261050849  pearcorr = 0.9158680612828269
-%无仓GHPR_Profit  spearcorr = 0.7149091160180842  pearcorr = 0.6735018105166403
-盈利交易数量  spearcorr = 0.8945392183992829  pearcorr = 0.917201846947379
-亏损交易数量  spearcorr = 0.8637352551832493  pearcorr = 0.9472228325804275
+# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
+violent = pd.DataFrame([])
+for sortby in columns: # sortby=chooseby=resultby="净利润"
+    count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
+    for chooseby in columns:
+        n = 5
+        resultby = "净利润"
 
-a1.包络线振荡策略(1).EURUSD.M30.2015-07-01.2017-01-01.2017-07-01.xlsx
-总交易  spearcorr = 0.7724663833720277  pearcorr = 0.9024321547785981
-多头交易  spearcorr = 0.7157690648761454  pearcorr = 0.8168961857740761
-空头交易  spearcorr = 0.6595577585017396  pearcorr = 0.8137632737221938
-Sharpe_Balance  spearcorr = 0.594905009488733  pearcorr = 0.5758782990346901
-Sharpe_Price  spearcorr = 0.5787045425595557  pearcorr = 0.5628518026045123
-利润因子  spearcorr = 0.5838191977935663  pearcorr = 0.5678291381124563
-期望利润  spearcorr = 0.6953525316135941  pearcorr = 0.6772716600094094
-Kelly止损仓位比率  spearcorr = 0.5727524311865076  pearcorr = 0.5762404909525187
-%最大相对回撤比  spearcorr = 0.5482841536282168  pearcorr = 0.3767667118415165
-最大相对回撤比占额  spearcorr = 0.5362210598253685  pearcorr = 0.3755968036604421
-最大绝对回撤值  spearcorr = 0.5362210598253685  pearcorr = 0.3755968036604421
-%最大绝对回撤值占比  spearcorr = 0.5482841536282168  pearcorr = 0.3767667118415165
-回归系数  spearcorr = 0.7363220951315584  pearcorr = 0.7093854543334555
-亏损总和  spearcorr = 0.6662482070989251  pearcorr = 0.7639717223076998
-盈利交易数量  spearcorr = 0.6601800364893541  pearcorr = 0.8562213166180398
-亏损交易数量  spearcorr = 0.7333172658836594  pearcorr = 0.8715237763860191
+        # 三个标准不能有重复的
+        if len(pd.Series([sortby,chooseby,resultby]).unique()) < 3:
+            continue
 
-a1.包络线振荡策略(1).EURUSD.M30.2016-01-01.2017-07-01.2018-01-01.xlsx
-总交易  spearcorr = 0.9288072833133255  pearcorr = 0.9506152789312625
-多头交易  spearcorr = 0.7975026200428488  pearcorr = 0.8574021091857378
-空头交易  spearcorr = 0.8706077849190784  pearcorr = 0.9133565368528833
-盈利总和  spearcorr = 0.7343052820266709  pearcorr = 0.8024419146326569
-亏损总和  spearcorr = 0.8096650359821721  pearcorr = 0.7860023230723364
-盈利交易数量  spearcorr = 0.8683669476200266  pearcorr = 0.9101292841040685
-亏损交易数量  spearcorr = 0.7963955057479855  pearcorr = 0.8257605886808501
+        ### 一次筛选
+        totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True, show=False)
+        ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
+        group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
+        # mypd.groupby_print(group)
+        out0 = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+        out1 = group.apply(lambda x: x.iloc[x[chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+        out2 = group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby最大的一个
+        #
+        a01=(out0["test%s_Q" % chooseby] > 0.5).sum()
+        a02=(out0["test%s_Q" % resultby] > 0.5).sum()
+        a11=(out1["test%s_Q" % chooseby] > 0.5).sum()
+        a12=(out1["test%s_Q" % resultby] > 0.5).sum()
+        a21=(out2["test%s_Q" % chooseby] > 0.5).sum()
+        a22=(out2["test%s_Q" % resultby] > 0.5).sum()
+        df = pd.DataFrame((a01,a02,a11,a12,a21,a22), index=["chooseby0","resultby0","chooseby1","resultby1","chooseby2","resultby2"]).T
+        indexname = "{}.{}.{}".format(sortby,chooseby,resultby)
+        df.rename({df.index[0]: indexname} , inplace=True)
+        violent = violent.append(df)
+
+# ---
+violent
 
 
-
-
-'''
 
