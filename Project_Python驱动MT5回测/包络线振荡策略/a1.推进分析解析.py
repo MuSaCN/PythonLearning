@@ -116,7 +116,7 @@ for i in range(len(matchlist)):  # i=0
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "Vince止损仓位比率" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB"
 n = 5
@@ -136,39 +136,39 @@ group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby
 
 
 #%% ### 暴力测试下怎么筛选结果较好 ###
-columns = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
-
+columns0 = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
+columns1 = ["TB"]
+columns2 = ["净利润"]
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
 violent = pd.DataFrame([])
-for sortby in columns: # sortby=chooseby=resultby="净利润"
+for sortby in columns0: # sortby=chooseby=resultby="净利润"
     count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-    for chooseby in columns:
+    for chooseby in columns1:
         n = 5
-        resultby = "净利润"
+        for resultby in columns2:
+            # 三个标准不能有重复的
+            if len(pd.Series([sortby,chooseby,resultby]).unique()) < 3:
+                continue
 
-        # 三个标准不能有重复的
-        if len(pd.Series([sortby,chooseby,resultby]).unique()) < 3:
-            continue
-
-        ### 一次筛选
-        totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True, show=False)
-        ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
-        group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
-        # mypd.groupby_print(group)
-        out0 = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
-        out1 = group.apply(lambda x: x.iloc[x[chooseby].argmax()]) # 选出每个分组chooseby最大的一个
-        out2 = group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby最大的一个
-        #
-        a01=(out0["test%s_Q" % chooseby] > 0.5).sum()
-        a02=(out0["test%s_Q" % resultby] > 0.5).sum()
-        a11=(out1["test%s_Q" % chooseby] > 0.5).sum()
-        a12=(out1["test%s_Q" % resultby] > 0.5).sum()
-        a21=(out2["test%s_Q" % chooseby] > 0.5).sum()
-        a22=(out2["test%s_Q" % resultby] > 0.5).sum()
-        df = pd.DataFrame((a01,a02,a11,a12,a21,a22), index=["chooseby0","resultby0","chooseby1","resultby1","chooseby2","resultby2"]).T
-        indexname = "{}.{}.{}".format(sortby,chooseby,resultby)
-        df.rename({df.index[0]: indexname} , inplace=True)
-        violent = violent.append(df)
+            ### 一次筛选
+            totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True, show=False)
+            ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
+            group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
+            # mypd.groupby_print(group)
+            out0 = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+            out1 = group.apply(lambda x: x.iloc[x[chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+            out2 = group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby最大的一个
+            #
+            a01=(out0["test%s_Q" % chooseby] < 0.5).sum()
+            a02=(out0["test%s_Q" % resultby] < 0.5).sum()
+            a11=(out1["test%s_Q" % chooseby] < 0.5).sum()
+            a12=(out1["test%s_Q" % resultby] < 0.5).sum()
+            a21=(out2["test%s_Q" % chooseby] < 0.5).sum()
+            a22=(out2["test%s_Q" % resultby] < 0.5).sum()
+            df = pd.DataFrame((a01,a02,a11,a12,a21,a22), index=["chooseby0","resultby0","chooseby1","resultby1","chooseby2","resultby2"]).T
+            indexname = "{}.{}.{}".format(sortby,chooseby,resultby)
+            df.rename({df.index[0]: indexname} , inplace=True)
+            violent = violent.append(df)
 
 # ---
 violent
