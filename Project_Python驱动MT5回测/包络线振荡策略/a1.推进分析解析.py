@@ -139,9 +139,9 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-sortby = "Vince止损仓位比率" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "GHPR" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "TB"
+chooseby = "Vince止损仓位比率" # "TB"
 n = 5
 resultby = "净利润"
 
@@ -160,7 +160,7 @@ group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby
 
 #%% ### 暴力测试下怎么筛选结果较好 ###
 sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
-choosebylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["TB"]
+choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
 resultbylist = ["净利润"]
 func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
