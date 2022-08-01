@@ -97,15 +97,38 @@ for i, row in timedf.iterrows():
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
     matchlist.append([trainmatch, testmatch])
 
+# ---设置自定义准则
+mycriterion = "myCriterion"
+for i in range(len(matchlist)):
+    trainmatch = matchlist[i][0] # 这里不需要copy()
+    testmatch = matchlist[i][1] # 这里不需要copy()
+    try:
+        trainmatch.drop(labels=mycriterion, axis=1, inplace=True)
+        testmatch.drop(labels=mycriterion, axis=1, inplace=True)
+    except:
+        pass
+    #
+    trainmatch.insert(loc=2, column=mycriterion, value=None)
+    trainmatch[mycriterion] = np.power(trainmatch["总交易"], 0.5) * trainmatch["平均盈利"] * np.power(trainmatch["盈利总和"], 0.5) / np.power(np.abs(trainmatch["亏损总和"]), 0.5) * np.power(trainmatch["盈利交易数量"], 0.5)
+    #
+    testmatch.insert(loc=2, column=mycriterion, value=None)
+    testmatch[mycriterion] = np.power(testmatch["总交易"], 0.5) * testmatch["平均盈利"] * np.power(testmatch["盈利总和"], 0.5) / np.power(np.abs(testmatch["亏损总和"]), 0.5) * np.power(testmatch["盈利交易数量"], 0.5)
+
+
+
 #%% ### 展示相关性 ###
-for i in range(len(matchlist)):  # i=0
+for i in range(len(matchlist)):  # i=10
     trainmatch = matchlist[i][0].copy()
     testmatch = matchlist[i][1].copy()
     # 显示训练集测试集的 spearman pearson 相关性.
     myMT5Analy.show_traintest_spearcorr(trainmatch, testmatch)
 
+# 获取训练集测试集相关性的界限计数，比如某个相关性的绝对值>0.5，分数加1。
+totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.5, 0.6, 0.7, 0.8, 0.9])
+
+
 #%% ### 一次筛选 ###
-# "净利润"	"总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
+# "净利润" "myCriterion" "总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
 # "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
 # "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
 # "Vince止损仓位比率" "最小净值" "%最大相对回撤比" "最大相对回撤比占额" "%最小保证金" "最大绝对回撤值"
@@ -137,7 +160,7 @@ group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby
 
 #%% ### 暴力测试下怎么筛选结果较好 ###
 sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
-choosebylist = ["TB"]
+choosebylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["TB"]
 resultbylist = ["净利润"]
 func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
