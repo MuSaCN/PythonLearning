@@ -141,7 +141,7 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "Kelly占用仓位杠杆" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "最长亏损序列额($)" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB" # "TB"
 n = 5
