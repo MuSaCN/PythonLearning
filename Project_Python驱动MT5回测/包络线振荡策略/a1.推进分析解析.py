@@ -68,15 +68,15 @@ warnings.filterwarnings('ignore')
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
 length = "2Y"
-step = "6M"
+step = "3M" # "6M","3M"
 
 reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step)
-expertfile = "a1.包络线振荡策略(1).ex5"
+expertfile = "a1.包络线振荡策略.ex5"
 
 # 推进测试的起止时间
 starttime = pd.Timestamp("2015.01.01") # ************
 endtime = pd.Timestamp("2022.07.01") # ************
-step_months = 6 # 推进步长，单位月 # ************
+step_months = 3 # 6,3 # 推进步长，单位月 # ************
 length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
@@ -117,6 +117,7 @@ for i in range(len(matchlist)):
 
 
 #%% ### 展示相关性 ###
+len(matchlist)
 for i in range(len(matchlist)):  # i=10
     trainmatch = matchlist[i][0].copy()
     testmatch = matchlist[i][1].copy()
@@ -140,7 +141,7 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "Kelly占用仓位杠杆" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB" # "TB"
 n = 5
@@ -155,9 +156,9 @@ group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组�
 # mypd.groupby_print(group)
 
 # ---根据训练集选择，测试集反馈。
-group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
-group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
-group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
+out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+out = group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
 
 
 #%% ### 暴力测试下怎么筛选结果较好(循环比多线程好，多进程不方便) ###
