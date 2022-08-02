@@ -274,6 +274,8 @@ for i, row in timedf.iterrows():
 
 #%% ####################### 推进分析解析，要等待推进分析优化完成 #######################
 # %%
+
+# %%
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -337,6 +339,7 @@ for i in range(len(matchlist)):  # i=10
 
 # 获取训练集测试集相关性的界限计数，比如某个相关性的绝对值>0.5，分数加1。
 totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.5, 0.6, 0.7, 0.8, 0.9])
+# totalcorr在SciView中研究
 
 
 #%% ### 一次筛选 ###
@@ -350,38 +353,43 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # "最大的连亏($)" "(int)最大的连亏序列数" "平均连胜序列" "平均连亏序列" "获利交易中的最大值"
 # "亏损交易中的最大值"
 
-# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
-sortby = "Vince止损仓位比率" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
+sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "TB"
+chooseby = "TB" # "TB"
 n = 5
-resultby = "净利润"
+resultlist=["TB", "净利润"]
 
-totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultby=resultby, dropmaxchooseby=True, show=False)
+totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
+len(totaldf)
+
 
 #%% ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
 group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
 # mypd.groupby_print(group)
 
+# ---根据训练集选择，测试集反馈。
 group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
-group.apply(lambda x: x.iloc[x[chooseby].argmax()]) # 选出每个分组chooseby最大的一个
-group.apply(lambda x: x.iloc[x[resultby].argmax()]) # 选出每个分组resultby最大的一个
+group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
 
 
-
-
-#%% ### 暴力测试下怎么筛选结果较好 ###
-sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
-choosebylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["TB"]
-resultbylist = ["净利润"]
+#%% ### 暴力测试下怎么筛选结果较好(循环比多线程好，多进程不方便) ###
+sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
+choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
+resultlist = ["TB", "净利润"] # ***非循环迭代***
 func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 n = 5
 
+import timeit
+t0 = timeit.default_timer()
 violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist, func=func,
                                               sortbylist=sortbylist, choosebylist=choosebylist,
-                                              resultbylist=resultbylist,count=count, n=n,
+                                              resultlist=resultlist,count=count, n=n,
                                               dropmaxchooseby=True)
-violent
-
-
+t1 = timeit.default_timer()
+print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
+# violent 在SciView中查看
+# 保存到xlsx
+violent.to_excel(reportfolder+".xlsx")

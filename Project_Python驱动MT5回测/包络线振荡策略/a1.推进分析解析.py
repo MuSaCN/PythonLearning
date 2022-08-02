@@ -177,4 +177,8 @@ violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist
 t1 = timeit.default_timer()
 print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
 # violent 在SciView中查看
+# 保存到xlsx
+violent.to_excel(reportfolder+".xlsx")
+
+
 
