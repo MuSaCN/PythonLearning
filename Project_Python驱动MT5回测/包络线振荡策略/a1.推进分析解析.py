@@ -144,7 +144,7 @@ sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB" # "TB"
 n = 5
-resultlist=["TB", "恢复因子", "净利润"]
+resultlist=["TB", "净利润"]
 
 totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
 len(totaldf)
@@ -164,7 +164,7 @@ group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每�
 #%% ### 暴力测试下怎么筛选结果较好 ###
 sortbylist = ["平均盈利","盈亏比"] # trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
 choosebylist = ["TB"] # ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
-resultlist = ["TB", "恢复因子", "净利润"] # ***非循环迭代***
+resultlist = ["TB", "净利润"] # ***非循环迭代***
 func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 n = 5
