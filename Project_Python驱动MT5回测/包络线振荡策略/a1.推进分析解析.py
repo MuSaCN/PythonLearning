@@ -139,7 +139,7 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # "最大的连亏($)" "(int)最大的连亏序列数" "平均连胜序列" "平均连亏序列" "获利交易中的最大值"
 # "亏损交易中的最大值"
 
-# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果。
+# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
 sortby = "平均盈利" # "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "TB" # "TB"
@@ -148,6 +148,7 @@ resultlist=["TB", "净利润"]
 
 totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
 len(totaldf)
+
 
 #%% ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
 group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
@@ -159,20 +160,21 @@ group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分
 group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
 
 
-
-
-#%% ### 暴力测试下怎么筛选结果较好 ###
-sortbylist = ["平均盈利","盈亏比"] # trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
-choosebylist = ["TB"] # ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
+#%% ### 暴力测试下怎么筛选结果较好(循环比多线程好，多进程不方便) ###
+sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
+choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
 resultlist = ["TB", "净利润"] # ***非循环迭代***
 func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 n = 5
 
+import timeit
+t0 = timeit.default_timer()
 violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist, func=func,
                                               sortbylist=sortbylist, choosebylist=choosebylist,
                                               resultlist=resultlist,count=count, n=n,
                                               dropmaxchooseby=True)
-
+t1 = timeit.default_timer()
+print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
 # violent 在SciView中查看
 

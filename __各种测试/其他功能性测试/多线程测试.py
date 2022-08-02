@@ -80,8 +80,8 @@ myparallel.multi_threading(worker,([[1,2]],[(3,4)],[5]))
 myparallel.multi_threading_list(worker,([1],[2],[3],[4],[5]))
 myparallel.multi_threading_list(worker,([[1,2]],[3],[4],[5]))
 
-myparallel.multi_threading_df(worker,([[1],[2],[3],[4],[5]]))
-myparallel.multi_threading_df(worker,([[1,2]],[3],[(4,)],[5]))
+myparallel.multi_threading_para_df(worker,([[1],[2],[3],[4],[5]]))
+myparallel.multi_threading_para_df(worker,([[1,2]],[3],[(4,)],[5]))
 
 myparallel.multi_threading_dict(worker,([[1,2]],((3,4),),[5])) # [5, 3, 2, 4, 1]
 myparallel.multi_threading_dict(worker,[[1],[2],[3],[4],[5]]) # [5, 3, 2, 4, 1]
@@ -100,13 +100,16 @@ myparallel.multi_threading(worker, [[1,2],[(3,4)],[([3,4]),]] )
 
 myparallel.multi_threading_list(worker,[[[1],[2]],[3],[4],[5]])
 
-myparallel.multi_threading_df(worker,([[1,2]],[3],[(4,)],[5]) )
-myparallel.multi_threading_df(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
+myparallel.multi_threading_para_df(worker,([[1,2]],[3],[(4,)],[5]) )
+myparallel.multi_threading_para_df(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
 
 myparallel.multi_threading_dict(worker,([[1,2]],[3],[(4,)],[5]))
 myparallel.multi_threading_dict(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
 myparallel.multi_threading_dict(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
 
+# myparallel.multi_threading_concat_df(worker,([[1,2]],[3],[(4,)],[5]))
+# myparallel.multi_threading_concat_df(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
+# myparallel.multi_threading_concat_df(worker,([[1,2],5],[3,[1]],[(4,),3],[5,6]) )
 
 #%% 测试2，多参数
 num = 0
@@ -117,8 +120,24 @@ def add(a,b,c):
 param_list = [["A","B","C"],[1,2,3],["A",1,3],[4,1,2],[8,"DE",0]]
 myparallel.multi_threading(add,param_list=param_list)
 myparallel.multi_threading_list(add,param_list=param_list)
-myparallel.multi_threading_df(add, param_list=param_list)
+myparallel.multi_threading_para_df(add, param_list=param_list)
 myparallel.multi_threading_dict(add, param_list=param_list)
+myparallel.multi_threading_concat_df(add, param_list=param_list)
+
+
+#%% 测试3，返回df
+def add(a,b,c):
+    print(a, b, c)
+    return pd.DataFrame([(a,b,c),(a,b,c)],columns=["A","B","C"])
+param_list = [["A","B","C"],[1,2,3],["A",1,3],[4,1,2],[8,"DE",0]]
+myparallel.multi_threading(add,param_list=param_list)
+myparallel.multi_threading_list(add,param_list=param_list)
+myparallel.multi_threading_para_df(add, param_list=param_list)
+myparallel.multi_threading_dict(add, param_list=param_list)
+myparallel.multi_threading_concat_df(add, param_list=param_list)
+
+
+
 
 
 #%% lock阻断测试
@@ -145,7 +164,7 @@ def run():
 
 for i in range(100):
     tickt_count = 10
-    myparallel.multi_threading_df(run,param_list=[[],[],[]])
+    myparallel.multi_threading_para_df(run,param_list=[[],[],[]])
     print('tickt count ',tickt_count) # 不lock，会出现-1
     if tickt_count == -1:
         raise ValueError("结果出现-1")
