@@ -97,6 +97,15 @@ for i, row in timedf.iterrows():
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
     matchlist.append([trainmatch, testmatch])
 
+# ---把表示负面意义的数据改成负数。
+negetivelist = ["%最大相对回撤比","最大相对回撤比占额","最大绝对回撤值","%最大绝对回撤值占比","LRStandardError","亏损交易数量","(int)最长亏损序列","(int)最大的连亏序列数","平均连亏序列"]
+for i in range(len(matchlist)): # i=0
+    trainmatch = matchlist[i][0] # 这里不需要copy()
+    testmatch = matchlist[i][1] # 这里不需要copy()
+    for nege in negetivelist:
+        trainmatch[nege] = -1 * trainmatch[nege]
+        testmatch[nege] = -1 * testmatch[nege]
+
 # ---设置自定义准则
 mycriterion = "myCriterion"
 for i in range(len(matchlist)):
