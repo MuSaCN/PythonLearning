@@ -61,24 +61,31 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # import warnings
 # warnings.filterwarnings('ignore')
 
+
+
 # %%
+''' # 输出内容保存到"工作---MT5策略研究"目录，以及MT5的Common目录。 '''
 import warnings
 warnings.filterwarnings('ignore')
 
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
-length = "2Y"
-step = "3M" # "6M","3M"
+starttime = pd.Timestamp("2015.01.01") # ************
+endtime = pd.Timestamp("2022.07.01") # ************
+length_year = 2 # 样本总时间包括训练集和测试集 # ************
+step_months = 6 # 6, 3 # 推进步长，单位月 # ************
+
+length = "%sY"%length_year
+step = "%sM"%step_months # "6M","3M"
 
 reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step)
 expertfile = "a1.包络线振荡策略.ex5"
 
 # 推进测试的起止时间
-starttime = pd.Timestamp("2015.01.01") # ************
-endtime = pd.Timestamp("2022.07.01") # ************
-step_months = 3 # 6,3 # 推进步长，单位月 # ************
-length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
+
+timedf.to_csv(__mypath__.get_desktop_path()+"\\推进时间.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step), sep=",") # 逗号的csv可直接被excel解析。
+
 
 # ---批量读取推进优化的报告(csv比xlsx速度快)，保存到matchlist中 [[0,1],[0,1]]--- 0 trainmatch, 1 testmatch.
 matchlist = [] # [[0,1]]
@@ -138,38 +145,6 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 # totalcorr在SciView中研究
 
 
-#%% ### 一次筛选 ###
-# "净利润" "myCriterion" "总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
-# "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
-# "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
-# "Vince止损仓位比率" "最小净值" "%最大相对回撤比" "最大相对回撤比占额" "%最小保证金" "最大绝对回撤值"
-# "%最大绝对回撤值占比" "回归系数" "回归截距" "LRCorrelation" "LRStandardError" "盈利总和" "亏损总和"
-# "AHPR" "GHPR" "%无仓GHPR_Profit" "%无仓GHPR_Loss" "盈利交易数量" "亏损交易数量" "(int)最长获利序列"
-# "最长获利序列额($)" "(int)最长亏损序列" "最长亏损序列额($)" "最大的连利($)" "(int)最大的连利序列数"
-# "最大的连亏($)" "(int)最大的连亏序列数" "平均连胜序列" "平均连亏序列" "获利交易中的最大值"
-# "亏损交易中的最大值"
-
-# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "最长亏损序列额($)" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
-count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "TB" # "TB"
-n = 5
-resultlist=["TB", "净利润"]
-
-totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
-len(totaldf)
-
-
-#%% ### 二次筛选：是否存在某种方法选出一个占优的结果 ###
-group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
-# mypd.groupby_print(group)
-
-# ---根据训练集选择，测试集反馈。
-out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
-out = group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
-out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
-
-
 #%% ### 暴力测试下怎么筛选结果较好(循环比多线程好，多进程不方便) ###
 sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
 choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
@@ -189,6 +164,60 @@ print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
 # violent 在SciView中查看
 # 保存到xlsx
 violent.to_excel(reportfolder+".xlsx")
+# 保存后下次分析可以直接从 F:\BaiduNetdiskWorkspace\工作---MT5策略研究\中读取
+# violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
+
+
+#%% ### 一次筛选：根据violent选择一个占优势的排序方式 ###
+# "净利润" "myCriterion" "总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
+# "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
+# "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
+# "Vince止损仓位比率" "最小净值" "%最大相对回撤比" "最大相对回撤比占额" "%最小保证金" "最大绝对回撤值"
+# "%最大绝对回撤值占比" "回归系数" "回归截距" "LRCorrelation" "LRStandardError" "盈利总和" "亏损总和"
+# "AHPR" "GHPR" "%无仓GHPR_Profit" "%无仓GHPR_Loss" "盈利交易数量" "亏损交易数量" "(int)最长获利序列"
+# "最长获利序列额($)" "(int)最长亏损序列" "最长亏损序列额($)" "最大的连利($)" "(int)最大的连利序列数"
+# "最大的连亏($)" "(int)最大的连亏序列数" "平均连胜序列" "平均连亏序列" "获利交易中的最大值"
+# "亏损交易中的最大值"
+
+# ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
+sortby = "%多胜率" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
+chooseby = "TB" # "TB"
+n = 5
+resultlist=["TB", "净利润"]
+
+totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
+len(totaldf)
+
+
+#%% ### 二次筛选：根据某种方法选出一个占优的结果 ###
+group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
+# mypd.groupby_print(group)
+
+# ---根据训练集选择，测试集反馈。
+out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+out = group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
+out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
+out
+
+#%% ### 根据out整理出策略每个阶段的外置参数
+parainput = pd.DataFrame([])
+for i in range(len(out)):
+    tag = out["tag"][i]
+    ipass = out["Pass"][i]
+    trainmatch = matchlist[tag][0] # 这里不需要copy()
+    # 下面参数名要根据EA源码的输入变量来整理，trainmatch中策略参数顺序不是对应的。
+    trainmatch = trainmatch[["Pass","Inp_SigMode","Inp_Ma_Period","Inp_Ma_Method","Inp_Applied_Price","Inp_Deviation","Inp_SLMuiltple","Inp_Filter0","Inp_Filter1"]]
+    trainrow = trainmatch[trainmatch["Pass"] == ipass]
+    trainrow["tag"] = tag
+    parainput = parainput.append(trainrow, ignore_index=True)
+#---
+parainput.drop(labels="Pass", axis=1, inplace=True)
+parainput.sort_values(by="tag", inplace=True, ignore_index=True)
+parainput.set_index(keys="tag", drop=True, inplace=True)
+
+parainput.to_csv(__mypath__.get_desktop_path()+"\\推进参数.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step), sep=",") # 逗号的csv可直接被excel解析。
+
 
 
 
