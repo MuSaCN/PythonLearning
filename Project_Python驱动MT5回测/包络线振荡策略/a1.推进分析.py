@@ -225,48 +225,51 @@ length_year = 2 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 
-symbol = "EURUSD" # ************
-timeframe = "TIMEFRAME_M30" # ************
-length = "%sY"%length_year
-step = "%sM"%step_months
+for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
+    if symbol in ["EURUSD"]: # symbol = "EURUSD"
+        continue
 
-experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),length,step)
-expertfile = "a1.包络线振荡策略.ex5" # ************
-expertname = experfolder + "\\" + expertfile
+    timeframe = "TIMEFRAME_M30" # ************
+    length = "%sY"%length_year
+    step = "%sM"%step_months
 
-
-forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+    experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
+    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),length,step)
+    expertfile = "a1.包络线振荡策略.ex5" # ************
+    expertname = experfolder + "\\" + expertfile
 
 
-for i, row in timedf.iterrows():
-    # 时间参数必须转成"%Y.%m.%d"字符串
-    fromdate = row["from"]
-    forwarddate = row["forward"]
-    todate = row["to"]
-    print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
+    forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+    model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+    optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+    optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
-    # ---xml格式优化报告的目录
-    tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
-    t0 = myMT5run.change_timestr_format(fromdate)
-    t1 = myMT5run.change_timestr_format(forwarddate)
-    t2 = myMT5run.change_timestr_format(todate)
-    reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
-    print("reportfile=",reportfile)
 
-#%%
-    myMT5run.__init__()
-    myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                           forwardmode=forwardmode, forwarddate=forwarddate,
-                           delays=0, model=model, optimization=optimization,
-                           optcriterion=optcriterion, reportfile=reportfile)
-    common_set()
-    strategy_set()
-    # ---检查参数输入是否匹配优化的模式，且写出配置结果。
-    myMT5run.check_inputs_and_write()
-    myMT5run.run_MT5()
+    for i, row in timedf.iterrows():
+        # 时间参数必须转成"%Y.%m.%d"字符串
+        fromdate = row["from"]
+        forwarddate = row["forward"]
+        todate = row["to"]
+        print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
+
+        # ---xml格式优化报告的目录
+        tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
+        t0 = myMT5run.change_timestr_format(fromdate)
+        t1 = myMT5run.change_timestr_format(forwarddate)
+        t2 = myMT5run.change_timestr_format(todate)
+        reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
+        print("reportfile=",reportfile)
+
+    #%%
+        myMT5run.__init__()
+        myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
+                               forwardmode=forwardmode, forwarddate=forwarddate,
+                               delays=0, model=model, optimization=optimization,
+                               optcriterion=optcriterion, reportfile=reportfile)
+        common_set()
+        strategy_set()
+        # ---检查参数输入是否匹配优化的模式，且写出配置结果。
+        myMT5run.check_inputs_and_write()
+        myMT5run.run_MT5()
 
 
