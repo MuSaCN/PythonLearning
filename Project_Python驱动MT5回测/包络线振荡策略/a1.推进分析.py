@@ -221,7 +221,7 @@ def strategy_set():
 starttime = pd.Timestamp("2015.01.01") # ************
 endtime = pd.Timestamp("2022.07.1") # ************
 step_months = 3 # 6, 3 # 推进步长，单位月 # ************
-length_year = 2 # 样本总时间包括训练集和测试集 # ************
+length_year = 1 # 样本总时间包括训练集和测试集 # ************
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 
