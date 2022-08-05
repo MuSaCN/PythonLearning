@@ -70,16 +70,22 @@ warnings.filterwarnings('ignore')
 
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
-starttime = pd.Timestamp("2015.01.01") # ************
-endtime = pd.Timestamp("2022.07.01") # ************
-length_year = 2 # 样本总时间包括训练集和测试集 # ************
-step_months = 6 # 6, 3 # 推进步长，单位月 # ************
+timefrom = "2015.01.01"
+timeto = "2022.07.01"
+length_year = 1 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
+step_months = 3 # 6, 3 # 推进步长，单位月(允许大于12) # ************
 
 length = "%sY"%length_year
 step = "%sM"%step_months # "6M","3M"
+timeaffix0 = myMT5run.change_timestr_format(timefrom)
+timeaffix1 = myMT5run.change_timestr_format(timeto)
 
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step)
+
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
 expertfile = "a1.包络线振荡策略.ex5"
+
+starttime = pd.Timestamp(timefrom) # ************
+endtime = pd.Timestamp(timeto) # ************
 
 # 推进分析参数输出目录
 forwatdparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}".format(expertfile.rsplit(".",1)[0])
@@ -87,8 +93,7 @@ forwatdparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{
 # 推进测试的起止时间
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
-timedf.to_csv(forwatdparapath+"\\推进时间.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step), sep=",") # 逗号的csv可直接被excel解析。
-
+timedf.to_csv(forwatdparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
 
 # ---批量读取推进优化的报告(csv比xlsx速度快)，保存到matchlist中 [[0,1],[0,1]]--- 0 trainmatch, 1 testmatch.
 matchlist = [] # [[0,1]]
@@ -175,6 +180,7 @@ violent.to_excel(reportfolder+".xlsx")
 violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
 len(matchlist)
 
+
 # "净利润" "myCriterion" "总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
 # "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
 # "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
@@ -186,9 +192,9 @@ len(matchlist)
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "%空胜率" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "%总胜率" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "恢复因子" # "TB"
+chooseby = "Kelly占用仓位杠杆" # "TB"
 n = 5
 resultlist=["TB", "净利润"]
 
@@ -223,7 +229,7 @@ parainput.sort_values(by="tag", inplace=True, ignore_index=True)
 parainput.set_index(keys="tag", drop=True, inplace=True)
 
 
-parainput.to_csv(forwatdparapath+"\\推进参数.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),length,step), sep=",") # 逗号的csv可直接被excel解析。
+parainput.to_csv(forwatdparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
 
 
 
