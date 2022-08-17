@@ -226,7 +226,7 @@ timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months
 
 
 for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
-    if symbol in ["EURUSD"]: # symbol = "EURUSD"
+    if symbol in []: # symbol = "EURUSD"
         continue
 
     timeframe = "TIMEFRAME_M30" # ************
