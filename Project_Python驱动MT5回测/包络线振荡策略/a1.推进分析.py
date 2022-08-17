@@ -234,7 +234,7 @@ for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","X
     step = "%sM"%step_months
 
     experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),starttime,endtime,length,step)
+    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),starttime,endtime,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
     expertfile = "a1.包络线振荡策略.ex5" # ************
     expertname = experfolder + "\\" + expertfile
 
