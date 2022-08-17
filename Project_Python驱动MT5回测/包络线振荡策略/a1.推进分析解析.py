@@ -68,7 +68,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-symbol = "EURUSD"
+symbol = "EURUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
 timeframe = "TIMEFRAME_M30"
 timefrom = "2015.01.01"
 timeto = "2022.07.01"
