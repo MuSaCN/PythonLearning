@@ -222,8 +222,11 @@ starttime = pd.Timestamp("2015.01.01") # ************
 endtime = pd.Timestamp("2022.07.1") # ************
 step_months = 6 # 6, 3 # 推进步长，单位月 # ************
 length_year = 2 # 样本总时间包括训练集和测试集 # ************
+
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
+timeaffix0 = myMT5run.change_timestr_format(starttime)
+timeaffix1 = myMT5run.change_timestr_format(endtime)
 
 for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
     if symbol in []: # symbol = "EURUSD"
@@ -234,7 +237,7 @@ for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","X
     step = "%sM"%step_months
 
     experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),starttime,endtime,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
+    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
     expertfile = "a1.包络线振荡策略.ex5" # ************
     expertname = experfolder + "\\" + expertfile
 
