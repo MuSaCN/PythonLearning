@@ -21,6 +21,7 @@ myplt = MyPlot.MyClass_Plot()  # 直接绘图类(单个图窗)
 mypltpro = MyPlot.MyClass_PlotPro()  # Plot高级图系列
 myfig = MyPlot.MyClass_Figure(AddFigure=False)  # 对象式绘图类(可多个图窗)
 myfigpro = MyPlot.MyClass_FigurePro(AddFigure=False)  # Figure高级图系列
+myplthtml = MyPlot.MyClass_PlotHTML()  # 画可以交互的html格式的图
 mynp = MyArray.MyClass_NumPy()  # 多维数组类(整合Numpy)
 mypd = MyArray.MyClass_Pandas()  # 矩阵数组类(整合Pandas)
 mypdpro = MyArray.MyClass_PandasPro()  # 高级矩阵数组类
@@ -47,6 +48,7 @@ myMT5 = MyMql.MyClass_ConnectMT5(connect=False)  # Python链接MetaTrader5客户
 myMT5Pro = MyMql.MyClass_ConnectMT5Pro(connect=False)  # Python链接MT5高级类
 myMT5Indi = MyMql.MyClass_MT5Indicator()  # MT5指标Python版
 myMT5Report = MyMT5Report.MyClass_StratTestReport(AddFigure=False)  # MT5策略报告类
+myMT5Analy = MyMT5Analysis.MyClass_ForwardAnalysis()  # MT5分析类
 myMT5Lots_Fix = MyMql.MyClass_Lots_FixedLever(connect=False)  # 固定杠杆仓位类
 myMT5Lots_Dy = MyMql.MyClass_Lots_DyLever(connect=False)  # 浮动杠杆仓位类
 myMT5run = MyMql.MyClass_RunningMT5()  # Python运行MT5
@@ -58,6 +60,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # %matplotlib inline
 # import warnings
 # warnings.filterwarnings('ignore')
+
 
 # %%
 import warnings
@@ -74,6 +77,7 @@ savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 
+
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
 timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
@@ -88,9 +92,9 @@ order_content = dict_order_content[symbol]
 deal_content = dict_deal_content[symbol]
 
 # ---以品种划分画策略报告中原始的走势图
-myMT5Report.plot_dict_deal_content(dict_deal_content=dict_deal_content,savefig=None,show=True)
+# myMT5Report.plot_dict_deal_content(dict_deal_content=dict_deal_content,savefig=None,show=True)
 
-#%%
+#%% 获取交易单元
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
 unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
@@ -98,21 +102,18 @@ unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_con
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
-myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
+# myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
 #%%
-# ---分析损益的时间keys按指定时间切片的总体利润柱状图(MT5上是Time1总体利润)
-myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
-myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
+output = unit_total[["Symbol","Time0","Time1","Type0","Volume0","StopLoss0","TakeProfit0","StopLossPoint"]].copy()
+# 倒序输出，以便MT5节省数组算力
+output.sort_values(by="Time0", ascending=False, inplace=True)
+#
+outputfolder = __mypath__.get_mt5_commonfile_path() + "\\TradeByFile"
+outputfile = "ReverseTradeMessage.csv"
+myfile.makedirs(outputfolder)
+output.to_csv(outputfolder + "\\" + outputfile,sep=";",encoding="utf-8")
+#
+print("已经保存到",outputfolder + "\\" + outputfile)
 
-
-# ---分析损益的时间keys按指定时间切片的平均利润柱状图
-myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.hour, PlotLabel=["开仓时间分类柱状图","开仓时间","平均PnL"])
-myMT5Report.pnlmean_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.hour, PlotLabel=["平仓时间分类柱状图","平仓时间","平均PnL"])
-
-
-#%%
-# ---分析损益的时间keys按指定时间切片的总体利润柱状图(MT5上是Time1总体利润)
-myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time0", lambdafunc=lambda x: x.dayofweek, PlotLabel=["开仓时间分类柱状图","开仓时间","总和PnL"])
-myMT5Report.pnlsum_grouped_barplots(unit_trade=unit_total, keys="Time1", lambdafunc=lambda x: x.dayofweek, PlotLabel=["平仓时间分类柱状图","平仓时间","总和PnL"])
 

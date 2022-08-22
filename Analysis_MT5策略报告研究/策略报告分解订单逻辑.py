@@ -64,12 +64,10 @@ myDefault.set_backend_default("agg") # 设置图片输出方式，这句必须�
 import warnings
 warnings.filterwarnings('ignore')
 
-Inp_filename = input("输入文件名称，无后缀：") + ".xlsx"
-Inp_pipvalue = input("输入点值，可以不输入。但是有的品种需要输入：")
 
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
-file = __mypath__.get_desktop_path() + "\\" + Inp_filename
+file = __mypath__.get_desktop_path() + "\\" +"ReportTester.html" # .html .xlsx
 folder = __mypath__.dirname(file, uplevel=0)
 filename = __mypath__.basename(file, uplevel=0)
 savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
@@ -77,6 +75,7 @@ savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
+strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 
 # 解析下词缀
 symbol = strat_setting.loc["Symbol:"][0]
@@ -84,9 +83,8 @@ timeframe, timefrom, timeto = myMT5Report.parse_period(strat_setting)
 # 获取数据
 data = myMT5Pro.getsymboldata(symbol,timeframe,timefrom, timeto,index_time=True, col_capitalize=True)
 # 设置pip_value。有时候做计算时，要重新设置下。
-# myMT5Report.set_pip_value(symbol, pip_value=1)
-if Inp_pipvalue != "":
-    myMT5Report.set_pip_value(symbol, pip_value=float(Inp_pipvalue))
+myMT5Report.set_pip_value(symbol, pip_value=float(1))
+
 
 # 设置为指定品种的内容
 order_content = dict_order_content[symbol]
@@ -94,7 +92,7 @@ deal_content = dict_deal_content[symbol]
 
 # ---以品种划分画策略报告中原始的走势图
 savefig = savefolder + "\\" + "0.以品种划分原策略走势图.jpg"
-myMT5Report.plot_dict_deal_content(dict_deal_content=dict_deal_content,savefig=savefig,show=True)
+myMT5Report.plot_dict_deal_content(dict_deal_content=dict_deal_content,savefig=None,show=True)
 
 
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
@@ -105,7 +103,7 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。注意order和deal有区别，order是以整体单来算，deal是实际情况。
 savefig = savefolder + "\\1.策略基仓走势.jpg"
-myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=savefig, show=True, title="策略基仓走势")
+myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
 
 #%% ======策略报告除去加仓行为(覆盖算法)======
@@ -114,7 +112,7 @@ unit_total_noadd, unit_buyonly_noadd, unit_sellonly_noadd = myMT5Report.get_noad
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 savefig = savefolder + "\\2.策略基仓+去加仓走势.jpg"
-myMT5Report.plot_report_balance(unit_total=unit_total_noadd, unit_buyonly=unit_buyonly_noadd, unit_sellonly=unit_sellonly_noadd, savefig=savefig, show=True, title="策略基仓+去加仓走势")
+myMT5Report.plot_report_balance(unit_total=unit_total_noadd, unit_buyonly=unit_buyonly_noadd, unit_sellonly=unit_sellonly_noadd, savefig=None, show=True, title="策略基仓+去加仓走势")
 
 # ---基仓无加仓情况下固定bar持仓走势研究
 #  根据 unit_order 把报告中的时间解析成 总数据 中的时间。因为报告中的时间太详细，我们定位到总数据中的时间框架中。结果中"TimeBar"表示持仓占用的Bar的数量，比如1根Bar上开仓平仓，占用为1。BarIndex0  BarIndex1 为 Time0和Time1 在 data 时间索引中的序号。
@@ -123,16 +121,16 @@ newtime_sellonly_noadd = myMT5Report.parse_unit_to_timenorm(unit_order=unit_sell
 
 # ---信号质量分析，返回 outStrat_Re, outSignal_Re：new_time 为 parse_unit_to_timenorm() 函数的输出结果；direct="BuyOnly"做多，"SellOnly"做空；
 savefig = savefolder + "\\3.基仓+去加仓.BuyOnly.固定1Bar走势.jpg"
-outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_noadd, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+去加仓.BuyOnly.1Bar",savefig=savefig, show=True)
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_buyonly_noadd, direct="BuyOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+去加仓.BuyOnly.1Bar",savefig=None, show=True)
 savefig = savefolder + "\\3.基仓+去加仓.SellOnly.固定1Bar走势.jpg"
-outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_noadd, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+去加仓.SellOnly.1Bar",savefig=savefig, show=True)
+outStrat_Re, outSignal_Re = myMT5Report.get_signal_quality(new_time=newtime_sellonly_noadd, direct="SellOnly", data=data, holding=1, lag_trade=1, norepeathold=False, suptitle="基仓+去加仓.SellOnly.1Bar",savefig=None, show=True)
 
 
 # ---订单可管理性研究，画图。策略训练集多holding回测，选择夏普比和胜率来分析，下面的信号质量计算是否重复持仓都要分析。重复持仓主要看胜率。
 savefig = savefolder + "\\3.基仓+去加仓.BuyOnly.订单可管理性研究.jpg"
-myMT5Report.analysis_more_holding(new_time = newtime_buyonly_noadd, direct = "BuyOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓+去加仓.BuyOnly.订单可管理性研究", savefig=savefig, show=True)
+myMT5Report.analysis_more_holding(new_time = newtime_buyonly_noadd, direct = "BuyOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓+去加仓.BuyOnly.订单可管理性研究", savefig=None, show=True)
 savefig = savefolder + "\\3.基仓+去加仓.SellOnly.订单可管理性研究.jpg"
-myMT5Report.analysis_more_holding(new_time = newtime_sellonly_noadd, direct = "SellOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓+去加仓.SellOnly.订单可管理性研究", savefig=savefig, show=True)
+myMT5Report.analysis_more_holding(new_time = newtime_sellonly_noadd, direct = "SellOnly", data=data, holding_to = 10, lag_trade=1, label1="sharpe", label2="winRate", suptitle="基仓+去加仓.SellOnly.订单可管理性研究", savefig=None, show=True)
 
 
 
@@ -142,7 +140,7 @@ unit_total_solo, unit_buyonly_solo, unit_sellonly_solo = myMT5Report.get_norepea
 
 # ---绘制策略报告的资金走势结果，按all、buyonly、sellonly绘制。
 savefig = savefolder + "\\4.策略基仓+去加仓+去重复持仓走势.jpg"
-myMT5Report.plot_report_balance(unit_total=unit_total_solo, unit_buyonly=unit_buyonly_solo, unit_sellonly=unit_sellonly_solo, savefig=savefig, show=True, title="策略基仓+去加仓+去重复持仓走势")
+myMT5Report.plot_report_balance(unit_total=unit_total_solo, unit_buyonly=unit_buyonly_solo, unit_sellonly=unit_sellonly_solo, savefig=None, show=True, title="策略基仓+去加仓+去重复持仓走势")
 
 # ---基仓无加仓无重复持仓固定bar持仓走势研究
 newtime_buyonly_solo = myMT5Report.parse_unit_to_timenorm(unit_order=unit_buyonly_solo, data = data)
