@@ -98,7 +98,7 @@ kendall = totalprice.corr(method='kendall')
 spearman = totalprice.corr(method='spearman')
 
 #%% 某品种与其他品种每年的相关性
-targetsymbol = "AUDUSD"
+targetsymbol = "EURUSD"
 method = 'pearson' # 'pearson' 'kendall' 'spearman'
 # ---
 totalprice.index = pd.to_datetime(totalprice.index) # 必须转成时间序列
