@@ -97,7 +97,7 @@ deal_content = dict_deal_content[symbol]
 #%% 获取交易单元
 # 分析交易单元，分为 unit_total、unit_buyonly、unit_sellonly。注意结果是根据 Order0 排序.
 unit_total = myMT5Report.content_to_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
-unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
+# unit_buyonly, unit_sellonly = myMT5Report.content_to_direct_unit_order(order_content=order_content, deal_content=deal_content, sortby="Order0")
 
 result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
@@ -106,13 +106,19 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 
 #%%
 output = unit_total[["Symbol","Time0","Time1","Type0","Volume0","StopLoss0","TakeProfit0","StopLossPoint"]].copy()
-# 倒序输出，以便MT5节省数组算力
-output.sort_values(by="Time0", ascending=False, inplace=True)
+# 填充 StopLoss0，TakeProfit0，StopLossPoint 的nan
+output["StopLoss0"].fillna(value=0, inplace=True)
+output["TakeProfit0"].fillna(value=0, inplace=True)
+output["StopLossPoint"].fillna(value=0, inplace=True)
+# 以两个时间倒序输出，以便MT5节省数组算力
+output.sort_values(by=["Time0","Time1"], ascending=False, inplace=True)
+output.reset_index(drop=True,inplace=True)
 #
 outputfolder = __mypath__.get_mt5_commonfile_path() + "\\TradeByFile"
 outputfile = "ReverseTradeMessage.csv"
-myfile.makedirs(outputfolder)
+myfile.makedirs(outputfolder, exist_ok=True)
 output.to_csv(outputfolder + "\\" + outputfile,sep=";",encoding="utf-8")
+# output = myfile.read_pd(outputfolder + "\\" + outputfile, sep=";", index_col=0)
 #
 print("已经保存到",outputfolder + "\\" + outputfile)
 
