@@ -218,15 +218,17 @@ def strategy_set():
 
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
 # 推进测试的起止时间
-starttime = pd.Timestamp("2015.01.01") # ************
-endtime = pd.Timestamp("2022.07.1") # ************
+starttime = "2015.01.01" # ************
+endtime = "2022.07.1" # ************
 step_months = 3 # 6, 3 # 推进步长，单位月 # ************
 length_year = 1 # 2, 1 # 样本总时间包括训练集和测试集 # ************
 
-timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
-
 timeaffix0 = myMT5run.change_timestr_format(starttime)
 timeaffix1 = myMT5run.change_timestr_format(endtime)
+starttime = pd.Timestamp(starttime)
+endtime = pd.Timestamp(endtime)
+
+timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
     if symbol in ["EURUSD"]: # symbol = "EURUSD"
