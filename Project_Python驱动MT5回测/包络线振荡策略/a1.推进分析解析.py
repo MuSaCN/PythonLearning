@@ -68,7 +68,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-symbol = "XAUUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
+symbol = "EURUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
 timeframe = "TIMEFRAME_M30"
 timefrom = "2015.01.01"
 timeto = "2022.07.01"
@@ -93,6 +93,9 @@ forwatdparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 timedf.to_csv(forwatdparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
+
+# timedf = timedf[0:-2] # 保留2个作为样本外，用于研究超参数
+
 
 # ---批量读取推进优化的报告(csv比xlsx速度快)，保存到matchlist中 [[0,1],[0,1]]--- 0 trainmatch, 1 testmatch.
 matchlist = [] # [[0,1]]
@@ -169,13 +172,14 @@ violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist
 t1 = timeit.default_timer()
 print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
 # violent 在SciView中查看
-# 保存到xlsx
+# 保存到xlsx，研究超参数时不要写入
 violent.to_excel(reportfolder+".xlsx")
 # 保存后下次分析可以直接从 F:\BaiduNetdiskWorkspace\工作---MT5策略研究\中读取
 # violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
 
 
 #%% ### 一次筛选：根据violent选择一个占优势的排序方式 ###
+# violent1 = violent # 用于研究超参数
 violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
 len(matchlist)
 
@@ -191,11 +195,12 @@ len(matchlist)
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "%总胜率" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "AHPR" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "Sharpe_MT5" # "TB"
+chooseby = "Vince止损仓位比率" # "TB"
 n = 5
 resultlist=["TB", "净利润"]
+
 
 totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
 len(totaldf)
