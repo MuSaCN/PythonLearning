@@ -220,8 +220,8 @@ def strategy_set():
 # 推进测试的起止时间
 starttime = pd.Timestamp("2015.01.01") # ************
 endtime = pd.Timestamp("2022.07.1") # ************
-step_months = 6 # 6, 3 # 推进步长，单位月 # ************
-length_year = 2 # 2, 1 # 样本总时间包括训练集和测试集 # ************
+step_months = 3 # 6, 3 # 推进步长，单位月 # ************
+length_year = 1 # 2, 1 # 样本总时间包括训练集和测试集 # ************
 
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
@@ -229,7 +229,7 @@ timeaffix0 = myMT5run.change_timestr_format(starttime)
 timeaffix1 = myMT5run.change_timestr_format(endtime)
 
 for symbol in ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]:
-    if symbol in []: # symbol = "EURUSD"
+    if symbol in ["EURUSD"]: # symbol = "EURUSD"
         continue
 
     timeframe = "TIMEFRAME_M30" # ************
