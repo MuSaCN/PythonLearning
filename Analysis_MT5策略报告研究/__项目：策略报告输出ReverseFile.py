@@ -67,14 +67,14 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
-file = __mypath__.get_desktop_path() + "\\" + "ReportTester.html" # .html .xlsx
+file = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\0.他人EA研究" + "\\The Reaper EA.html" # .html .xlsx
 folder = __mypath__.dirname(file, uplevel=0)
 filename = __mypath__.basename(file, uplevel=0)
 savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
 
 
 # 读取报告，加载品种信息到 self.symbol_df。注意部分平仓不适合deal_standard = True修正。
-strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
+# strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_xlsx(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 strat_setting, strat_result, dict_order_content, dict_deal_content = myMT5Report.read_report_htm(filepath=file, result_vert=True, deal_standard=False, onlytestsymbol=False)
 
 
