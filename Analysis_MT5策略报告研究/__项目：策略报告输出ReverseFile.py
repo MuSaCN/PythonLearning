@@ -105,13 +105,15 @@ result = myMT5Report.cal_result_no_money_manage(unit_order=unit_total)[0]
 # myMT5Report.plot_report_balance(unit_total=unit_total, unit_buyonly=unit_buyonly, unit_sellonly=unit_sellonly, savefig=None, show=True, title="策略基仓走势")
 
 #%%
-output = unit_total[["Symbol","Time0","Time1","Type0","Volume0","StopLoss0","TakeProfit0","StopLossPoint"]].copy()
+output = unit_total[["Symbol","Time0","Time1","Type0","Volume0","StopLoss0","TakeProfit0","StopLossPoint","Order0","Order1"]].copy()
 # 填充 StopLoss0，TakeProfit0，StopLossPoint 的nan
 output["StopLoss0"].fillna(value=0, inplace=True)
 output["TakeProfit0"].fillna(value=0, inplace=True)
 output["StopLossPoint"].fillna(value=0, inplace=True)
-# 以两个时间倒序输出，以便MT5节省数组算力
-output.sort_values(by=["Time0","Time1"], ascending=False, inplace=True)
+# 以Time0倒序输出，以便MT5节省数组算力。Time1二级正序，表示相同时间开仓持仓最久的放前面，以便分析。
+output.sort_values(by=["Time0","Time1"], ascending=[False, True], inplace=True)
+# 或者Time0,Time1双倒序，按照自然时间的交易顺序。这个感觉没有上面的好。
+# output.sort_values(by=["Time0","Time1"], ascending=[False, False], inplace=True)
 output.reset_index(drop=True,inplace=True)
 #
 outputfolder = __mypath__.get_mt5_commonfile_path() + "\\TradeByFile"
