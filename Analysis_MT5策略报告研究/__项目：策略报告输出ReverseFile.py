@@ -67,7 +67,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # file = __mypath__.get_desktop_path() + "\\Golden.XAUUSD.H1.xlsx"
-file = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\0.他人EA研究" + "\\Index Scalper PRO.html" # .html .xlsx
+file = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\0.他人EA研究" + "\\EA Black Dragon.html" # .html .xlsx
 folder = __mypath__.dirname(file, uplevel=0)
 filename = __mypath__.basename(file, uplevel=0)
 savefolder = folder + "\\"+ filename.rsplit(".", maxsplit=1)[0]
