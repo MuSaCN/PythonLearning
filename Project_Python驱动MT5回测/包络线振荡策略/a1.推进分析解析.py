@@ -68,12 +68,12 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
-symbol = "EURUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
+symbol = "XAUUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
 timeframe = "TIMEFRAME_M30"
 timefrom = "2015.01.01"
 timeto = "2022.07.01"
-length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
-step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
+length_year = 1 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
+step_months = 3 # 3,6 # 推进步长，单位月(允许大于12) # ************
 
 length = "%sY"%length_year
 step = "%sM"%step_months # "6M","3M"
@@ -195,9 +195,9 @@ len(matchlist)
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "AHPR" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "平均连亏序列" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "Vince止损仓位比率" # "TB"
+chooseby = "SQN_Price" # "TB"
 n = 5
 resultlist=["TB", "净利润"]
 
@@ -234,7 +234,7 @@ parainput.set_index(keys="tag", drop=True, inplace=True)
 
 
 parainput.to_csv(forwatdparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
-
+print("已保存到",forwatdparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
 
 
 
