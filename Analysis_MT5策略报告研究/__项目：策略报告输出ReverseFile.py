@@ -62,6 +62,10 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # warnings.filterwarnings('ignore')
 
 
+'''
+根据他人EA的策略报告，输出倒序的交易信息，再次由MQL解析它。
+'''
+
 # %%
 import warnings
 warnings.filterwarnings('ignore')
