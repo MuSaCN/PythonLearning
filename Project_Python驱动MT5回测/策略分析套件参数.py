@@ -63,7 +63,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # %%
 # ------通用分析套件参数------
 def common_set():
-    myMT5run.input_set("FrameMode", "1") # 0-FRAME_None 1-FRAME_Result 2-FRAME_GUI
+    myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
     # ; ======(通用)0.用于分析======
     myMT5run.input_set("Inp_Signal_Shift", "1") # >=1为信号确认，且每bar运行一次，=0为实时。
     myMT5run.input_set("Inp_CustomMode", "0") # 0-TB
@@ -136,8 +136,8 @@ def common_set():
     myMT5run.input_set("Inp_BreakEven_Mode", "0") # 1-BreakEven_POINT
     myMT5run.input_set("Inp_BreakEven_Point", "200||100||50||1000||N") # BreakEven_POINT模式: 达到多少点利润进行盈亏平衡
     myMT5run.input_set("Inp_BreakEven_CostPoint", "0") # 盈亏平衡的成本点，比如Commission占用的点数。
-    # ; ------7.挂单交易------
-    myMT5run.input_set("Inp_PendingMode", "0") #
+    # ; ------7.1 挂单交易------
+    myMT5run.input_set("Inp_PendingMode", "0") # 0-PENDMode_NONE直接交易
     myMT5run.input_set("Inp_Is_PendDeal_SetSLTP", "true") # true挂单成交后再设置止损止盈；false直接设置再挂单。
     myMT5run.input_set("Inp_Pending_PreBar", "1||1||1||10||N") # STOP_BAR / LIMIT_BAR:在之前的N根极值处挂单(有挂单价格无效)。
     myMT5run.input_set("Inp_Pending_Atr_Period", "7||7||1||70||N") # STOP_ATR / LIMIT_ATR：挂单ATR周期.
@@ -147,21 +147,23 @@ def common_set():
     myMT5run.input_set("Inp_Pending_Adjust", "0||0||1||10||N") # 挂单：点数修正挂单位置(有挂单价格无效)。
     myMT5run.input_set("Inp_Pending_ExpireTF", "0||0||0||49153||N") # 挂单：挂单有效的时间框
     myMT5run.input_set("Inp_Pending_ExpireBar", "3||3||1||30||N") # 挂单：挂单有效的Bar个数
+    # ; ------7.2 挂单移动修改(吸附性原理) ------
+    myMT5run.input_set("Inp_MovePendMode", "0")  # 移动挂单的模式
+    myMT5run.input_set("Inp_MovePendPrice", "-1||-1||1||-10||N")  # MovePend_POINT: 挂单移动的价格点数
+    myMT5run.input_set("Inp_MovePendSL", "-1||-1||1||-10||N")  # MovePend_POINT: 挂单移动的止损点数
+    myMT5run.input_set("Inp_MovePendTP", "-1||-1||1||-10||N")  # MovePend_POINT: 挂单移动的止盈点数
     # ; ------8.时间过滤------
     myMT5run.input_set("Inp_IsIn_MONDAY", "true") # 允许星期一入场
     myMT5run.input_set("Inp_IsIn_TUESDAY", "true") # 允许星期二入场
     myMT5run.input_set("Inp_IsIn_WEDNESDAY", "true") # 允许星期三入场
     myMT5run.input_set("Inp_IsIn_THURSDAY", "true") # 允许星期四入场
     myMT5run.input_set("Inp_IsIn_FRIDAY", "true") # 允许星期五入场
-    myMT5run.input_set("Inp_StartHour", "0") # 允许入场的开始小时
-    myMT5run.input_set("Inp_StartMinute", "0") # 允许入场的开始分钟
-    myMT5run.input_set("Inp_EndHour", "23") # 允许入场的结束小时
-    myMT5run.input_set("Inp_EndMinute", "59") # 允许入场的结束分钟
+    myMT5run.input_set("Inp_StartEndTime", "00:00-23:59") # 允许入场的开始小时
     # ; ------9.初始仓单资金管理------
     myMT5run.input_set("Inp_MM_Mode", "0||0||0||6||N") # 0-MM_Minimum
     myMT5run.input_set("Inp_Lots_Fixed", "0.01||0.01||0.001000||0.100000||N") # MM_Fixed模式：固定仓位
     myMT5run.input_set("Inp_Lots_IncreDelta", "100||100||10.000000||1000.000000||N") # MM_FixedIncrement模式：原书建议delta值可以设置为"基仓回测系统"中：历史最大回撤数值的一半 或者 最大亏损额的倍数。
-    myMT5run.input_set("Inp_Lots_IncreInitLots", "1||1||0.100000||10.000000||N") # MM_FixedIncrement模式：初始仓位，可以调节大。
+    myMT5run.input_set("Inp_Lots_IncreInitLots", "0.1||1||0.100000||10.000000||N") # MM_FixedIncrement模式：初始仓位，可以调节大。
     myMT5run.input_set("Inp_Lots_SLRiskPercent", "0.05||0.05||0.005000||0.500000||N") # MM_SL模式, MM_SL_ATR模式：所用资金比例
     myMT5run.input_set("Inp_Lots_ATRPeriod", "14||14||1||140||N") # MM_SL_ATR模式：ATR周期
     myMT5run.input_set("Inp_Lots_ATRMultiple", "1||1||0.100000||10.000000||N") # MM_SL_ATR模式：ATR倍数
@@ -181,12 +183,12 @@ def common_set():
     myMT5run.input_set("Inp_TIB_SLMode", "1") # TIB_SLMode加仓单基于标的单的止损模式(标的单若盈亏平衡会冲突).
     myMT5run.input_set("Inp_TIB_TPMode", "2") # TIB_TPMode加仓单基于标的单的止盈模式.
     myMT5run.input_set("Inp_TIB_LotsMode", "2") # TIB_LotsMode加仓单基于标的单的仓位模式.
-    myMT5run.input_set("Inp_TIB_RatioLots", "1||0.5||0.050000||5.000000||N") # 当TIB_LotsMode=TIB_Lots_Ratio启用，以标的单持仓大小的比例加仓.
+    myMT5run.input_set("Inp_TIB_RatioLots", "0.5||0.5||0.050000||5.000000||N") # 当TIB_LotsMode=TIB_Lots_Ratio启用，以标的单持仓大小的比例加仓.
     # ------10.3加仓策略方法------
     myMT5run.input_set("Inp_TIB_Method", "0") # TIB_Method加仓策略方法.
     myMT5run.input_set("Inp_TIB_MaxAddCount", "0||1||1||10||N") # TIB_MaxAddCount最大的加仓次数(通用)，0不限次数。
     myMT5run.input_set("Inp_TIB_AddInPoint", "100||100||1||1000||N") # TIB_Method_Point模式：价格每次移动点数进行加仓.
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N") # TIB_Method_ATR模式：ATR周期.
-    myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N") # TIB_Method_ATR模式：ATR倍数.
+    myMT5run.input_set("Inp_TIB_ATRMultiple", "0.5||1||0.100000||10.000000||N") # TIB_Method_ATR模式：ATR倍数.
 
 
