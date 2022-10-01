@@ -62,7 +62,7 @@ sum_choo = Sum_Auto_Choose()
 #%% ************ 需要修改的部分 ************
 sum_choo.strat_para_name = ["k", "holding", "lag_trade"]
 sum_choo.all_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
-sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
+sum_choo.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 
 #%%
 sum_choo.core_num = -1

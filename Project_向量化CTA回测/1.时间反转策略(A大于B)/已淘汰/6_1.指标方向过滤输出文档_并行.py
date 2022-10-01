@@ -70,7 +70,7 @@ df_out = Direct_Filter_Output()
 #%% ******修改这里******
 # 策略参数名称，用于文档中解析参数 ***修改这里***
 df_out.strategy_para_name = ["k", "holding", "lag_trade"]
-df_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+df_out.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 df_out.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
 
 

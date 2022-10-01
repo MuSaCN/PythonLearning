@@ -69,7 +69,7 @@ strat_pool = Strat_Pool_Integration()
 
 #%% ******修改这里******
 strat_pool.strategy_para_name = ["n", "holding", "lag_trade"]
-strat_pool.symbol_list = myMT5Pro.get_main_symbol_name_list()
+strat_pool.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 strat_pool.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
 strat_pool.readfile_suffix = ".better"
 

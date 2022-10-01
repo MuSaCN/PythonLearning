@@ -65,7 +65,7 @@ myDefault.set_backend_default("agg")
 
 #%% ******修改这里******
 s_better.strategy_para_name = ["n", "holding", "lag_trade"]
-s_better.symbol_list = myMT5Pro.get_main_symbol_name_list()
+s_better.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 s_better.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
 s_better.readfile_suffix = ".holdingtest" # 输入的文档加后缀 .holdingtest
 s_better.outfile_suffix = ".better" # 输出的文档加后缀

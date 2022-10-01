@@ -75,7 +75,7 @@ myDefault.set_backend_default("agg")
 
 
 #%% ******需要修改******
-df_choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
+df_choo_para.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 df_choo_para.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉动量研究"
 df_choo_para.core_num = -1
 

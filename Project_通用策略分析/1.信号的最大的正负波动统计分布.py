@@ -58,7 +58,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 #%%
 strategy_para_name = ["k", "holding", "lag_trade"]
-symbol_list = myMT5Pro.get_main_symbol_name_list()
+symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 total_folder = "F:\\工作---策略研究\\1.简单的动量反转\\_动量研究"
 readfile_suffix = ".better"
 holding_testcount = 5#20

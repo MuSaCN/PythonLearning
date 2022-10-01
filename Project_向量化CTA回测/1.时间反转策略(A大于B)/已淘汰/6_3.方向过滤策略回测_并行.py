@@ -70,7 +70,7 @@ myplt.set_backend("agg")  # agg 后台输出图片，不占pycharm内存
 
 
 #%%
-rf_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_bt.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 rf_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
 
 

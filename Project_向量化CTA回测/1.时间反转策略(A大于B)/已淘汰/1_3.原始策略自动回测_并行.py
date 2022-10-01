@@ -65,7 +65,7 @@ init_bt = Init_Strategy_BackTest()
 #%% ************ 需要修改的部分 ************
 # 策略内参数(非策略参数 symbol、timeframe、direct 会自动解析) ******修改这里******
 init_bt.para_name = ["k", "holding", "lag_trade"]
-init_bt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+init_bt.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 init_bt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究"
 init_bt.filename_prefix = "反转"
 

@@ -191,7 +191,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 core_num = -1
 total_folder = "F:\\工作---Python策略研究\\2.公开的海龟策略\\_海龟反转研究"
 filename_prefix = "海龟反转"
-symbol_list = myMT5Pro.get_main_symbol_name_list()
+symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 direct_para = ["BuyOnly", "SellOnly"] # 方向词缀 ["BuyOnly", "SellOnly", "All"]
 
 # ---策略类设置

@@ -72,7 +72,7 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 #%% ************ 需要修改的部分 ************
 choose_opt.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
 choose_opt.filename_prefix = "DailyRange交叉反转"
-choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choose_opt.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 choose_opt.para_fixed_list = [{"n":None, "holding":1, "lag_trade":1}] # key词缀不能搞错了
 
 
@@ -89,7 +89,7 @@ sum_choo = Sum_Auto_Choose()
 #%% ************ 可能需要修改的部分 ************
 sum_choo.strat_para_name = list(choose_opt.para_fixed_list[0].keys())
 sum_choo.all_folder = choose_opt.total_folder
-sum_choo.symbol_list = myMT5Pro.get_main_symbol_name_list()
+sum_choo.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 sum_choo.outfile_suffix = ".original" # 输出的文档加后缀
 sum_choo.core_num = -1
 

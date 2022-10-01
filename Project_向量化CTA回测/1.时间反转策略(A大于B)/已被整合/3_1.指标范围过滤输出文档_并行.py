@@ -69,7 +69,7 @@ rf_out = Range_Filter_Output()
 
 #%% ************ 需要修改的部分 ************
 rf_out.strategy_para_name = ["k", "holding", "lag_trade"]
-rf_out.symbol_list = myMT5Pro.get_main_symbol_name_list()
+rf_out.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 rf_out.total_folder = "F:\\工作---策略研究\\1.简单的动量反转\\_反转研究"
 rf_out.readfile_suffix = ".better"
 

@@ -65,7 +65,7 @@ myDefault.set_backend_default("agg") # 这句必须放到类下面
 #%% ************ 需要修改的部分 ************
 choose_opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_动量研究"
 choose_opt.filename_prefix = "动量"
-choose_opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choose_opt.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 choose_opt.para_fixed_list = [{"k":None, "holding":1, "lag_trade":1}] # 仅检测 holding=1
 
 #%%

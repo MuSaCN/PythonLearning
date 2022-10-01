@@ -76,7 +76,7 @@ myDefault.set_backend_default("agg")
 
 
 #%% ************ 需要修改的部分 ************
-choo_para.symbol_list = myMT5Pro.get_main_symbol_name_list()
+choo_para.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 choo_para.total_folder = "F:\\工作---策略研究\\4.DailyRange交叉策略\\_交叉反转研究(先突破再交叉)"
 choo_para.core_num = -1 # -1表示留1个进程不执行运算。
 

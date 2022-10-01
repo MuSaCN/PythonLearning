@@ -85,7 +85,7 @@ opt.holding_end = 1         # 持有期参数，可以不同固定为1
 opt.lag_trade_end = 1       # 信号出现滞后交易参数，参数不能大
 # 非策略参数
 opt.direct_para = ["BuyOnly", "SellOnly"] # direct_para = ["BuyOnly", "SellOnly", "All"]
-opt.symbol_list = myMT5Pro.get_main_symbol_name_list()
+opt.symbol_list = myMT5Pro.get_mainusd_symbol_name_list()
 opt.total_folder = "F:\\工作---策略研究\\简单的动量反转\\_反转研究test"
 opt.filename_prefix = "反转"
 
