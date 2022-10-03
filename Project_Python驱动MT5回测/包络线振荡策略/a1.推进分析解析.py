@@ -67,13 +67,13 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 ''' # 输出内容保存到"工作---MT5策略研究"目录，以及MT5的Common目录。 '''
 import warnings
 warnings.filterwarnings('ignore')
-
-symbol = "XAUUSD" # ["EURUSD","GBPUSD","AUDUSD","NZDUSD","USDJPY","USDCAD","USDCHF","XAUUSD"]
+# ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
+symbol = "EURAUD"
 timeframe = "TIMEFRAME_M30"
 timefrom = "2015.01.01"
 timeto = "2022.07.01"
-length_year = 1 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
-step_months = 3 # 3,6 # 推进步长，单位月(允许大于12) # ************
+length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
+step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
 
 length = "%sY"%length_year
 step = "%sM"%step_months # "6M","3M"
@@ -87,12 +87,12 @@ starttime = pd.Timestamp(timefrom) # ************
 endtime = pd.Timestamp(timeto) # ************
 
 # 推进分析参数输出目录
-forwatdparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}".format(expertfile.rsplit(".",1)[0])
+forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}".format(expertfile.rsplit(".",1)[0])
 
 # 推进测试的起止时间
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
-timedf.to_csv(forwatdparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
+timedf.to_csv(forwardparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
 
 # timedf = timedf[0:-2] # 保留2个作为样本外，用于研究超参数
 
@@ -195,9 +195,9 @@ len(matchlist)
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "平均连亏序列" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "(int)最长亏损序列" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "SQN_Price" # "TB"
+chooseby = "平均盈利" # "TB"
 n = 5
 resultlist=["TB", "净利润"]
 
@@ -216,7 +216,7 @@ out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sor
 # out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
 out
 
-#%% ### 根据out整理出策略每个阶段的外置参数
+### 根据out整理出策略每个阶段的外置参数
 parainput = pd.DataFrame([])
 for i in range(len(out)):
     tag = out["tag"][i]
@@ -233,8 +233,8 @@ parainput.sort_values(by="tag", inplace=True, ignore_index=True)
 parainput.set_index(keys="tag", drop=True, inplace=True)
 
 
-parainput.to_csv(forwatdparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
-print("已保存到",forwatdparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
+parainput.to_csv(forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
+print("已保存到",forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
 
 
 
