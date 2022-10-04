@@ -94,6 +94,7 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
 
     # 推进分析参数输出目录
     forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}".format(expertfile.rsplit(".",1)[0])
+    myfile.makedirs(forwardparapath, True)
 
     # 推进测试的起止时间
     timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
