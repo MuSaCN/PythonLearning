@@ -257,7 +257,7 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
             tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)  # 时间框词缀
             # EA的位置
             experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推进交易.2Y6M"
-            expertfile = "a1.推进交易.{}.{}.ex5".format(symbol, tf_affix)  # ************
+            expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", tf_affix)  # ************
             expertname = experfolder + "\\" + expertfile
             print("3. EA=",expertname)
 
