@@ -194,7 +194,7 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
 
     #%% ### 解析下violent ###
     for key in ["mean0.5","mean0.4","mean0.3","mean0.2","mean0.1"]:
-        # key="mean0.1"
+        # key="mean0.2"
         # 根据每个键获取最高的模式
         tempviolent = violent.sort_values(by=key, ascending=False)
         tempmax = tempviolent[key].max()
@@ -203,7 +203,7 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
         print("\n")
         print("2:",key,"排序最前的模式为",tempindexlist)
         # 解析每个模式的参数
-        for tempindex in tempindexlist:
+        for tempindex in tempindexlist: # tempindex=tempindexlist[0]
             [sortby, chooseby, resultlist] = tempindex.split(".")
             resultlist = eval(resultlist) if type(resultlist)==str else resultlist
             print("3: 当前模式的参数为：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
@@ -264,6 +264,11 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
             # xml格式优化报告的目录
             reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\1.推进分析靠前模式测试\{}.{}".format(symbol, tf_affix)
             myfile.makedirs(reportfolder, True)
+            # 输出文档不能有%符号
+            if "%" in sortby:
+                sortby = sortby.replace("%","")
+            if "%" in chooseby:
+                chooseby = chooseby.replace("%","")
             reportfile = reportfolder + "\\{}.{}.{}.xml".format(sortby,chooseby,resultlist)
             print("3. reportfile=", reportfile)
 
