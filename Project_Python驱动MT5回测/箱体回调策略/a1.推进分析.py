@@ -256,7 +256,7 @@ symbollist = ["EURUSD"]
 
 #---测试下哪个优化标准更能找到好策略
 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
-def run(optcriterion=0):
+def run(criterionindex=0):
     for symbol in symbollist:
         if symbol in []: # symbol = "EURUSD"
             continue
@@ -267,7 +267,7 @@ def run(optcriterion=0):
 
         experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略"
 
-        optcriterionaffix=myMT5run.get_optcriterion_affix(optcriterion=optcriterion)
+        optcriterionaffix=myMT5run.get_optcriterion_affix(optcriterion=criterionindex)
         reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\7.箱体回调策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
 
         expertfile = "a1.箱体回调策略.ex5" # ************
@@ -276,7 +276,7 @@ def run(optcriterion=0):
         forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
         model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
         optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-        optcriterion = optcriterion # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+        optcriterion = criterionindex # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 
         for i, row in timedf.iterrows():
