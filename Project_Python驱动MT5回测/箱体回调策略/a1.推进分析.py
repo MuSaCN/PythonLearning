@@ -308,8 +308,11 @@ def run(criterionindex=0):
 
 
 #%% 测试下哪个优化标准更能找到好策略
+print("run0")
 run(0)
+print("run6")
 run(6)
+print("run7")
 run(7)
 
 
