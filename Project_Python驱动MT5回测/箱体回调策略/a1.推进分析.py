@@ -220,20 +220,20 @@ def common_set():
 
 # ------策略参数------
 def strategy_set():
-    myMT5run.input_set("MaxBoxPeriod", "53||50||1||70||Y")  # ************
-    myMT5run.input_set("OsciBoxPeriod", "9||5||1||15||Y") # ************
-    myMT5run.input_set("K_TrendBuyU", "0.70||1.0||-0.02||0.7||Y") # ************
-    myMT5run.input_set("K_TrendBuyD", "0.54||0.4||0.02||0.6||Y") # ************
-    myMT5run.input_set("TrendGap", "500||0||100||1000||Y") # ************
-    myMT5run.input_set("K_OsciBuyLevel", "0.15||0.05||0.05||0.2||Y")  # ****
-    myMT5run.input_set("OsciGap", "90||80||10||150||Y")  # *****
-    myMT5run.input_set("CloseBuyLevel", "0.90||0.8||0.02||0.9||Y") # *****
-    myMT5run.input_set("PriceGap", "200||200||1||2000||N")
-    myMT5run.input_set("MaxSpread", "200||200||1||2000||N")
-    myMT5run.input_set("SL_Min", "0||0||1||10||N")
-    myMT5run.input_set("SL_Max", "1500||500||100||2000||N")
-    myMT5run.input_set("AvgLotsToPPoint_L", "0||0||1||10||N")
-    myMT5run.input_set("AvgLotsToPPoint_R", "0||0||1||10||N")
+    myMT5run.input_set("MaxBoxPeriod", "53||50||1||70||Y")  # 大箱体周期************
+    myMT5run.input_set("OsciBoxPeriod", "9||5||1||15||Y") # 小箱体周期************
+    myMT5run.input_set("K_TrendBuyU", "0.70||1.0||-0.02||0.7||Y") # 做多：大箱体K值上界************
+    myMT5run.input_set("K_TrendBuyD", "0.54||0.4||0.02||0.6||Y") # 做多：大箱体K值下界************
+    myMT5run.input_set("TrendGap", "500||0||100||1000||Y") # 做多：close[1]高于趋势箱体的最低价TrendGap点************
+    myMT5run.input_set("K_OsciBuyLevel", "0.15||0.05||0.05||0.2||Y")  # 做多：价格要在低位置才可以，K < buylevel****
+    myMT5run.input_set("OsciGap", "90||80||10||150||Y")  # 做多：振荡箱体2的最高价与close[1]相差超过OSCGap点*****
+    myMT5run.input_set("CloseBuyLevel", "0.90||0.8||0.02||0.9||Y") # 多平：K大于规定的DirectCloseLevel*****
+    myMT5run.input_set("PriceGap", "999||200||1||2000||N") # 1.做多：图表上bid价格<上根bar收盘价+20点；
+    myMT5run.input_set("MaxSpread", "999||200||1||2000||N") # 2.做多：当前点差不超过设置的最大点差Spread 30；
+    myMT5run.input_set("SL_Min", "0||0||1||10||N") # 止损的限定范围 250
+    myMT5run.input_set("SL_Max", "1500||500||100||2000||N") # 止损的限定范围 15000
+    myMT5run.input_set("AvgLotsToPPoint_L", "0||0||1||10||N") # 平均1手盈利达到此平仓 200
+    myMT5run.input_set("AvgLotsToPPoint_R", "0||0||1||10||N") # 平均1手盈利达到此平仓 99999
 
 
 
@@ -255,20 +255,20 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
     if symbol in []: # symbol = "EURUSD"
         continue
 
-    timeframe = "TIMEFRAME_M30" # ************
+    timeframe = "TIMEFRAME_M15" # ************
     length = "%sY"%length_year
     step = "%sM"%step_months
 
-    experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
-    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
-    expertfile = "a1.包络线振荡策略.ex5" # ************
-    expertname = experfolder + "\\" + expertfile
+    experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略"
 
+    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\7.箱体回调策略\推进分析.Balance_max\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
+    expertfile = "a1.箱体回调策略.ex5" # ************
+    expertname = experfolder + "\\" + expertfile
 
     forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
     model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-    optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-    optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+    optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+    optcriterion = 0 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 
     for i, row in timedf.iterrows():
