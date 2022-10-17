@@ -249,13 +249,15 @@ timeaffix1 = myMT5run.change_timestr_format(endtime)
 starttime = pd.Timestamp(starttime)
 endtime = pd.Timestamp(endtime)
 
+# ---推进分析的最后一个时间无法推进，只能优化.
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
+
 
 symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
 symbollist = ["EURUSD"]
 
 #---测试下哪个优化标准更能找到好策略
-# 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+# -1 -- Complete, 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max.
 def run(criterionindex=0):
     for symbol in symbollist:
         if symbol in []: # symbol = "EURUSD"
@@ -278,7 +280,6 @@ def run(criterionindex=0):
         optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
         optcriterion = criterionindex # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
-
         for i, row in timedf.iterrows():
             # 时间参数必须转成"%Y.%m.%d"字符串
             fromdate = row["from"]
@@ -289,10 +290,21 @@ def run(criterionindex=0):
             # ---xml格式优化报告的目录
             tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
             t0 = myMT5run.change_timestr_format(fromdate)
-            t1 = myMT5run.change_timestr_format(forwarddate)
+            t1 = myMT5run.change_timestr_format(forwarddate) if forwarddate is not None else None
             t2 = myMT5run.change_timestr_format(todate)
             reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
             print("reportfile=",reportfile)
+
+            # 如果t1是None表示不是向前分析
+            if t1 is None:
+                forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+
+            # 检测文件是否存在，存在则不需要再次优化
+            csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format( expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
+            if __mypath__.path_exists(reportfile) and __mypath__.path_exists(csvfile):
+                print("已经完成：", reportfile)
+                continue
+
 
         #%%
             myMT5run.__init__()
