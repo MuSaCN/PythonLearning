@@ -68,7 +68,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD", "EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
-symbol = "NZDUSD"
+symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
 timefrom = "2015.01.01"
 timeto = "2022.07.01"
@@ -92,6 +92,7 @@ forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{
 # 推进测试的起止时间
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
+myfile.makedirs(forwardparapath, True)
 timedf.to_csv(forwardparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
 
 # timedf = timedf[0:-2] # 保留2个作为样本外，用于研究超参数
