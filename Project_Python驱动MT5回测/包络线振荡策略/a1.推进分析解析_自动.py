@@ -205,6 +205,30 @@ def get_timedf_matchlist_and_violent():
         violent = myfile.read_pd(choosefilename, index_col=0)
     return timedf, matchlist, violent
 
+# ---获取[sortby, chooseby, resultlist]的模式收集，返回 modecollection
+def get_modecollection(violent):
+    modecollection = [] # [sortby, chooseby, resultlist]的收集
+    for key in ["mean0.5","mean0.4","mean0.3","mean0.2","mean0.1"]:
+        # key="mean0.2"
+        # 根据每个键获取最高的模式
+        tempviolent = violent.sort_values(by=key, ascending=False)
+        tempmax = tempviolent[key].max()
+        tempseeds = tempviolent[tempviolent[key]==tempmax]
+        tempindexlist = tempseeds.index.tolist()
+        print("\n")
+        print("2:",key,"排序最前的模式为",tempindexlist)
+        # 解析每个模式的参数
+        for tempindex in tempindexlist: # tempindex=tempindexlist[0]
+            [sortby, chooseby, resultlist] = tempindex.split(".")
+            # resultlist = eval(resultlist) if type(resultlist)==str else resultlist
+            modecollection.append([sortby, chooseby, resultlist])
+    modecollection = pd.DataFrame(modecollection)
+    modecollection.drop_duplicates(inplace=True) # 去除重复的
+    # 列2字符串要转为list
+    modecollection[2] = modecollection[2].apply(lambda x: eval(x) if type(x)==str else x)
+    modecollection = modecollection.values.tolist()
+    return modecollection
+
 # ---生成EA的参数
 def get_EA_parainput(sortby, chooseby, resultlist, count=0.5, n=5):
     # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
@@ -417,68 +441,59 @@ for symbol in symbollist:
     # 推进分析参数输出目录
     forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}.{}".format(optcriterionaffix, expertfile.rsplit(".",1)[0])
 
-    # ---获取 timedf, matchlist, violent
+    ### ---获取 timedf, matchlist, violent
     timedf, matchlist, violent = get_timedf_matchlist_and_violent()
     print("1: get_timedf_matchlist_and_violent()完成，准备解析 violent.")
 
     #%% ###### 解析下violent ######
-    for key in ["mean0.5","mean0.4","mean0.3","mean0.2","mean0.1"]:
-        # key="mean0.2"
-        # 根据每个键获取最高的模式
-        tempviolent = violent.sort_values(by=key, ascending=False)
-        tempmax = tempviolent[key].max()
-        tempseeds = tempviolent[tempviolent[key]==tempmax]
-        tempindexlist = tempseeds.index.tolist()
-        print("\n")
-        print("2:",key,"排序最前的模式为",tempindexlist)
-        # 解析每个模式的参数
-        for tempindex in tempindexlist: # tempindex=tempindexlist[0]
-            [sortby, chooseby, resultlist] = tempindex.split(".")
-            resultlist = eval(resultlist) if type(resultlist)==str else resultlist
-            print("3: 当前模式的参数为：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
+    # ---获取[sortby, chooseby, resultlist]的模式收集
+    modecollection = get_modecollection(violent=violent)
 
-            #%% ### 生成EA的参数 ###
-            get_EA_parainput(sortby, chooseby, resultlist, count=0.5, n=5)
+    # ---每个模式都进行推进回测
+    for sortby, chooseby, resultlist in modecollection:
+        print("3: 当前模式的参数为：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
+        #%% ### 生成EA的参数 ###
+        get_EA_parainput(sortby, chooseby, resultlist, count=0.5, n=5)
 
-            #%% ### 回测 ###
-            # symbol='EURCHF'; timeframe="TIMEFRAME_M30"
-            # sortby,chooseby,resultlist = ('亏损总和', '盈利总和', ['TB', '净利润'])
-            # tf_affix="M30";starttime="2015.07.01"
-            tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)  # 时间框词缀
+        ### 回测 ###
+        # symbol='EURCHF'; timeframe="TIMEFRAME_M30"
+        # sortby,chooseby,resultlist = ('亏损总和', '盈利总和', ['TB', '净利润'])
+        # tf_affix="M30";starttime="2015.07.01"
+        tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)  # 时间框词缀
 
-            # EA的位置
-            bt_expertname = bt_experfolder + "\\" + bt_expertfile
-            print("3. EA=",bt_expertname)
+        # EA的位置
+        bt_expertname = bt_experfolder + "\\" + bt_expertfile
+        print("3. EA=",bt_expertname)
 
-            # xml格式优化报告的目录
-            bt_reportfolder = bt_folder + r"\{}.{}".format(symbol, tf_affix)
-            myfile.makedirs(bt_reportfolder, True)
+        # xml格式优化报告的目录
+        bt_reportfolder = bt_folder + r"\{}.{}".format(symbol, tf_affix)
+        myfile.makedirs(bt_reportfolder, True)
 
-            # 输出文档不能有%符号
-            if "%" in sortby:
-                sortby = sortby.replace("%","")
-            if "%" in chooseby:
-                chooseby = chooseby.replace("%","")
-            bt_reportfile = bt_reportfolder + "\\{}.{}.{}.xml".format(sortby,chooseby,resultlist)
-            print("3. reportfile=", bt_reportfile)
+        # 输出文档不能有%符号
+        if "%" in sortby:
+            sortby = sortby.replace("%","")
+        if "%" in chooseby:
+            chooseby = chooseby.replace("%","")
+        bt_reportfile = bt_reportfolder + "\\{}.{}.{}.xml".format(sortby,chooseby,resultlist)
+        print("3. reportfile=", bt_reportfile)
 
-            # 回测设置
-            bt_forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-            bt_model = 1  # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-            bt_optimization = 0  # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-            print("3: 开始MT5回测EA：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
+        # 回测设置
+        bt_forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+        bt_model = 1  # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+        bt_optimization = 0  # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+        print("3: 开始MT5回测EA：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
 
-            # ---
-            myMT5run.__init__()
-            myMT5run.config_Tester(bt_expertname, symbol, timeframe, fromdate=bt_starttime,
-                                   todate=bt_endtime,forwardmode=bt_forwardmode, forwarddate=None,
-                                   delays=0, model=bt_model, optimization=bt_optimization,
-                                   optcriterion=6, reportfile=bt_reportfile)
-            common_set()
-            strategy_set()
-            # ---检查参数输入是否匹配优化的模式，且写出配置结果。
-            myMT5run.check_inputs_and_write()
-            myMT5run.run_MT5()
+        #%% # ---
+        myMT5run.__init__()
+        myMT5run.config_Tester(bt_expertname, symbol, timeframe, fromdate=bt_starttime,
+                               todate=bt_endtime,forwardmode=bt_forwardmode, forwarddate=None,
+                               delays=0, model=bt_model, optimization=bt_optimization,
+                               optcriterion=6, reportfile=bt_reportfile)
+        common_set()
+        strategy_set()
+        # ---检查参数输入是否匹配优化的模式，且写出配置结果。
+        myMT5run.check_inputs_and_write()
+        myMT5run.run_MT5()
 
 
 
