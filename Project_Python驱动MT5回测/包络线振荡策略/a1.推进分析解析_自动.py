@@ -93,7 +93,7 @@ bt_experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推�
 bt_expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", myMT5run.timeframe_to_ini_affix(timeframe))
 # (***)推进回测的时间起始(***)
 bt_starttime = "2015.07.01"  # 手动指定******
-bt_endtime = "2022.10.1"  # 手动指定******
+bt_endtime = "2022.07.1"  # 手动指定******
 # 推进回测保存的总目录
 bt_folder = contentfolder + r"\1.推进回测.{}.{}".format(
     myMT5run.change_timestr_format(bt_starttime), myMT5run.change_timestr_format(bt_endtime))
