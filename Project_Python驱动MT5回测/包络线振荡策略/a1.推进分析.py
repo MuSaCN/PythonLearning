@@ -219,19 +219,23 @@ def strategy_set():
 
 
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # ***********
+expertfile = "a1.包络线振荡策略.ex5"  # ************
+outputfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+
 # 推进测试的起止时间
 starttime = "2015.01.01" # ************
 endtime = "2022.07.1" # ************
 step_months = 6 # 6, 3 # 推进步长，单位月 # ************
 length_year = 2 # 2, 1 # 样本总时间包括训练集和测试集 # ************
-optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化 # ******
-# symbol = "EURUSD" # *********
+
+symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # *********
 timeframe = "TIMEFRAME_M30"  # ************
-experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # ***********
-expertfile = "a1.包络线振荡策略.ex5"  # ************
+
 forwardmode = 4  # *** 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
 model = 1  # *** 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
 optimization = 1  # *** 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # *** 完全优化(词缀无optcriterion)
 optcriterion = 6  # *** 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
 
@@ -243,15 +247,13 @@ endtime = pd.Timestamp(endtime)
 
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
-
-for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]:
+for symbol in symbollist:
     if symbol in []: # symbol = "EURUSD"
         continue
 
     length = "%sY"%length_year
     step = "%sM"%step_months
-    reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
-
+    reportfolder = outputfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
     expertname = experfolder + "\\" + expertfile
 
     for i, row in timedf.iterrows():
