@@ -221,7 +221,7 @@ def strategy_set():
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
 experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # ***********
 expertfile = "a1.包络线振荡策略.ex5"  # ************
-outputfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
 
 # 推进测试的起止时间
 starttime = "2015.01.01" # ************
@@ -253,7 +253,7 @@ for symbol in symbollist:
 
     length = "%sY"%length_year
     step = "%sM"%step_months
-    reportfolder = outputfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
+    reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
     expertname = experfolder + "\\" + expertfile
 
     for i, row in timedf.iterrows():

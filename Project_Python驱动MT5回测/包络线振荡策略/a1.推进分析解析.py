@@ -68,6 +68,9 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 # ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD", "EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
+expertfile = "a1.包络线振荡策略.ex5"
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
 starttime = "2015.01.01"
@@ -75,21 +78,23 @@ endtime = "2022.07.01"
 length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
 step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
 
-expertfile = "a1.包络线振荡策略.ex5"
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 优化词缀
 
 
+#%%
 length = "%sY"%length_year
 step = "%sM"%step_months # "6M","3M"
 
 timeaffix0 = myMT5run.change_timestr_format(starttime)
 timeaffix1 = myMT5run.change_timestr_format(endtime)
 
-optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化
+starttime = pd.Timestamp(starttime)
+endtime = pd.Timestamp(endtime)
 
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
-
-starttime = pd.Timestamp(starttime) # ************
-endtime = pd.Timestamp(endtime) # ************
+# 报告目录
+reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
+# 筛选汇总文件
+choosefilename = contentfolder + r"\推进分析.{}\筛选汇总.{}.{}.{}.{}.length={}.step={}.xlsx".format(optcriterionaffix, symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
 
 # 推进分析参数输出目录
 forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}.{}".format(optcriterionaffix, expertfile.rsplit(".",1)[0])
@@ -99,7 +104,6 @@ timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_mont
 
 myfile.makedirs(forwardparapath, True)
 timedf.to_csv(forwardparapath+"\\推进时间.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
-
 # timedf = timedf[0:-2] # 保留2个作为样本外，用于研究超参数
 
 
@@ -116,10 +120,14 @@ for i, row in timedf.iterrows():
     t0 = myMT5run.change_timestr_format(fromdate)
     t1 = myMT5run.change_timestr_format(forwarddate) if islast is False else None
     t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(forwarddate)
+    # ---注意最后一个不是推进优化
     csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
     print("读取 csvfile=", csvfile)
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
+    if(len(testmatch)==0):
+        print("   注意：此 csvfile 不是向前优化！")
     matchlist.append([trainmatch, testmatch])
+
 
 # ---把表示负面意义的数据改成负数。
 negetivelist = ["%最大相对回撤比","最大相对回撤比占额","最大绝对回撤值","%最大绝对回撤值占比","LRStandardError","亏损交易数量","(int)最长亏损序列","(int)最大的连亏序列数","平均连亏序列"]
@@ -163,35 +171,37 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 
 
 #%% ### 暴力测试下怎么筛选结果较好(循环比多线程好，多进程不方便) ###
-sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns # ["平均盈利"]
-choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
-resultlist=["TB", "净利润"] # ***非循环迭代***
-func = lambda x: x.iloc[0] # 二次筛选的模式。选出每个分组的第一个，即sortby排序第一个
-count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-n = 5
+### 第一次筛选
+if __mypath__.path_exists(choosefilename):
+    # violent1 = violent # 用于研究超参数
+    violent = myfile.read_pd(choosefilename, index_col=0)
+    len(matchlist)
+else:
+    # 筛选第一步：根据violent选择一个占优势的排序方式
+    sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
+    choosebylist = ["myCriterion","TB","Sharpe_MT5","SQN_MT5_No","Sharpe_Balance","SQN_Balance","SQN_Balance_No","Sharpe_Price","SQN_Price","SQN_Price_No","平均盈利","盈亏比","利润因子","恢复因子","期望利润","Kelly占用仓位杠杆","Kelly止损仓位比率","Vince止损仓位比率","回归系数","LRCorrelation","盈利总和"] # ["TB"]
+    resultlist=["TB", "净利润"] # ***非循环迭代***
+    # 筛选第二步。选出每个分组的第一个，即sortby排序第一个
+    func = lambda x: x.iloc[0] # ******
+    count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
+    n = 5
 
-import timeit
-t0 = timeit.default_timer()
-violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist, func=func,
-                                              sortbylist=sortbylist, choosebylist=choosebylist,
-                                              resultlist=resultlist,count=count, n=n,
-                                              dropmaxchooseby=True)
-t1 = timeit.default_timer()
-print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
-# violent 在SciView中查看
-# 保存到xlsx，研究超参数时不要写入
-violent.to_excel(reportfolder+".xlsx")
-# 保存后下次分析可以直接从 F:\BaiduNetdiskWorkspace\工作---MT5策略研究\中读取
-# violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
+    import timeit
+    t0 = timeit.default_timer()
+    violent =  myMT5Analy.violenttest_howtochoose(timedf=timedf, matchlist=matchlist, func=func,
+                                                  sortbylist=sortbylist, choosebylist=choosebylist,
+                                                  resultlist=resultlist,count=count, n=n,
+                                                  dropmaxchooseby=True)
+    t1 = timeit.default_timer()
+    print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
+    # violent 在SciView中查看
+    # 保存到xlsx，研究超参数时不要写入
+    violent.to_excel(choosefilename)
+    # 保存后下次分析可以直接从 F:\BaiduNetdiskWorkspace\工作---MT5策略研究\中读取
+    # violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
 
 
-#%% ### 一次筛选：根据violent选择一个占优势的排序方式 ###
-# violent1 = violent # 用于研究超参数
-violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
-len(matchlist)
-
-
-#%%
+#%% ### 单独一次筛选 ###
 # "净利润" "myCriterion" "总交易" "多头交易" "空头交易" "%总胜率" "%多胜率" "%空胜率" "TB" "Sharpe_MT5"
 # "SQN_MT5_No" "Sharpe_Balance"	"SQN_Balance" "SQN_Balance_No" "Sharpe_Price" "SQN_Price" "SQN_Price_No"
 # "平均盈利" "平均亏损" "盈亏比" "利润因子" "恢复因子" "期望利润" "Kelly占用仓位杠杆" "Kelly止损仓位比率"
@@ -203,7 +213,7 @@ len(matchlist)
 # "亏损交易中的最大值"
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "总交易" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "平均盈利" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
 chooseby = "Sharpe_MT5" # "TB"
 n = 5
@@ -219,16 +229,16 @@ group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组�
 # mypd.groupby_print(group)
 
 # ---根据训练集选择，测试集反馈。
-out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
+lastchoose = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
 # out = group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
 # out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
-out
+lastchoose
 
 ### 根据out整理出策略每个阶段的外置参数
 parainput = pd.DataFrame([])
-for i in range(len(out)):
-    tag = out["tag"][i]
-    ipass = out["Pass"][i]
+for i in range(len(lastchoose)):
+    tag = lastchoose["tag"][i]
+    ipass = lastchoose["Pass"][i]
     trainmatch = matchlist[tag][0] # 这里不需要copy()
     # 下面参数名要根据EA源码的输入变量来整理，trainmatch中策略参数顺序不是对应的。
     trainmatch = trainmatch[["Pass","Inp_SigMode","Inp_Ma_Period","Inp_Ma_Method","Inp_Applied_Price","Inp_Deviation","Inp_SLMuiltple","Inp_Filter0","Inp_Filter1"]]
