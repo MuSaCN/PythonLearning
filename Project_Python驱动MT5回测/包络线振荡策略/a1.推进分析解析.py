@@ -70,23 +70,26 @@ warnings.filterwarnings('ignore')
 # ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD", "EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
 symbol = "EURUSD"
 timeframe = "TIMEFRAME_M30"
-timefrom = "2015.01.01"
-timeto = "2022.07.01"
+starttime = "2015.01.01"
+endtime = "2022.07.01"
 length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
 step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
 
-length = "%sY"%length_year
-step = "%sM"%step_months # "6M","3M"
-timeaffix0 = myMT5run.change_timestr_format(timefrom)
-timeaffix1 = myMT5run.change_timestr_format(timeto)
-
-reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进.{}.{}.{}.{}.length={}.step={}".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
 expertfile = "a1.包络线振荡策略.ex5"
 
-starttime = pd.Timestamp(timefrom) # ************
-endtime = pd.Timestamp(timeto) # ************
+
+length = "%sY"%length_year
+step = "%sM"%step_months # "6M","3M"
+
+timeaffix0 = myMT5run.change_timestr_format(starttime)
+timeaffix1 = myMT5run.change_timestr_format(endtime)
 
 optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化
+
+reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step)
+
+starttime = pd.Timestamp(starttime) # ************
+endtime = pd.Timestamp(endtime) # ************
 
 # 推进分析参数输出目录
 forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}.{}".format(optcriterionaffix, expertfile.rsplit(".",1)[0])
@@ -108,10 +111,11 @@ for i, row in timedf.iterrows():
     forwarddate = row["forward"]
     todate = row["to"]
     # ---xlsx格式优化报告
-    tf_affix = myMT5Analy.timeframe_to_ini_affix(timeframe)
-    t0 = myMT5Analy.change_timestr_format(fromdate)
-    t1 = myMT5Analy.change_timestr_format(forwarddate)
-    t2 = myMT5Analy.change_timestr_format(todate)
+    islast = pd.Timestamp(forwarddate) == pd.Timestamp(endtime)
+    tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
+    t0 = myMT5run.change_timestr_format(fromdate)
+    t1 = myMT5run.change_timestr_format(forwarddate) if islast is False else None
+    t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(forwarddate)
     csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
     print("读取 csvfile=", csvfile)
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)

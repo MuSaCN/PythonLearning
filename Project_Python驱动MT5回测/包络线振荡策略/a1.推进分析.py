@@ -224,7 +224,18 @@ starttime = "2015.01.01" # ************
 endtime = "2022.07.1" # ************
 step_months = 6 # 6, 3 # 推进步长，单位月 # ************
 length_year = 2 # 2, 1 # 样本总时间包括训练集和测试集 # ************
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化 # ******
+# symbol = "EURUSD" # *********
+timeframe = "TIMEFRAME_M30"  # ************
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # ***********
+expertfile = "a1.包络线振荡策略.ex5"  # ************
+forwardmode = 4  # *** 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+model = 1  # *** 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+optimization = 1  # *** 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+optcriterion = 6  # *** 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
+
+#%%
 timeaffix0 = myMT5run.change_timestr_format(starttime)
 timeaffix1 = myMT5run.change_timestr_format(endtime)
 starttime = pd.Timestamp(starttime)
@@ -232,26 +243,16 @@ endtime = pd.Timestamp(endtime)
 
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
-optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化
 
 for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]:
     if symbol in []: # symbol = "EURUSD"
         continue
 
-    timeframe = "TIMEFRAME_M30" # ************
     length = "%sY"%length_year
     step = "%sM"%step_months
-
-    experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"
     reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
 
-    expertfile = "a1.包络线振荡策略.ex5" # ************
     expertname = experfolder + "\\" + expertfile
-
-    forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-    model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-    optimization = 1 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-    optcriterion = 6 # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
     for i, row in timedf.iterrows():
         # 时间参数必须转成"%Y.%m.%d"字符串
