@@ -260,11 +260,14 @@ for symbol in ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDC
         todate = row["to"]
         print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
 
-        # ---xml格式优化报告的目录
+        # ---最后一步要调整下t1和t2
+        islast = pd.Timestamp(forwarddate) == pd.Timestamp(endtime)
         tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
         t0 = myMT5run.change_timestr_format(fromdate)
-        t1 = myMT5run.change_timestr_format(forwarddate) if forwarddate is not None else None
-        t2 = myMT5run.change_timestr_format(todate)
+        t1 = myMT5run.change_timestr_format(forwarddate) if islast is False else None
+        t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(forwarddate)
+
+        # ---xml格式优化报告的目录
         reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
         print("reportfile=",reportfile)
 

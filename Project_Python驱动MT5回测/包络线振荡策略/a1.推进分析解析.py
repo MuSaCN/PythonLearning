@@ -86,8 +86,10 @@ expertfile = "a1.包络线振荡策略.ex5"
 starttime = pd.Timestamp(timefrom) # ************
 endtime = pd.Timestamp(timeto) # ************
 
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 完全优化
+
 # 推进分析参数输出目录
-forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}".format(expertfile.rsplit(".",1)[0])
+forwardparapath = __mypath__.get_mt5_commonfile_path() + r"\推进分析参数.{}.{}".format(optcriterionaffix, expertfile.rsplit(".",1)[0])
 
 # 推进测试的起止时间
 timedf = myMT5Analy.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
