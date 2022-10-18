@@ -67,20 +67,39 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 import warnings
 warnings.filterwarnings('ignore')
 
+
+# (***)基础EA(***)。用于优化分析的，注意不同于下面推进回测的EA，后者要阶段更新参数。
 expertfile = "a1.包络线振荡策略.ex5"
-contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略" # 输出的总目录******
+# (***)根据基础EA源码的Input变量的顺序来整理下面参数名(***)
+ea_inputparalist = ["Inp_SigMode", "Inp_Ma_Period", "Inp_Ma_Method", "Inp_Applied_Price", "Inp_Deviation","Inp_SLMuiltple", "Inp_Filter0", "Inp_Filter1"]
 
-symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # *********
 
-timeframe = "TIMEFRAME_M30"
-timefrom = "2015.01.01"
-timeto = "2022.07.01"
-length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
-step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
+symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # 策略的品种列表******
+timeframe = "TIMEFRAME_M30" # 策略的时间框******
 
-optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 优化词缀
 
-#%%
+# (***)推进分析的相关参数(***)
+forward_starttime = "2015.01.01" # 推进分析数据的开始时间******
+forward_endtime = "2022.07.01" # 推进分析数据的结束时间(最后一个格子只做优化，不做推进)******
+length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数)******
+step_months = 6 # 3,6 # 推进步长，单位月(允许大于12)******
+# (***)优化词缀(***): -1 Complete, 0 Balance max, 6 Custom max, 7 Complex Criterion max.
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1)
+
+
+# (***)推进回测EA的目录和文件名(***)
+bt_experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推进交易.2Y6M"
+bt_expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", myMT5run.timeframe_to_ini_affix(timeframe))
+# (***)推进回测的时间起始(***)
+bt_starttime = "2015.07.01"  # 手动指定******
+bt_endtime = "2022.10.1"  # 手动指定******
+# 推进回测保存的总目录
+bt_folder = contentfolder + r"\1.推进回测.{}.{}".format(
+    myMT5run.change_timestr_format(bt_starttime), myMT5run.change_timestr_format(bt_endtime))
+
+
+#%% ###### 主要函数 ######
 # ---获取 timedf, matchlist, violent
 def get_timedf_matchlist_and_violent():
     # 推进测试的起止时间
@@ -186,10 +205,50 @@ def get_timedf_matchlist_and_violent():
         violent = myfile.read_pd(choosefilename, index_col=0)
     return timedf, matchlist, violent
 
+# ---生成EA的参数
+def get_EA_parainput(sortby, chooseby, resultlist, count=0.5, n=5):
+    # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
+    sortby = sortby  # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+    count = count  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
+    chooseby = chooseby  # "TB"
+    n = n
+    resultlist = resultlist
+    ### 第一次筛选 ###
+    totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count,
+                                          chooseby=chooseby, n=n, resultlist=resultlist,
+                                          dropmaxchooseby=True, show=False)
+    print("3: len(totaldf)=", len(totaldf))
 
+    ### 第二次筛选：根据某种方法选出一个占优的结果 ###
+    group = totaldf.groupby(by="tag", axis=0, as_index=False)  # tag为各个分组的标签
+    # mypd.groupby_print(group)
 
+    # ---根据训练集选择，测试集反馈。
+    lastchoose = group.apply(lambda x: x.iloc[0])  # 选出每个分组的第一个，即sortby排序第一个
 
-# ---策略通用参数---
+    ### 根据out整理出策略每个阶段的外置参数
+    parainput = pd.DataFrame([])
+    for i in range(len(lastchoose)):
+        tag = lastchoose["tag"][i]
+        ipass = lastchoose["Pass"][i]
+        trainmatch = matchlist[tag][0]  # 这里不需要copy()
+        # 下面参数名要根据EA源码的输入变量来整理，trainmatch中策略参数顺序不是对应的。
+        trainmatch = trainmatch[["Pass"]+ea_inputparalist]
+        trainrow = trainmatch[trainmatch["Pass"] == ipass]
+        trainrow["tag"] = tag
+        parainput = parainput.append(trainrow, ignore_index=True)
+    # ---
+    parainput.drop(labels="Pass", axis=1, inplace=True)
+    parainput.sort_values(by="tag", inplace=True, ignore_index=True)
+    parainput.set_index(keys="tag", drop=True, inplace=True)
+    parainput.to_csv(forwardparapath + "\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".
+                     format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe), timeaffix0,
+                            timeaffix1, length, step),sep=",")  # 逗号的csv可直接被excel解析。
+    print("3: 已保存到", forwardparapath + "\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".
+          format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe), timeaffix0,
+                 timeaffix1, length, step))
+
+# ---(***)推进回测策略通用参数(***)---
 def common_set():
     myMT5run.input_set("FrameMode", "0")  # *** 0-FRAME_None 1-BTMoreResult 2-OptResult
     # ; ======(通用)0.用于分析======
@@ -333,9 +392,10 @@ def common_set():
     myMT5run.input_set("Inp_TIB_ATRPeriod", "14||14||1||140||N")  # TIB_Method_ATR模式：ATR周期.
     myMT5run.input_set("Inp_TIB_ATRMultiple", "1||1||0.100000||10.000000||N")  # TIB_Method_ATR模式：ATR倍数.
 
-# ---策略参数---
+# ---(***)推进回测策略参数(***)---
 def strategy_set():
     pass
+
 
 #%%
 for symbol in symbollist:
@@ -347,10 +407,10 @@ for symbol in symbollist:
     #%% ###### 获得 violent ######
     length = "%sY"%length_year
     step = "%sM"%step_months # "6M","3M"
-    timeaffix0 = myMT5run.change_timestr_format(timefrom)
-    timeaffix1 = myMT5run.change_timestr_format(timeto)
-    starttime = pd.Timestamp(timefrom)
-    endtime = pd.Timestamp(timeto)
+    timeaffix0 = myMT5run.change_timestr_format(forward_starttime)
+    timeaffix1 = myMT5run.change_timestr_format(forward_endtime)
+    starttime = pd.Timestamp(forward_starttime)
+    endtime = pd.Timestamp(forward_endtime)
 
     # 报告目录
     reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5Analy.timeframe_to_ini_affix(timeframe), timeaffix0,timeaffix1, length, step)
@@ -362,7 +422,6 @@ for symbol in symbollist:
     # ---获取 timedf, matchlist, violent
     timedf, matchlist, violent = get_timedf_matchlist_and_violent()
     print("1: get_timedf_matchlist_and_violent()完成，准备解析 violent.")
-
 
     #%% ###### 解析下violent ######
     for key in ["mean0.5","mean0.4","mean0.3","mean0.2","mean0.1"]:
@@ -380,88 +439,45 @@ for symbol in symbollist:
             resultlist = eval(resultlist) if type(resultlist)==str else resultlist
             print("3: 当前模式的参数为：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
 
-            #%%
-            # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-            sortby = sortby # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
-            count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-            chooseby = chooseby # "TB"
-            n = 5
-            resultlist=resultlist
-
-            totaldf = myMT5Analy.analysis_forward(timedf=timedf, matchlist=matchlist, sortby=sortby, count=count, chooseby=chooseby, n=n, resultlist=resultlist, dropmaxchooseby=True, show=False)
-            print("3: len(totaldf)=",len(totaldf))
-
-
-            #%% ### 二次筛选：根据某种方法选出一个占优的结果 ###
-            group = totaldf.groupby(by="tag", axis=0, as_index=False) # tag为各个分组的标签
-            # mypd.groupby_print(group)
-
-            # ---根据训练集选择，测试集反馈。
-            out = group.apply(lambda x: x.iloc[0]) # 选出每个分组的第一个，即sortby排序第一个
-            # out = group.apply(lambda x: x.iloc[x["chooseby"+chooseby].argmax()]) # 选出每个分组chooseby最大的一个
-            # out = group.apply(lambda x: x.iloc[x["result0"+resultlist[0]].argmax()]) # 选出每个分组result最大的一个
-            # out
-
-            ### 根据out整理出策略每个阶段的外置参数
-            parainput = pd.DataFrame([])
-            for i in range(len(out)):
-                tag = out["tag"][i]
-                ipass = out["Pass"][i]
-                trainmatch = matchlist[tag][0] # 这里不需要copy()
-                # 下面参数名要根据EA源码的输入变量来整理，trainmatch中策略参数顺序不是对应的。
-                trainmatch = trainmatch[["Pass","Inp_SigMode","Inp_Ma_Period","Inp_Ma_Method","Inp_Applied_Price","Inp_Deviation","Inp_SLMuiltple","Inp_Filter0","Inp_Filter1"]]
-                trainrow = trainmatch[trainmatch["Pass"] == ipass]
-                trainrow["tag"] = tag
-                parainput = parainput.append(trainrow, ignore_index=True)
-            #---
-            parainput.drop(labels="Pass", axis=1, inplace=True)
-            parainput.sort_values(by="tag", inplace=True, ignore_index=True)
-            parainput.set_index(keys="tag", drop=True, inplace=True)
-
-            parainput.to_csv(forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
-            print("3: 已保存到",forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
-
+            #%% ### 生成EA的参数 ###
+            get_EA_parainput(sortby, chooseby, resultlist, count=0.5, n=5)
 
             #%% ### 回测 ###
             # symbol='EURCHF'; timeframe="TIMEFRAME_M30"
             # sortby,chooseby,resultlist = ('亏损总和', '盈利总和', ['TB', '净利润'])
             # tf_affix="M30";starttime="2015.07.01"
             tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)  # 时间框词缀
+
             # EA的位置
-            experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推进交易.2Y6M"
-            expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", tf_affix)  # ************
-            expertname = experfolder + "\\" + expertfile
-            print("3. EA=",expertname)
+            bt_expertname = bt_experfolder + "\\" + bt_expertfile
+            print("3. EA=",bt_expertname)
 
             # xml格式优化报告的目录
-            reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略\1.推进分析靠前模式测试\{}.{}".format(symbol, tf_affix)
-            myfile.makedirs(reportfolder, True)
+            bt_reportfolder = bt_folder + r"\{}.{}".format(symbol, tf_affix)
+            myfile.makedirs(bt_reportfolder, True)
+
             # 输出文档不能有%符号
             if "%" in sortby:
                 sortby = sortby.replace("%","")
             if "%" in chooseby:
                 chooseby = chooseby.replace("%","")
-            reportfile = reportfolder + "\\{}.{}.{}.xml".format(sortby,chooseby,resultlist)
-            print("3. reportfile=", reportfile)
+            bt_reportfile = bt_reportfolder + "\\{}.{}.{}.xml".format(sortby,chooseby,resultlist)
+            print("3. reportfile=", bt_reportfile)
 
             # 回测设置
-            starttime = timedf["from"].iloc[1] # starttime="2015.07.01"  # ************
-            endtime = "2022.10.1"  # ************
-            forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-            model = 1  # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-            optimization = 0  # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+            bt_forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+            bt_model = 1  # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+            bt_optimization = 0  # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
             print("3: 开始MT5回测EA：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
 
             # ---
             myMT5run.__init__()
-            myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=starttime, todate=endtime,
-                                   forwardmode=forwardmode, forwarddate=None,
-                                   delays=0, model=model, optimization=optimization,
-                                   optcriterion=6, reportfile=reportfile)
+            myMT5run.config_Tester(bt_expertname, symbol, timeframe, fromdate=bt_starttime,
+                                   todate=bt_endtime,forwardmode=bt_forwardmode, forwarddate=None,
+                                   delays=0, model=bt_model, optimization=bt_optimization,
+                                   optcriterion=6, reportfile=bt_reportfile)
             common_set()
             strategy_set()
-
-            # strategy_set() # 没有额外的策略参数
             # ---检查参数输入是否匹配优化的模式，且写出配置结果。
             myMT5run.check_inputs_and_write()
             myMT5run.run_MT5()
