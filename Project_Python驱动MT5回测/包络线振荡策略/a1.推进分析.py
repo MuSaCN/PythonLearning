@@ -72,8 +72,7 @@ plt.show()
 
 
 
-#%% ###### 外部参数 ######
-
+#%% ###### 策略参数 ######
 
 # ====== 策略参数 ======
 # ------通用分析套件参数------
@@ -219,9 +218,10 @@ def strategy_set():
 
 
 #%% ###### a1.三均线顺势拉回策略 策略优化 ######
-experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # ***********
-expertfile = "a1.包络线振荡策略.ex5"  # ************
-contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+
+experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # (***)基础EA所在的目录(***)
+expertfile = "a1.包络线振荡策略.ex5"  # (***)基础EA(***)
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略" # 输出的总目录******
 
 # 推进测试的起止时间
 starttime = "2015.01.01" # ************

@@ -63,22 +63,28 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 
 
 
-# %%
+# %% ###### 输入参数部分 ######
 ''' # 输出内容保存到"工作---MT5策略研究"目录，以及MT5的Common目录。 '''
 import warnings
 warnings.filterwarnings('ignore')
+
+expertfile = "a1.包络线振荡策略.ex5" # (***)基础EA(***)
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略" # 输出的总目录******
+# (***)根据基础EA源码的Input变量的顺序来整理下面参数名(***)
+ea_inputparalist = ["Inp_SigMode", "Inp_Ma_Period", "Inp_Ma_Method", "Inp_Applied_Price", "Inp_Deviation","Inp_SLMuiltple", "Inp_Filter0", "Inp_Filter1"]
+
+
 # ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD", "EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
-expertfile = "a1.包络线振荡策略.ex5"
-contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\6.包络线振荡策略"
+symbol = "EURUSD" # ******
+timeframe = "TIMEFRAME_M30" # ******
+starttime = "2015.01.01" # 推进分析数据的开始时间******
+endtime = "2022.07.01" # 推进分析数据的结束时间(最后一个格子只做优化，不做推进)******
+length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数)******
+step_months = 6 # 3,6 # 推进步长，单位月(允许大于12)******
 
-symbol = "EURUSD"
-timeframe = "TIMEFRAME_M30"
-starttime = "2015.01.01"
-endtime = "2022.07.01"
-length_year = 2 # 1,2 # 样本总时间包括训练集和测试集，单位年(允许小数) # ************
-step_months = 6 # 3,6 # 推进步长，单位月(允许大于12) # ************
+# (***)优化词缀(***): -1 Complete, 0 Balance max, 6 Custom max, 7 Complex Criterion max.
+optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1)
 
-optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # 优化词缀
 
 
 #%%
@@ -242,7 +248,7 @@ for i in range(len(lastchoose)):
     ipass = lastchoose["Pass"][i]
     trainmatch = matchlist[tag][0] # 这里不需要copy()
     # 下面参数名要根据EA源码的输入变量来整理，trainmatch中策略参数顺序不是对应的。
-    trainmatch = trainmatch[["Pass","Inp_SigMode","Inp_Ma_Period","Inp_Ma_Method","Inp_Applied_Price","Inp_Deviation","Inp_SLMuiltple","Inp_Filter0","Inp_Filter1"]]
+    trainmatch = trainmatch[["Pass"] + ea_inputparalist]
     trainrow = trainmatch[trainmatch["Pass"] == ipass]
     trainrow["tag"] = tag
     parainput = parainput.append(trainrow, ignore_index=True)
@@ -251,9 +257,11 @@ parainput.drop(labels="Pass", axis=1, inplace=True)
 parainput.sort_values(by="tag", inplace=True, ignore_index=True)
 parainput.set_index(keys="tag", drop=True, inplace=True)
 
-
-parainput.to_csv(forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
-print("已保存到",forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
-
+#---
+parainput.to_csv(forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(
+    symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step), sep=",") # 逗号的csv可直接被excel解析。
+print("已保存到",forwardparapath+"\\推进参数.{}.{}.{}.{}.length={}.step={}.csv".format(
+    symbol,myMT5Analy.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step))
+print("~~~下一步根据MT5上对应EA执行回测~~~")
 
 
