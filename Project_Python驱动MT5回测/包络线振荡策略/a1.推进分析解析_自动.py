@@ -89,7 +89,7 @@ optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1)
 
 
 # (***)推进回测EA的目录和文件名(***)
-bt_experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推进交易.2Y6M"
+bt_experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略\\推进交易.{}.2Y6M".format(optcriterionaffix)
 bt_expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", myMT5run.timeframe_to_ini_affix(timeframe))
 # (***)推进回测的时间起始(***)
 bt_starttime = "2015.07.01"  # 手动指定******
