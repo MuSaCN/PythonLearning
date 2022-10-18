@@ -125,7 +125,7 @@ for i, row in timedf.iterrows():
     print("读取 csvfile=", csvfile)
     trainmatch, testmatch = myMT5Analy.read_forward_opt_csv(filepath=csvfile)
     if(len(testmatch)==0):
-        print("   注意：此 csvfile 不是向前优化！")
+        print("  注意：此 csvfile 不是向前优化！")
     matchlist.append([trainmatch, testmatch])
 
 
@@ -175,7 +175,6 @@ totalcorr = myMT5Analy.traintest_corr_score(matchlist=matchlist, corrlimit = [0.
 if __mypath__.path_exists(choosefilename):
     # violent1 = violent # 用于研究超参数
     violent = myfile.read_pd(choosefilename, index_col=0)
-    len(matchlist)
 else:
     # 筛选第一步：根据violent选择一个占优势的排序方式
     sortbylist = trainmatch.loc[:, "净利润":"亏损交易中的最大值"].columns
@@ -196,9 +195,11 @@ else:
     print("\n", '简单循环 multi processing 耗时为：', t1 - t0) # 17
     # violent 在SciView中查看
     # 保存到xlsx，研究超参数时不要写入
-    violent.to_excel(choosefilename)
     # 保存后下次分析可以直接从 F:\BaiduNetdiskWorkspace\工作---MT5策略研究\中读取
-    # violent = myfile.read_pd(reportfolder+".xlsx", index_col=0)
+    violent.to_excel(choosefilename)
+    violent = myfile.read_pd(choosefilename, index_col=0)
+
+
 
 
 #%% ### 单独一次筛选 ###
