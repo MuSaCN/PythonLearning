@@ -229,7 +229,7 @@ def strategy_set():
     myMT5run.input_set("Inp_Filter1", "true||false||0||true||Y") # 信号过滤1：D1上过滤震荡，D1上震荡才允许进场。
 
 
-#%% ###### a1.三均线顺势拉回策略 策略优化 ######
+#%% ###### 策略优化 ######
 
 experfolder = "My_Experts\\Strategy深度研究\\包络线振荡策略"  # (***)基础EA所在的目录(***)
 expertfile = "a1.包络线振荡策略.ex5"  # (***)基础EA(***)
@@ -259,13 +259,18 @@ endtime = pd.Timestamp(endtime)
 
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
+
+
+
 for symbol in symbollist:
     if symbol in []: # symbol = "EURUSD"
         continue
 
     length = "%sY"%length_year
     step = "%sM"%step_months
-    reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
+    reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".\
+        format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),
+               timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
     expertname = experfolder + "\\" + expertfile
 
     for i, row in timedf.iterrows():
@@ -283,7 +288,8 @@ for symbol in symbollist:
         t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(forwarddate)
 
         # ---xml格式优化报告的目录
-        reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
+        reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(
+            expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
         print("reportfile=",reportfile)
 
         # 如果t1是None表示不是向前分析

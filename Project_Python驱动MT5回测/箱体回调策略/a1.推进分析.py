@@ -73,11 +73,11 @@ plt.show()
 
 
 
-#%% ###### 外部参数 ######
-
+#%% ###### 策略参数 ######
 
 # ====== 策略参数 ======
-# ------通用分析套件参数------
+# ------通用分析套件参数(版本2022.10.15)------
+# 使用时要修改，请标注 *******
 def common_set():
     myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
     # ; ======(通用)0.用于分析======
@@ -220,72 +220,76 @@ def common_set():
 
 # ------策略参数------
 def strategy_set():
-    myMT5run.input_set("MaxBoxPeriod", "53||50||1||70||Y")  # 大箱体周期************
-    myMT5run.input_set("OsciBoxPeriod", "9||5||1||15||Y") # 小箱体周期************
-    myMT5run.input_set("K_TrendBuyU", "0.70||1.0||-0.02||0.7||Y") # 做多：大箱体K值上界************
-    myMT5run.input_set("K_TrendBuyD", "0.54||0.4||0.02||0.6||Y") # 做多：大箱体K值下界************
-    myMT5run.input_set("TrendGap", "500||0||100||1000||Y") # 做多：close[1]高于趋势箱体的最低价TrendGap点************
-    myMT5run.input_set("K_OsciBuyLevel", "0.15||0.05||0.05||0.2||Y")  # 做多：价格要在低位置才可以，K < buylevel****
-    myMT5run.input_set("OsciGap", "90||80||10||150||Y")  # 做多：振荡箱体2的最高价与close[1]相差超过OSCGap点*****
-    myMT5run.input_set("CloseBuyLevel", "0.90||0.8||0.02||0.9||Y") # 多平：K大于规定的DirectCloseLevel*****
-    myMT5run.input_set("PriceGap", "999||200||1||2000||N") # 1.做多：图表上bid价格<上根bar收盘价+20点；
-    myMT5run.input_set("MaxSpread", "999||200||1||2000||N") # 2.做多：当前点差不超过设置的最大点差Spread 30；
-    myMT5run.input_set("SL_Min", "0||0||1||10||N") # 止损的限定范围 250
-    myMT5run.input_set("SL_Max", "1500||500||100||2000||N") # 止损的限定范围 15000
-    myMT5run.input_set("AvgLotsToPPoint_L", "0||0||1||10||N") # 平均1手盈利达到此平仓 200
-    myMT5run.input_set("AvgLotsToPPoint_R", "0||0||1||10||N") # 平均1手盈利达到此平仓 99999
+    myMT5run.input_set("Inp_SigMode", "1||1||1||2||Y")  # 1-左侧入场，2-右侧入场。
+    myMT5run.input_set("Inp_Ma_Period", "20||20||1||40||Y") # ************
+    myMT5run.input_set("Inp_Ma_Method", "0||0||0||3||N") # ************
+    myMT5run.input_set("Inp_Applied_Price", "1||1||0||7||N") # ************
+    myMT5run.input_set("Inp_Deviation", "0.1||0.1||0.05||0.7||Y") # ************
+    myMT5run.input_set("Inp_SLMuiltple", "2||2.0||0.200000||20.000000||N")  # 初始止损的倍数
+    myMT5run.input_set("Inp_Filter0", "false||false||0||true||Y")  # 信号过滤0：前一单做多亏，则当前只能做空；前一单做空亏，则当前只能做多。
+    myMT5run.input_set("Inp_Filter1", "true||false||0||true||Y") # 信号过滤1：D1上过滤震荡，D1上震荡才允许进场。
 
 
 
-#%% ###### a1.三均线顺势拉回策略 策略优化 ######
+#%% ###### 策略优化 ######
+
+experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略"  # (***)基础EA所在的目录(***)
+expertfile = "a1.箱体回调策略.ex5"  # (***)基础EA(***)
+contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\7.箱体回调策略" # 输出的总目录******
+
 # 推进测试的起止时间
 starttime = "2015.01.01" # ************
 endtime = "2022.07.1" # ************
 step_months = 6 # 6, 3 # 推进步长，单位月 # ************
 length_year = 2 # 2, 1 # 样本总时间包括训练集和测试集 # ************
 
+symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # *********
+symbollist = ["EURUSD"]
+
+timeframe = "TIMEFRAME_M15"  # ************
+
+forwardmode = 4  # *** 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+model = 1  # *** 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
+optimization = 2  # *** 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+# optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=-1) # *** 完全优化(词缀无optcriterion)
+# optcriterion = 6  # *** 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
+
+
+#%%
 timeaffix0 = myMT5run.change_timestr_format(starttime)
 timeaffix1 = myMT5run.change_timestr_format(endtime)
 starttime = pd.Timestamp(starttime)
 endtime = pd.Timestamp(endtime)
 
-# ---推进分析的最后一个时间无法推进，只能优化.
 timedf = myMT5run.get_everystep_time(starttime, endtime, step_months=step_months, length_year=length_year)
 
 
-symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
-symbollist = ["EURUSD"]
-
+#%%
 #---测试下哪个优化标准更能找到好策略
 # -1 -- Complete, 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max.
 def run(criterionindex=0):
+    optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=criterionindex)  # ***
+    optcriterion = criterionindex # *** 0 Balance max, 1 Profit Factor max, 2 Expected Payoff max, 3 Drawdown min, 4 Recovery Factor max, 5 Sharpe Ratio max, 6 Custom max, 7 Complex Criterion max
+
+    # ---
     for symbol in symbollist:
-        if symbol in []: # symbol = "EURUSD"
+        if symbol in []:  # symbol = "EURUSD"
             continue
 
-        timeframe = "TIMEFRAME_M15" # ************
-        length = "%sY"%length_year
-        step = "%sM"%step_months
+        length = "%sY" % length_year
+        step = "%sM" % step_months
 
-        experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略"
-
-        optcriterionaffix=myMT5run.get_optcriterion_affix(optcriterion=criterionindex)
-        reportfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\7.箱体回调策略\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),timeaffix0,timeaffix1,length,step) # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
-
-        expertfile = "a1.箱体回调策略.ex5" # ************
+        reportfolder = contentfolder + r"\推进分析.{}\推进.{}.{}.{}.{}.length={}.step={}".\
+            format(optcriterionaffix, symbol,myMT5run.timeframe_to_ini_affix(timeframe),
+                   timeaffix0, timeaffix1, length, step)  # 以 "推进.EURUSD.M30.2015-01-01.2022-07-01.length=2Y.step=6M" 格式
         expertname = experfolder + "\\" + expertfile
-
-        forwardmode = 4 # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
-        model = 1 # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
-        optimization = 2 # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
-        optcriterion = criterionindex # 0 -- Balance max, 1 -- Profit Factor max, 2 -- Expected Payoff max, 3 -- Drawdown min, 4 -- Recovery Factor max, 5 -- Sharpe Ratio max, 6 -- Custom max, 7 -- Complex Criterion max
 
         for i, row in timedf.iterrows():
             # 时间参数必须转成"%Y.%m.%d"字符串
             fromdate = row["from"]
             forwarddate = row["forward"]
             todate = row["to"]
-            print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate,forwarddate,todate))
+            print("======开始测试：fromdate={}, forwarddate={}, todate={}".format(fromdate, forwarddate, todate))
 
             # ---最后一步要调整下t1和t2
             islast = pd.Timestamp(forwarddate) == pd.Timestamp(endtime)
@@ -296,21 +300,22 @@ def run(criterionindex=0):
                 forwarddate)
 
             # ---xml格式优化报告的目录
-            reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
-            print("reportfile=",reportfile)
+            reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(
+                expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2, optcriterion)
+            print("reportfile=", reportfile)
 
             # 如果t1是None表示不是向前分析
             if t1 is None:
                 forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
 
             # 检测文件是否存在，存在则不需要再次优化
-            csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format( expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
+            csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol,
+                                                                      tf_affix, t0, t1, t2)
             if __mypath__.path_exists(reportfile) and __mypath__.path_exists(csvfile):
                 print("已经完成：", reportfile)
                 continue
 
-
-        #%%
+            # %%
             myMT5run.__init__()
             myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
                                    forwardmode=forwardmode, forwarddate=forwarddate,
