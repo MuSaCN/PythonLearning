@@ -244,7 +244,7 @@ step_months = 6 # 6, 3 # 推进步长，单位月 # ************
 length_year = 2 # 2, 1 # 样本总时间包括训练集和测试集 # ************
 
 symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # *********
-symbollist = ["EURUSD"]
+# symbollist = ["EURUSD"]
 
 timeframe = "TIMEFRAME_M15"  # ************
 
