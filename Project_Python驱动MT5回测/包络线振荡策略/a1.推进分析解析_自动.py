@@ -95,7 +95,7 @@ bt_expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", myMT5run.timeframe
 bt_starttime = "2015.07.01"  # 手动指定******
 bt_endtime = "2022.07.1"  # 手动指定******
 # 推进回测保存的总目录
-bt_folder = contentfolder + r"\1.推进回测.{}.{}".format(
+bt_folder = contentfolder + r"\1.推进回测.{}.{}.{}".format(optcriterionaffix,
     myMT5run.change_timestr_format(bt_starttime), myMT5run.change_timestr_format(bt_endtime))
 
 
