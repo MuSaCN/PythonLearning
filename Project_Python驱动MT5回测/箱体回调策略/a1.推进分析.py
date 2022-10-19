@@ -273,7 +273,7 @@ def run(criterionindex=0):
 
     # ---
     for symbol in symbollist:
-        if symbol in []:  # symbol = "EURUSD"
+        if symbol in []:  # symbol = "GBPUSD"
             continue
 
         length = "%sY" % length_year
@@ -296,8 +296,7 @@ def run(criterionindex=0):
             tf_affix = myMT5run.timeframe_to_ini_affix(timeframe)
             t0 = myMT5run.change_timestr_format(fromdate)
             t1 = myMT5run.change_timestr_format(forwarddate) if islast is False else None
-            t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(
-                forwarddate)
+            t2 = myMT5run.change_timestr_format(todate) if islast is False else myMT5run.change_timestr_format(forwarddate)
 
             # ---xml格式优化报告的目录
             reportfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.Crit={}.xml".format(
@@ -315,6 +314,7 @@ def run(criterionindex=0):
                 print("已经完成：", reportfile)
                 continue
 
+            print("fromdate={} forwarddate={} todate={}".format(fromdate, forwarddate, todate))
             # %%
             myMT5run.__init__()
             myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
