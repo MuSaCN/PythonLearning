@@ -293,8 +293,8 @@ for symbol in symbollist:
         print("reportfile=",reportfile)
 
         # 如果t1是None表示不是向前分析
-        if t1 is None:
-            forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+        iforwardmode = 0 if t1 is None else forwardmode  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+        print("t0={} t1={} t2={}".format(t0, t1, t2))
 
         # 检测文件是否存在，存在则不需要再次优化
         csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
@@ -302,10 +302,12 @@ for symbol in symbollist:
             print("已经完成：",reportfile)
             continue
 
+        print("fromdate={} forwarddate={} todate={}".format(fromdate, forwarddate, todate))
+        print("forwardmode={} ".format(iforwardmode))
         #%%
         myMT5run.__init__()
         myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
-                               forwardmode=forwardmode, forwarddate=forwarddate,
+                               forwardmode=iforwardmode, forwarddate=forwarddate,
                                delays=0, model=model, optimization=optimization,
                                optcriterion=optcriterion, reportfile=reportfile)
         common_set()

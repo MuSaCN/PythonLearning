@@ -266,7 +266,6 @@ def strategy_set():
     myMT5run.input_set("OptCriterion", optcriterionaffix)
 
 
-
 # ---获取 timedf, matchlist, violent
 def get_timedf_matchlist_and_violent():
     # 推进测试的起止时间
