@@ -101,8 +101,8 @@ step_months = 6 # 3,6 # 推进步长，单位月(允许大于12)******
 optcriterionaffix = myMT5run.get_optcriterion_affix(optcriterion=0) # ******
 
 
-# (***)推进回测EA的目录和文件名(***)
-bt_experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略\\".format(optcriterionaffix)
+# (***)推进回测EA的目录(后面不能带\\)和文件名(***)
+bt_experfolder = "My_Experts\\Strategy深度研究\\箱体回调策略".format(optcriterionaffix)
 bt_expertfile = "a1.推进交易.{}.{}.ex5".format("_Symbol", myMT5run.timeframe_to_ini_affix(timeframe))
 # (***)推进回测的时间起始(***)
 bt_starttime = "2015.07.01"  # 手动指定******
