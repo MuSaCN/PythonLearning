@@ -274,7 +274,7 @@ def run(criterionindex=0):
 
     # ---
     for symbol in symbollist:
-        if symbol in []:  # symbol = "GBPUSD"
+        if symbol in []:  # symbol = "EURUSD" "GBPUSD"
             continue
 
         length = "%sY" % length_year
@@ -306,17 +306,17 @@ def run(criterionindex=0):
 
             # 如果t1是None表示不是向前分析
             iforwardmode = 0 if t1 is None else forwardmode # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
+            todate = forwarddate if t1 is None else todate
             print("t0={} t1={} t2={}".format(t0, t1, t2))
+            print("fromdate={} forwarddate={} todate={}".format(fromdate, forwarddate, todate))
+            print("forwardmode={} ".format(iforwardmode))
 
             # 检测文件是否存在，存在则不需要再次优化
-            csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol,
-                                                                      tf_affix, t0, t1, t2)
+            csvfile = reportfolder + "\\{}.{}.{}.{}.{}.{}.csv".format(expertfile.rsplit(sep=".", maxsplit=1)[0], symbol, tf_affix, t0, t1, t2)
             if __mypath__.path_exists(reportfile) and __mypath__.path_exists(csvfile):
                 print("已经完成：", reportfile)
                 continue
 
-            print("fromdate={} forwarddate={} todate={}".format(fromdate, forwarddate, todate))
-            print("forwardmode={} ".format(iforwardmode))
             # %%
             myMT5run.__init__()
             myMT5run.config_Tester(expertname, symbol, timeframe, fromdate=fromdate, todate=todate,
