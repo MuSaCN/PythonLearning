@@ -61,7 +61,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # warnings.filterwarnings('ignore')
 
 # %%
-# ------通用分析套件参数(版本2022.10.15)------
+# ------通用分析套件参数(版本2022.10.22)------
 # 使用时要修改，请标注 *******
 def common_set():
     myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
@@ -69,6 +69,8 @@ def common_set():
     myMT5run.input_set("Inp_Signal_Shift", "1") # >=1为信号确认，且每bar运行一次，=0为实时。
     myMT5run.input_set("Inp_CustomMode", "0") # 0-TB
     myMT5run.input_set("Inp_IsBackTestCSV", "false") # 单次回测是否输出csv结果
+    myMT5run.input_set("Inp_CommissionMode", "0") # CommissionMode佣金模式
+    myMT5run.input_set("Inp_CommissionValue", "0") # CommissionValue佣金模式对应的值
     # ; ------1.入场限制------
     # ------1.1 同方向重复入场------
     myMT5run.input_set("Inp_Is_ReSignal", "false") # true允许信号同向重复入场，false不允许。
@@ -80,11 +82,18 @@ def common_set():
     myMT5run.input_set("Inp_TimeRangeTFShift", "0||0||1||10||N") # 当true时，Shift=0为从当前bar至今，1为从上个bar至今。
     # ------1.3 节假日刚开盘触发入场信号------
     myMT5run.input_set("Inp_Is_AfHoliOpLimit", "false") # true限制节假日刚开盘的入场信号，false不限制.
+    # ------1.4 交易成本限制------
+    myMT5run.input_set("Inp_Is_CostLimit", "false") # 是否启用交易成本限制
+    myMT5run.input_set("Inp_AvgCostTickCount", "30") # 最近n个tick平均点差+佣金点数
+    myMT5run.input_set("Inp_Is_CurCostLimit", "true") # 是否启用当前点差成本
+    myMT5run.input_set("Inp_CostPointLimit", "30") # 限制成本点最大的点数
     # ; ------2.出场模式------
     myMT5run.input_set("Inp_Is_SigToCloseInver", "true") # true信号平反向仓，false则不是。sig=4不适合.
     myMT5run.input_set("Inp_Is_PendToCloseInver", "true") # true挂单成交平反向仓，false则不是。
     myMT5run.input_set("Inp_FixedHolding", "0||0||1||10||N") # 0表示不是固定持仓模式，>0表示固定周期持仓。
     myMT5run.input_set("Inp_FixedHoldTF", "0") # FixedHolding的时间框
+    myMT5run.input_set("Inp_FixedHoldPPoint_L", "0||0||1||10||N") # 0.限定的净利润点数
+    myMT5run.input_set("Inp_FixedHoldPPoint_R", "0||0||1||10||N") # 0.限定的净利润点数
     myMT5run.input_set("Inp_AvgLotsToProfit_L", "0||0.0||0.000000||0.000000||N") # 1.AvgLotsToProfit_L:一局单子平均1仓位净利润达到指定额度平仓。LR都为0不启用。
     myMT5run.input_set("Inp_AvgLotsToProfit_R", "0||0.0||0.000000||0.000000||N") # 1.AvgLotsToProfit_R:一局单子平均1仓位净利润达到指定额度平仓。LR都为0不启用。
     myMT5run.input_set("Inp_AvgLotsToPPoint_L", "0||0||1||10||N") # 2.AvgLotsToPPoint_L:一局单子平均1仓位净利润达到指定点数平仓。LR都为0不启用。
@@ -169,6 +178,7 @@ def common_set():
     myMT5run.input_set("Inp_IsIn_WEDNESDAY", "true") # 允许星期三入场
     myMT5run.input_set("Inp_IsIn_THURSDAY", "true") # 允许星期四入场
     myMT5run.input_set("Inp_IsIn_FRIDAY", "true") # 允许星期五入场
+    myMT5run.input_set("Inp_HourFilter", "") # 不允许交易，过滤的小时
     myMT5run.input_set("Inp_StartEndTime", "00:00-23:59") # 允许入场的开始小时
     # ; ------9.初始仓单资金管理------
     myMT5run.input_set("Inp_MM_Mode", "0||0||0||7||N") # 0-MM_Minimum

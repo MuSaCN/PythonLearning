@@ -85,7 +85,7 @@ ea_inputparalist = ["MaxBoxPeriod", "OsciBoxPeriod", "K_TrendBuyU", "K_TrendBuyD
 
 
 symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # 策略的品种列表******
-symbollist = ["EURUSD"]
+# symbollist = ["EURUSD"]
 
 timeframe = "TIMEFRAME_M15" # 策略的时间框******
 
@@ -113,7 +113,7 @@ bt_folder = contentfolder + r"\1.推进回测.{}.{}.{}".format(optcriterionaffix
 
 
 #%% ###### 主要函数 ######
-# ------通用分析套件参数(版本2022.10.15)------
+# ------通用分析套件参数(版本2022.10.22)------
 # 使用时要修改，请标注 *******
 def common_set():
     myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
