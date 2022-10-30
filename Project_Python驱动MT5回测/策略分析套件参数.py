@@ -61,7 +61,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # warnings.filterwarnings('ignore')
 
 # %%
-# ------通用分析套件参数(版本2022.10.22)------
+# ------通用分析套件参数(版本2022.10.30)------
 # 使用时要修改，请标注 *******
 def common_set():
     myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
@@ -196,8 +196,7 @@ def common_set():
     # ------10.1加仓基础设置------
     myMT5run.input_set("Inp_Is_StartAddIn", "false") # true开启加仓管理，必须设置Is_ReSignal=true.
     myMT5run.input_set("Inp_TargetCommentAffix", "Affix") # 标的单注释词缀，总格式=MainComment.Affix
-    myMT5run.input_set("Inp_AddIn_Profit", "true") # true盈利加仓，false亏损加仓。
-    myMT5run.input_set("Inp_PnL_PointLeft", "0||0||50||400||N") # 盈亏加仓左侧的点数，亏损加仓要设为负值。
+    myMT5run.input_set("Inp_PnL_PointLeft", "-9999||0||1||10||N") # 盈亏加仓左侧的点数，亏损加仓要设为负值。
     myMT5run.input_set("Inp_Pnl_PointRight", "9999||9999||1||99990||N") # 盈亏加仓右侧的点数，亏损加仓要设为负值。
     myMT5run.input_set("Inp_AddIn_IntervalTF", "0") # 加仓的时间间隔timeframe.
     myMT5run.input_set("Inp_AddIn_IntervalBar", "0||0||1||10||N") # 加仓的时间间隔bar，0表示没有。
