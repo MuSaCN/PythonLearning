@@ -207,8 +207,7 @@ def common_set():
     # ------10.1加仓基础设置------
     myMT5run.input_set("Inp_Is_StartAddIn", "false") # true开启加仓管理，必须设置Is_ReSignal=true.
     myMT5run.input_set("Inp_TargetCommentAffix", "Affix") # 标的单注释词缀，总格式=MainComment.Affix
-    myMT5run.input_set("Inp_PnL_PointLeft", "-9999||0||1||10||N") # 盈亏加仓左侧的点数，亏损加仓要设为负值。
-    myMT5run.input_set("Inp_Pnl_PointRight", "9999||9999||1||99990||N") # 盈亏加仓右侧的点数，亏损加仓要设为负值。
+    myMT5run.input_set("Inp_PnL_Point", "0||0||1||10||N") # 盈亏加仓的点数，0关闭，>0盈加，<0亏加。
     myMT5run.input_set("Inp_AddIn_IntervalTF", "0") # 加仓的时间间隔timeframe.
     myMT5run.input_set("Inp_AddIn_IntervalBar", "0||0||1||10||N") # 加仓的时间间隔bar，0表示没有。
     # ------10.2加仓止盈损、仓位大小设置------
