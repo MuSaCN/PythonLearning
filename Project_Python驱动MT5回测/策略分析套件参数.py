@@ -61,7 +61,7 @@ myDefault.set_backend_default("Pycharm")  # Pycharm下需要plt.show()才显示�
 # warnings.filterwarnings('ignore')
 
 # %%
-# ------通用分析套件参数(版本2022.10.30)------
+# ------通用分析套件参数(版本2022.11.05)------
 # 使用时要修改，请标注 *******
 def common_set():
     myMT5run.input_set("FrameMode", "2") # 0-None 1-BTMoreResult 2-OptResult 3-ToDesk 4-GUI
