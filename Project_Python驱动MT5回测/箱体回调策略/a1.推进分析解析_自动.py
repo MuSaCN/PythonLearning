@@ -514,6 +514,7 @@ for symbol in symbollist:
         bt_forwardmode = 0  # 向前检测 (0 "No", 1 "1/2", 2 "1/3", 3 "1/4", 4 "Custom")
         bt_model = 1  # 0 "每笔分时", 1 "1 分钟 OHLC", 2 "仅开盘价", 3 "数学计算", 4 "每个点基于实时点"
         bt_optimization = 0  # 0 禁用优化, 1 "慢速完整算法", 2 "快速遗传算法", 3 "所有市场观察里选择的品种"
+        profitinpips = 0 # profitinpips = 1 用pips作为利润，不用具体的货币。0用具体货币，且考虑佣金
         print("3: 开始MT5回测EA：sortby={}, chooseby={}, resultlist={}".format(sortby,chooseby,resultlist))
 
         #%% # ---
@@ -521,7 +522,7 @@ for symbol in symbollist:
         myMT5run.config_Tester(bt_expertname, symbol, timeframe, fromdate=bt_starttime,
                                todate=bt_endtime,forwardmode=bt_forwardmode, forwarddate=None,
                                delays=0, model=bt_model, optimization=bt_optimization,
-                               optcriterion=6, reportfile=bt_reportfile)
+                               optcriterion=6, profitinpips=profitinpips, reportfile=bt_reportfile)
         common_set()
         strategy_set()
         # ---检查参数输入是否匹配优化的模式，且写出配置结果。
