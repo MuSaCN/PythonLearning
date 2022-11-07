@@ -80,8 +80,7 @@ expertfile = "a1.箱体回调策略.ex5"
 contentfolder = r"F:\BaiduNetdiskWorkspace\工作---MT5策略研究\7.箱体回调策略" # 输出的总目录******
 # (***)根据基础EA源码的Input变量的顺序来整理下面参数名(***)
 ea_inputparalist = ["MaxBoxPeriod", "OsciBoxPeriod", "K_TrendBuyU", "K_TrendBuyD", "TrendGap",
-                    "K_OsciBuyLevel", "OsciGap", "CloseBuyLevel", "PriceGap", "MaxSpread",
-                    "SL_Min", "SL_Max", "AvgLotsToPPoint_L", "AvgLotsToPPoint_R"]
+                    "K_OsciBuyLevel", "OsciGap", "CloseBuyLevel"]
 
 
 symbollist = ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD","EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"] # 策略的品种列表******
@@ -113,14 +112,16 @@ bt_folder = contentfolder + r"\1.推进回测.{}.{}.{}".format(optcriterionaffix
 
 
 #%% ###### 主要函数 ######
-# ------通用分析套件参数(版本2022.10.22)------
+# ------通用分析套件参数(版本2022.11.05)------
 # 使用时要修改，请标注 *******
 def common_set():
-    myMT5run.input_set("FrameMode", "2") # 0-FRAME_None 1-BTMoreResult 2-OptResult
+    myMT5run.input_set("FrameMode", "2") # 0-None 1-BTMoreResult 2-OptResult 3-ToDesk 4-GUI
     # ; ======(通用)0.用于分析======
     myMT5run.input_set("Inp_Signal_Shift", "1") # >=1为信号确认，且每bar运行一次，=0为实时。
     myMT5run.input_set("Inp_CustomMode", "0") # 0-TB
     myMT5run.input_set("Inp_IsBackTestCSV", "false") # 单次回测是否输出csv结果
+    myMT5run.input_set("Inp_CommissionMode", "0") # CommissionMode佣金模式
+    myMT5run.input_set("Inp_CommissionValue", "0.0") # CommissionValue佣金模式对应的值
     # ; ------1.入场限制------
     # ------1.1 同方向重复入场------
     myMT5run.input_set("Inp_Is_ReSignal", "false") # true允许信号同向重复入场，false不允许。
@@ -132,32 +133,50 @@ def common_set():
     myMT5run.input_set("Inp_TimeRangeTFShift", "0||0||1||10||N") # 当true时，Shift=0为从当前bar至今，1为从上个bar至今。
     # ------1.3 节假日刚开盘触发入场信号------
     myMT5run.input_set("Inp_Is_AfHoliOpLimit", "false") # true限制节假日刚开盘的入场信号，false不限制.
+    # ------1.4 交易成本限制------
+    myMT5run.input_set("Inp_AvgCostTickCount", "0") # 最近n个tick平均点差+佣金点数
+    myMT5run.input_set("Inp_Is_CurCostLimit", "false") # 是否启用当前点差成本
+    myMT5run.input_set("Inp_CostPointLimit", "30") # 限制成本点最大的点数
+    # ------1.5 交易时间间隔(自然时间)限制------
+    myMT5run.input_set("Inp_IntervalMultiply", "0.0||0.0||0.000000||0.000000||N")
+    myMT5run.input_set("Inp_IntervalBarTF", "0||0||0||49153||N")
     # ; ------2.出场模式------
+    myMT5run.input_set("Inp_Is_CloseAttachPend", "true")
+    # ------2.1 常规出场模式------
     myMT5run.input_set("Inp_Is_SigToCloseInver", "true") # true信号平反向仓，false则不是。sig=4不适合.
     myMT5run.input_set("Inp_Is_PendToCloseInver", "true") # true挂单成交平反向仓，false则不是。
+    # ------2.2 订单固定Bar出场模式------
     myMT5run.input_set("Inp_FixedHolding", "0||0||1||10||N") # 0表示不是固定持仓模式，>0表示固定周期持仓。
     myMT5run.input_set("Inp_FixedHoldTF", "0") # FixedHolding的时间框
-    myMT5run.input_set("Inp_AvgLotsToProfit_L", "0||0.0||0.000000||0.000000||N") # 1.AvgLotsToProfit_L:一局单子平均1仓位净利润达到指定额度平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_AvgLotsToProfit_R", "0||0.0||0.000000||0.000000||N") # 1.AvgLotsToProfit_R:一局单子平均1仓位净利润达到指定额度平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_AvgLotsToPPoint_L", "0||0||1||10||N") # 2.AvgLotsToPPoint_L:一局单子平均1仓位净利润达到指定点数平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_AvgLotsToPPoint_R", "0||0||1||10||N") # 2.AvgLotsToPPoint_R:一局单子平均1仓位净利润达到指定点数平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_CumLotsToProfit_L", "0||0.0||0.000000||0.000000||N") # 3.CumLotsToProfit_L:一局单子总净利润达到指定额度平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_CumLotsToProfit_R", "0||0.0||0.000000||0.000000||N") # 3.CumLotsToProfit_R:一局单子总净利润达到指定额度平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_CumLotsToPercBalance_L", "0||0.0||0.000000||0.000000||N") # 4.CumLotsToPercBalance_L:一局单子总净利润达到Balance指定百分比平仓。LR都为0不启用。
-    myMT5run.input_set("Inp_CumLotsToPercBalance_R", "0||0.0||0.000000||0.000000||N") # 4.CumLotsToPercBalance_R:一局单子总净利润达到Balance指定百分比平仓。LR都为0不启用。
+    myMT5run.input_set("Inp_FixedHoldPPoint", "0||0||1||10||N")  #
+    # ------2.3 资金出场模式------
+    myMT5run.input_set("Inp_MoneyToCloseMode", "0")
+    myMT5run.input_set("Inp_AvgLotsToProfit", "0.0||0.0||0.000000||0.000000||N")
+    myMT5run.input_set("Inp_AvgLotsToPPoint", "0||0||1||10||N")
+    myMT5run.input_set("Inp_CumLotsToProfit", "0.0||0.0||0.000000||0.000000||N")
+    myMT5run.input_set("Inp_CumLotsToPercBalance", "0.0||0.0||0.000000||0.000000||N")
+    # ------2.4 资金移动止损------
+    myMT5run.input_set("Inp_MoneyTrailMode", "0")
+    myMT5run.input_set("Inp_MoneyTrailStart", "0.0||0.0||0.000000||0.000000||N")
+    myMT5run.input_set("Inp_MoneyTrailFall", "0.0||0.0||0.000000||0.000000||N")
+    # ------2.5 极端净利润平极端单------
+    myMT5run.input_set("Inp_ExtNetProfitMode", "0")
+    myMT5run.input_set("Inp_ExtNetProfitN", "1||0||1||10||N")
+    myMT5run.input_set("Inp_ExtNetProfitM", "2||0||1||10||N")
+    myMT5run.input_set("Inp_ExtNetProfit", "0.0||0.0||0.000000||0.000000||N")
     # ; ------3.信号过滤(范围和方向)------
     # ------3.1 范围过滤------
     myMT5run.input_set("Inp_FilterMode", "0||0||0||2||N") # 0-NoFilter, 1-Range, 2-TwoSide
     myMT5run.input_set("Inp_FilterIndiName", "") # 过滤指标名称
     myMT5run.input_set("Inp_FilterIndiTF", "_Period") # 过滤指标时间框字符串
-    myMT5run.input_set("Inp_FilterIndiPara0", "0") # 过滤指标首个参数
-    myMT5run.input_set("Inp_FilterLeftValue", "0") # 过滤指标左侧的值
-    myMT5run.input_set("Inp_FilterRightValue", "0") # 过滤指标右侧的值
+    myMT5run.input_set("Inp_FilterIndiPara0", "0.0") # 过滤指标首个参数
+    myMT5run.input_set("Inp_FilterLeftValue", "0.0") # 过滤指标左侧的值
+    myMT5run.input_set("Inp_FilterRightValue", "0.0") # 过滤指标右侧的值
     # ------3.2 方向过滤------
     myMT5run.input_set("Inp_DirectMode", "0||2||0||4||N") # 2-TwoSide, 3-Direct1, 4-Direct2
     myMT5run.input_set("Inp_DirectIndiName", "") # 方向指标名称
     myMT5run.input_set("Inp_DirectIndiTF", "_Period") # 方向指标时间框字符串
-    myMT5run.input_set("Inp_DirectIndiPara0", "0||0||0.000000||0.000000||N") # 方向指标首个参数
+    myMT5run.input_set("Inp_DirectIndiPara0", "0.0||0.0||0.000000||0.000000||N") # 方向指标首个参数
     myMT5run.input_set("Inp_DirectCompareCloseTF", "0") # 与方向指标作比较的close时间框
     # ; ------4.1 初始止损设置------
     myMT5run.input_set("Inp_Init_SLMode", "0") # 0-SLMode_NONE, 2-SLMode_SpecifyDist, 3-SLMode_POINT
@@ -198,7 +217,7 @@ def common_set():
     # ; ------6.盈亏平衡------
     myMT5run.input_set("Inp_BreakEven_Mode", "0") # 1-BreakEven_POINT
     myMT5run.input_set("Inp_BreakEven_Point", "200||100||50||1000||N") # BreakEven_POINT模式: 达到多少点利润进行盈亏平衡
-    myMT5run.input_set("Inp_BreakEven_CostPoint", "0") # 盈亏平衡的成本点，比如Commission占用的点数。
+    myMT5run.input_set("Inp_BreakEven_ExtraCostPoint", "0") # 盈亏平衡的成本点，比如Commission占用的点数。
     # ; ------7.1 挂单交易------
     myMT5run.input_set("Inp_PendingMode", "0") # 0-PENDMode_NONE直接交易
     myMT5run.input_set("Inp_Is_PendDeal_SetSLTP", "true") # true挂单成交后再设置止损止盈；false直接设置再挂单。
@@ -221,6 +240,7 @@ def common_set():
     myMT5run.input_set("Inp_IsIn_WEDNESDAY", "true") # 允许星期三入场
     myMT5run.input_set("Inp_IsIn_THURSDAY", "true") # 允许星期四入场
     myMT5run.input_set("Inp_IsIn_FRIDAY", "true") # 允许星期五入场
+    myMT5run.input_set("Inp_HourFilter", "") # 不允许交易，过滤的小时
     myMT5run.input_set("Inp_StartEndTime", "00:00-23:59") # 允许入场的开始小时
     # ; ------9.初始仓单资金管理------
     myMT5run.input_set("Inp_MM_Mode", "0||0||0||7||N") # 0-MM_Minimum
@@ -238,9 +258,7 @@ def common_set():
     # ------10.1加仓基础设置------
     myMT5run.input_set("Inp_Is_StartAddIn", "false") # true开启加仓管理，必须设置Is_ReSignal=true.
     myMT5run.input_set("Inp_TargetCommentAffix", "Affix") # 标的单注释词缀，总格式=MainComment.Affix
-    myMT5run.input_set("Inp_AddIn_Profit", "true") # true盈利加仓，false亏损加仓。
-    myMT5run.input_set("Inp_PnL_PointLeft", "0||0||50||400||N") # 盈亏加仓左侧的点数，亏损加仓要设为负值。
-    myMT5run.input_set("Inp_Pnl_PointRight", "9999||9999||1||99990||N") # 盈亏加仓右侧的点数，亏损加仓要设为负值。
+    myMT5run.input_set("Inp_PnL_Point", "0||0||1||10||N") # 盈亏加仓的点数，0关闭，>0盈加，<0亏加。
     myMT5run.input_set("Inp_AddIn_IntervalTF", "0") # 加仓的时间间隔timeframe.
     myMT5run.input_set("Inp_AddIn_IntervalBar", "0||0||1||10||N") # 加仓的时间间隔bar，0表示没有。
     # ------10.2加仓止盈损、仓位大小设置------
@@ -259,11 +277,6 @@ def common_set():
 def strategy_set():
     myMT5run.input_set("PriceGap", "999||999||1||9990||N")
     myMT5run.input_set("MaxSpread", "999||999||1||9990||N")
-    myMT5run.input_set("SL_Min", "0||0||1||10||N")
-    myMT5run.input_set("SL_Max", "0||0||1||10||N")
-    myMT5run.input_set("AvgLotsToPPoint_L", "0||0||1||10||N")
-    myMT5run.input_set("AvgLotsToPPoint_R", "0||0||1||10||N")
-    myMT5run.input_set("OptCriterion", optcriterionaffix)
 
 
 # ---获取 timedf, matchlist, violent
