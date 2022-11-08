@@ -76,7 +76,7 @@ ea_inputparalist = ["MaxBoxPeriod", "OsciBoxPeriod", "K_TrendBuyU", "K_TrendBuyD
 
 
 # ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "AUDJPY","CHFJPY","EURAUD","EURCAD", "EURCHF","EURGBP","EURJPY","GBPAUD","GBPCAD","GBPCHF","GBPJPY","NZDJPY"]
-symbol = "AUDJPY" # ******
+symbol = "XAUUSD" # ******
 timeframe = "TIMEFRAME_M15" # ******
 starttime = "2015.01.01" # 推进分析数据的开始时间******
 endtime = "2022.07.01" # 推进分析数据的结束时间(最后一个格子只做优化，不做推进)******
@@ -222,9 +222,9 @@ else:
 
 
 # ---训练集根据sortby降序排序后，从中选择count个行，再根据chooseby选择前n个最大值，再根据resultby表示结果.
-sortby = "最大的连利($)" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
+sortby = "AHPR" # "Kelly占用仓位杠杆" "myCriterion" "盈亏比" "平均盈利" "盈利总和" "盈利交易数量"
 count = 0.5  # 0.5一半，-1全部。注意有时候遗传算法导致结果太少，所以用-1更好
-chooseby = "Sharpe_Balance" # "TB"
+chooseby = "Vince止损仓位比率" # "TB"
 n = 5
 resultlist=["TB", "净利润"]
 
