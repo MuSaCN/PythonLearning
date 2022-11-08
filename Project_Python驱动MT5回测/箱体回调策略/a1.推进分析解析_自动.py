@@ -527,7 +527,7 @@ for symbol in symbollist:
         strategy_set()
         # ---检查参数输入是否匹配优化的模式，且写出配置结果。
         myMT5run.check_inputs_and_write()
-        myMT5run.run_MT5()
+        myMT5run.run_MT5(open=True)
 
 
 
